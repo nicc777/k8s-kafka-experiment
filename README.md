@@ -13,7 +13,9 @@ To start experimenting, start with the [Experiment README](./experiments/README.
 
 Click the below image for a full-size version:
 
-<a href="">   <img src="img_girl.jpg" alt="Design Diagram" width="256" height="365">  </a>
+<a href="https://github.com/nicc777/k8s-kafka-experiment/blob/ca8fe054a1b9a384e246d1a45292dd124448f2ac/diagrams/experimental-design.png" target="_blank">   <img src="https://github.com/nicc777/k8s-kafka-experiment/blob/ca8fe054a1b9a384e246d1a45292dd124448f2ac/diagrams/experimental-design-thumbnail.png" alt="Design Diagram" width="256" height="365">  </a>
+
+
 
 For the experiments the same application is used in all experiments. The application has essentially three versions in order to also experiment with various application upgrades, where each upgrade adds more data to the data schema.
 
