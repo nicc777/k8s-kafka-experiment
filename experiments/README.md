@@ -38,7 +38,7 @@ cd experiments
 helm upgrade --install -n confluent confluent-operator confluentinc/confluent-for-kubernetes
 
 # Deploy the main kafka components - the actual schema configurations will be applied in each experiment as needed
-kubectl apply -f confluent-platform.yaml
+kubectl apply -f ./kafka-platform-deployments/application/kafka-platform.yaml
 
 # Deploy the Kafka UI (non-confluent project)
 helm repo add kafka-ui https://provectus.github.io/kafka-ui-charts
@@ -73,7 +73,7 @@ cd ../
 helm delete -n confluent kafka-ui
 
 # Delete the running Kafka components
-kubectl delete -f confluent-platform.yaml
+kubectl delete -f ./kafka-platform-deployments/application/kafka-platform.yaml
 ```
 
 # Final Cleanup

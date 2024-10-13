@@ -9,75 +9,30 @@ metadata:
     name: kafka-platform
 spec:
   project: default
-
   source:
-    repoURL: https://github.com/argoproj/argocd-example-apps.git  # Can point to either a Helm chart repo or a git repo.
-    targetRevision: HEAD  # For Helm, this refers to the chart version.
-    path: guestbook  # This has no meaning for Helm charts pulled directly from a Helm repo instead of git.
-
-    # helm specific config
-    chart: chart-name  # Set this when pulling directly from a Helm repo. DO NOT set for git-hosted Helm charts.
-    helm:
-      passCredentials: false # If true then adds --pass-credentials to Helm commands to pass credentials to all domains
-      # Extra parameters to set (same as setting through values.yaml, but these take precedence)
-      parameters:
-      - name: "nginx-ingress.controller.service.annotations.external-dns\\.alpha\\.kubernetes\\.io/hostname"
-        value: mydomain.example.com
-      - name: "ingress.annotations.kubernetes\\.io/tls-acme"
-        value: "true"
-        forceString: true # ensures that value is treated as a string
-
-      # Use the contents of files as parameters (uses Helm's --set-file)
-      fileParameters:
-      - name: config
-        path: files/config.json
-
-      # Release name override (defaults to application name)
-      releaseName: guestbook
-
-      # Helm values files for overriding values in the helm chart
-      # The path is relative to the spec.source.path directory defined above
-      valueFiles:
-      - values-prod.yaml
-
-      # Ignore locally missing valueFiles when installing Helm chart. Defaults to false
-      ignoreMissingValueFiles: false
-
-      # Values file as block file. Prefer to use valuesObject if possible (see below)
-      values: |
-        ingress:
-          enabled: true
-          path: /
-          hosts:
-            - mydomain.example.com
-          annotations:
-            kubernetes.io/ingress.class: nginx
-            kubernetes.io/tls-acme: "true"
-          labels: {}
-          tls:
-            - secretName: mydomain-tls
-              hosts:
-                - mydomain.example.com
-
-      # Values file as block file. This takes precedence over values
-      valuesObject:
-        ingress:
-          enabled: true
-          path: /
-          hosts:
-            - mydomain.example.com
-          annotations:
-            kubernetes.io/ingress.class: nginx
-            kubernetes.io/tls-acme: "true"
-          labels: {}
-          tls:
-            - secretName: mydomain-tls
-              hosts:
-                - mydomain.example.com
-
-      # Skip custom resource definition installation if chart contains custom resource definitions. Defaults to false
-      skipCrds: false
-
-      # Optional Helm version to template with. If omitted it will fall back to look at the 'apiVersion' in Chart.yaml
-      # and decide which Helm binary to use automatically. This field can be either 'v2' or 'v3'.
-      version: v2
+    repoURL: https://github.com/nicc777/k8s-kafka-experiment.git
+    targetRevision: HEAD
+    path: /experiments/kafka-platform-deployments/deployments
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: confluent
+  info:
+    - name: 'README'
+      value: 'https://github.com/nicc777/k8s-kafka-experiment/blob/main/README.md'
+  syncPolicy:
+    automated: 
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+    - RespectIgnoreDifferences=true
+    - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
