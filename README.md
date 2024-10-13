@@ -1,3 +1,15 @@
+
+- [k8s-kafka-experiment](#k8s-kafka-experiment)
+- [Workload Description used to Exercise Kafka](#workload-description-used-to-exercise-kafka)
+  - [Basic Workload Scenario](#basic-workload-scenario)
+  - [Workflow Versions](#workflow-versions)
+    - [Version 1: Basic Data](#version-1-basic-data)
+    - [Version 2: Adding Widget Defects](#version-2-adding-widget-defects)
+    - [Version 3: Adding Total Manufacturing Cost](#version-3-adding-total-manufacturing-cost)
+- [Kubernetes Platform](#kubernetes-platform)
+- [References and resources](#references-and-resources)
+
+
 # k8s-kafka-experiment
 
 Just some experiments on running Kafka and simple applications in Kubernetes, exploring various operational scenarios around schema management and application upgrades requiring schema changes in order to explore various upgrade strategies, for example blue/green, canary etc.
