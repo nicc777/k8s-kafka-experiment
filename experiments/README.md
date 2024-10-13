@@ -31,8 +31,13 @@ There are several steps to start each experiment
 Ensure the values for the Kafka UI still matches your desired configuration
 
 ```shell
-# Assuming you are in this project's root directory, Change into the "experiments" directory:
+# (OPTIONAL) Assuming you are in this project's root directory, Change into the "experiments" directory:
 cd experiments 
+
+# Deploy two Valkey (Memory Cache) instances to serve our back-end and UI as DB's
+helm install -n exp -f ./valkey-backend-values.yaml valkey-backend oci://registry-1.docker.io/bitnamicharts/valkey
+
+helm install -n exp -f ./valkey-ui-values.yaml valkey-ui oci://registry-1.docker.io/bitnamicharts/valkey
 
 # Deploy the Kafka operator
 helm upgrade --install -n confluent confluent-operator confluentinc/confluent-for-kubernetes
@@ -74,6 +79,9 @@ helm delete -n confluent kafka-ui
 
 # Delete the running Kafka components
 kubectl delete -f ./kafka-platform-deployments/application/kafka-platform.yaml
+
+# Cleanup the Memory caches
+helm delete -n exp valkey-backend valkey-ui
 ```
 
 # Final Cleanup

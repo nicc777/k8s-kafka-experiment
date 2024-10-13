@@ -1,0 +1,7 @@
+auth:
+  enabled: false
+  sentinel: false
+replica:
+  replicaCount: 1
+metrics:
+  enabled: true

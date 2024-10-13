@@ -241,3 +241,7 @@ kubectl port-forward service/argo-cd-argocd-server -n argocd --address=0.0.0.0 7
 * Tested on the [microk8s](https://microk8s.io/) Kubernetes distro, running on a single host. AT the time of creating this experiment, Kubernetes was at version 1.30
 * The [Kafka UI](https://github.com/provectus/kafka-ui) project and [documentation](https://docs.kafka-ui.provectus.io/)
   * [Kafka UI Helm Charts](https://docs.kafka-ui.provectus.io/configuration/helm-charts/quick-start) documentation
+* Valkey Resources:
+  * [Valkey Home Page](https://valkey.io/)
+  * Bitname Managed [Helm Chart](https://github.com/bitnami/charts/blob/main/bitnami/valkey/README.md)
+* This project use a [generic Python container](https://github.com/nicc777/container-python4aws) with all the require libraries, packages and other tools pre-installed for easy Python script deployment and testing in Kubernetes
