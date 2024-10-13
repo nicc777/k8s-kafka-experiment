@@ -215,9 +215,17 @@ Note: The `total_manufacturing_cost` must be the sum total of every SKU's `produ
 
 # Kubernetes Platform
 
-The experiment is based on a `microk8s` version 1.30 with the following key plugins enabled:
+The experiment is based on a `microk8s` version 1.30 with the following key addons enabled:
 
-* xxx
+* Required:
+  * argocd
+  * dns
+  * hostpath-storage
+* Optional, but may be useful
+  * dashboard
+  * ingress
+  * metrics-server
+  * registry
 
 To get the ArgoCD admin password, run:
 
@@ -239,6 +247,7 @@ kubectl port-forward service/argo-cd-argocd-server -n argocd --address=0.0.0.0 7
   * [Schema Registry Concepts for Confluent Platform](https://docs.confluent.io/platform/current/schema-registry/fundamentals/index.html)
   * [Tutorial: Use Schema Registry on Confluent Platform to Implement Schemas for a Client Application](https://docs.confluent.io/platform/7.7/schema-registry/schema_registry_onprem_tutorial.html)
 * Tested on the [microk8s](https://microk8s.io/) Kubernetes distro, running on a single host. AT the time of creating this experiment, Kubernetes was at version 1.30
+  * [Addons Documentation](https://microk8s.io/docs/addons)
 * The [Kafka UI](https://github.com/provectus/kafka-ui) project and [documentation](https://docs.kafka-ui.provectus.io/)
   * [Kafka UI Helm Charts](https://docs.kafka-ui.provectus.io/configuration/helm-charts/quick-start) documentation
 * Valkey Resources:
