@@ -60,9 +60,15 @@ Change into the relevant experiment sub-directory and follow the instructions in
 
 List of experiment:
 
-| Experiment | Experimental Objectives |
-|------------|-------------------------|
-| TODO       | TODO                    |
+| Experiment                   | Experimental Objectives                                                  |
+|------------------------------|--------------------------------------------------------------------------|
+| [exp-01](./exp-01/README.md) | Basic deployment of workload V1                                          |
+| exp-02                       | Basic deployment of workload V2                                          |
+| exp-03                       | Basic deployment of workload V3                                          |
+| exp-04                       | Deployment of V1 and upgrade to V2 using Blue Green with Canary strategy |
+
+> [!NOTE]
+> At this stage, future experiments will depend on the learnings from experiment 4.
 
 ## Step 3: Post Experiment Cleanup
 
