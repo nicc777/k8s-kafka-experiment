@@ -1,9 +1,9 @@
 apiVersion: platform.confluent.io/v1beta1
 kind: Schema
 metadata:
-  name: payment-value
+  name: test-raw-data
   namespace: confluent
 spec:
   data:
-    configRef: schema-config
+    configRef: schema-test-raw-data
     format: avro

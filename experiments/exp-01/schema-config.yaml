@@ -1,17 +1,20 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: schema-config
+  name: schema-test-raw-data
   namespace: confluent
 data:
   schema: |
     {
-      "namespace": "io.confluent.examples.clients.basicavro",
+      "namespace": "tld.example",
       "type": "record",
-      "name": "Payment",
-      "fields": [
-        {"name": "id", "type": "string"},
-        {"name": "amount", "type": "double"},
-        {"name": "email", "type": "string"}
-      ]
+        "name": "TestRawData",
+        "fields": [
+            { "name": "sku", "type": "string" },
+            { "name": "manufactured_qty", "type": "int" },
+            { "name": "year", "type": "int" },
+            { "name": "month", "type": "int" },
+            { "name": "day", "type": "int" },
+            { "name": "hour", "type": "int" }
+        ]
     }
