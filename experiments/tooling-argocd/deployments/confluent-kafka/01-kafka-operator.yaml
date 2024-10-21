@@ -14,26 +14,6 @@ kind: Task
 metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "1"
-  name: helm-add-repo
-spec:
-  params:
-    - name: repo
-      type: string
-    - name: repoUrl
-      type: string
-  steps:
-    - name: add-repo
-      image: alpine/helm:3.5.2
-      script: |
-        #!/bin/sh
-        helm repo add $(params.repo) $(params.repoUrl)
-        helm repo update
----
-apiVersion: tekton.dev/v1beta1
-kind: Task
-metadata:
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
   name: helm-install
 spec:
   params:
@@ -48,7 +28,8 @@ spec:
       image: alpine/helm:3.5.2
       script: |
         #!/bin/sh
-        sleep 10
+        helm repo add $(params.repo) $(params.repoUrl)
+        helm repo update
         helm upgrade --install confluent-kafka-operator $(params.chart) --namespace $(params.namespace) -f /workspace/confluent-operator-custom-values/values.yaml
 ---
 apiVersion: tekton.dev/v1beta1
@@ -61,18 +42,14 @@ spec:
   workspaces:
     - name: confluent-operator-custom-values
   tasks:
-    - name: add-helm-repo
+    - name: install-helm-chart
       taskRef:
-        name: helm-add-repo
+        name: helm-install
       params:
         - name: repo
           value: confluentinc
         - name: repoUrl
           value: https://packages.confluent.io/helm
-    - name: install-helm-chart
-      taskRef:
-        name: helm-install
-      params:
         - name: chart
           value: "confluentinc/confluent-for-kubernetes"
         - name: namespace
