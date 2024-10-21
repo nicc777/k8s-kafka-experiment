@@ -1,6 +1,7 @@
 
 - [Experiments Root](#experiments-root)
 - [Initial Preparations (once off)](#initial-preparations-once-off)
+  - [Install CI/CD Base](#install-cicd-base)
 - [Running a experiment](#running-a-experiment)
   - [Step 1: Preparing Kafka and Kafka UI](#step-1-preparing-kafka-and-kafka-ui)
   - [Step 2: Running the experiment](#step-2-running-the-experiment)
@@ -24,6 +25,11 @@ Each directory is an experiment on it's own.
 All applications will be installed in the namespace `exp`.
 
 # Initial Preparations (once off)
+
+## Install CI/CD Base
+
+Follow the instructions from [`cicd_base/README.md`](../cicd_base/README.md)
+
 
 ```shell
 # Add the confluent Helm repo
