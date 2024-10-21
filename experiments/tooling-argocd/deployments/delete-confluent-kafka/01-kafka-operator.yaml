@@ -5,6 +5,10 @@ metadata:
   name: helm-uninstall
 spec:
   params:
+    - name: repo
+      type: string
+    - name: repoUrl
+      type: string
     - name: release
       type: string
     - name: namespace
@@ -28,6 +32,10 @@ spec:
       taskRef:
         name: helm-uninstall
       params:
+        - name: repo
+          value: confluentinc
+        - name: repoUrl
+          value: https://packages.confluent.io/helm
         - name: release
           value: "confluent-kafka-operator"  # Replace with your Helm release name
         - name: namespace
