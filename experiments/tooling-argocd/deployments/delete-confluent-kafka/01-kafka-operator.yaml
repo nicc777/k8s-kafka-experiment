@@ -42,21 +42,6 @@ spec:
           value: "confluent"  # Replace with your namespace
 ---
 apiVersion: tekton.dev/v1beta1
-kind: Pipeline
-metadata:
-  name: uninstall-helm-chart-pipeline
-spec:
-  tasks:
-    - name: uninstall-helm-chart
-      taskRef:
-        name: helm-uninstall
-      params:
-        - name: release
-          value: "my-release"  # Replace with your Helm release name
-        - name: namespace
-          value: "your-namespace"  # Replace with your namespace
----
-apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
   name: uninstall-helm-chart-pipelinerun
