@@ -1,3 +1,17 @@
+
+- [Experiments Root](#experiments-root)
+- [Initial Preparations (once off)](#initial-preparations-once-off)
+- [Running a experiment](#running-a-experiment)
+  - [Step 1: Preparing Kafka and Kafka UI](#step-1-preparing-kafka-and-kafka-ui)
+  - [Step 2: Running the experiment](#step-2-running-the-experiment)
+  - [Step 3: Post Experiment Cleanup](#step-3-post-experiment-cleanup)
+- [Final Cleanup](#final-cleanup)
+- [Common Tasks](#common-tasks)
+  - [ArgoCD](#argocd)
+    - [Get the admin Password](#get-the-admin-password)
+    - [Access the UI](#access-the-ui)
+
+
 # Experiments Root
 
 > [!WARNING]
@@ -103,5 +117,23 @@ kubectl delete namespace confluent
 
 kubectl delete namespace exp
 ```
+
+# Common Tasks
+
+## ArgoCD
+
+### Get the admin Password
+
+```shell
+kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
+```
+
+### Access the UI
+
+```shell
+kubectl port-forward service/argo-cd-argocd-server 7090:80 -n argocd
+```
+
+And open http://127.0.0.1:7090 in your browser.
 
 
