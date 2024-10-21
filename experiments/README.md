@@ -136,4 +136,11 @@ kubectl port-forward service/argo-cd-argocd-server 7090:80 -n argocd
 
 And open http://127.0.0.1:7090 in your browser.
 
+> [!NOTE]
+> By default the port forwarder will only listen on localhost. If you need to expose it on your LAN to access the UI from another computer, use the following instead:
+
+```shell
+kubectl port-forward service/argo-cd-argocd-server 7090:80 -n argocd --address 0.0.0.0
+```
+
 
