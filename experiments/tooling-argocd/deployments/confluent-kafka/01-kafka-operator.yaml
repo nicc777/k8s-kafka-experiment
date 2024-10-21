@@ -17,6 +17,10 @@ metadata:
   name: helm-install
 spec:
   params:
+    - name: repo
+      type: string
+    - name: repoUrl
+      type: string
     - name: chart
       type: string
     - name: namespace
