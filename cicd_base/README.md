@@ -37,3 +37,11 @@ Run the following:
 kubectl apply -f cicd_base/applications/01_tekton.yaml
 ```
 
+# Prepare Namespaces
+
+Eun the following:
+
+```shell
+kubectl apply -f cicd_base/applications/02_experiment_namespaces.yaml
+```
+
