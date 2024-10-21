@@ -2,7 +2,7 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: kafka-operator
+  name: delete-kafka-operator
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
@@ -13,7 +13,7 @@ spec:
   source:
     repoURL: https://github.com/nicc777/k8s-kafka-experiment.git
     targetRevision: HEAD
-    path: experiments/tooling-argocd/deployments/confluent-kafka
+    path: experiments/tooling-argocd/deployments/delete-confluent-kafka
   destination:
     server: https://kubernetes.default.svc
     namespace: confluent
@@ -37,9 +37,4 @@ spec:
         duration: 5s
         factor: 2
         maxDuration: 3m
-  ignoreDifferences:
-  - group: "*"
-    kind: PipelineRun
-    # jsonPointers:
-    # - /workspaces[]
 

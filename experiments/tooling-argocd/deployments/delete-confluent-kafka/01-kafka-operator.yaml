@@ -1,0 +1,60 @@
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: helm-uninstall
+spec:
+  params:
+    - name: release
+      type: string
+    - name: namespace
+      type: string
+  steps:
+    - name: uninstall
+      image: alpine/helm:3.5.2
+      script: |
+        #!/bin/sh
+        helm repo add $(params.repo) $(params.repoUrl)
+        helm repo update
+        helm uninstall $(params.release) --namespace $(params.namespace)
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: uninstall-helm-chart-pipeline
+spec:
+  tasks:
+    - name: uninstall-helm-chart
+      taskRef:
+        name: helm-uninstall
+      params:
+        - name: release
+          value: "confluent-kafka-operator"  # Replace with your Helm release name
+        - name: namespace
+          value: "confluent"  # Replace with your namespace
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: uninstall-helm-chart-pipeline
+spec:
+  tasks:
+    - name: uninstall-helm-chart
+      taskRef:
+        name: helm-uninstall
+      params:
+        - name: release
+          value: "my-release"  # Replace with your Helm release name
+        - name: namespace
+          value: "your-namespace"  # Replace with your namespace
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: uninstall-helm-chart-pipelinerun
+spec:
+  pipelineRef:
+    name: uninstall-helm-chart-pipeline
+
+
+
