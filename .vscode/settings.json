@@ -34,6 +34,7 @@
         "tektonv",
         "validatingwebhook",
         "validatingwebhookconfigurations",
+        "valkey",
         "verificationpolicies",
         "verificationpolicy"
     ]

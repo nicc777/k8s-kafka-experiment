@@ -1,0 +1,87 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: confluent-operator-custom-values
+data:
+  values.yaml: |
+    # Custom Helm values go here
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: helm-add-repo
+spec:
+  params:
+    - name: repo
+      type: string
+    - name: repoUrl
+      type: string
+  steps:
+    - name: add-repo
+      image: alpine/helm:3.5.2
+      script: |
+        #!/bin/sh
+        helm repo add $(params.repo) $(params.repoUrl)
+        helm repo update
+---
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: helm-install
+spec:
+  params:
+    - name: chart
+      type: string
+    - name: namespace
+      type: string
+  workspaces:
+    - name: confluent-operator-custom-values
+  steps:
+    - name: install
+      image: alpine/helm:3.5.2
+      script: |
+        #!/bin/sh
+        helm install confluent-kafka-operator $(params.chart) --namespace $(params.namespace) -f /workspace/confluent-operator-custom-values/values.yaml
+---
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: install-helm-chart-pipeline
+spec:
+  workspaces:
+    - name: confluent-operator-custom-values
+  tasks:
+    - name: add-helm-repo
+      taskRef:
+        name: helm-add-repo
+      params:
+        - name: repo
+          value: confluentinc
+        - name: repoUrl
+          value: https://packages.confluent.io/helm
+    - name: install-helm-chart
+      taskRef:
+        name: helm-install
+      params:
+        - name: chart
+          value: "confluentinc/confluent-for-kubernetes"
+        - name: namespace
+          value: "confluent"
+      workspaces:
+        - name: confluent-operator-custom-values
+          workspace: confluent-operator-custom-values
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: install-helm-chart-pipelinerun
+spec:
+  pipelineRef:
+    name: install-helm-chart-pipeline
+  workspaces:
+    - name: confluent-operator-custom-values
+      configmap:
+        name: confluent-operator-custom-values
+
+
