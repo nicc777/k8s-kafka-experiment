@@ -12,19 +12,19 @@ metadata:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: README
+  name: readme-confluent
   namespace: confluent
 data:
-  readme: |
+  README.md: |
     # Note
     This is the namespace for the confluent Kafka distribution
 ---
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: README
+  name: readme-exp
   namespace: exp
 data:
-  readme: |
+  README.md: |
     # Note
     This is the namespace for the various experiments
