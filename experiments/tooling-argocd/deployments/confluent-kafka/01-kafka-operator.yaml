@@ -28,7 +28,6 @@ spec:
         #!/bin/sh
         helm repo add $(params.repo) $(params.repoUrl)
         helm repo update
-        sleep 10
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -49,6 +48,7 @@ spec:
       image: alpine/helm:3.5.2
       script: |
         #!/bin/sh
+        sleep 10
         helm upgrade --install confluent-kafka-operator $(params.chart) --namespace $(params.namespace) -f /workspace/confluent-operator-custom-values/values.yaml
 ---
 apiVersion: tekton.dev/v1beta1
