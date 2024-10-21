@@ -3,7 +3,7 @@ apiVersion: platform.confluent.io/v1beta1
 kind: Zookeeper
 metadata:
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "5"
   name: zookeeper
   namespace: confluent
 spec:
@@ -18,7 +18,7 @@ apiVersion: platform.confluent.io/v1beta1
 kind: Kafka
 metadata:
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "6"
   name: kafka
   namespace: confluent
 spec:
@@ -37,7 +37,7 @@ apiVersion: platform.confluent.io/v1beta1
 kind: SchemaRegistry
 metadata:
   annotations:
-    argocd.argoproj.io/sync-wave: "2"
+    argocd.argoproj.io/sync-wave: "7"
   name: schemaregistry
   namespace: confluent
 spec:
