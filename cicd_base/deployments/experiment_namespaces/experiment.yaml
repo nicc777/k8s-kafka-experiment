@@ -15,7 +15,7 @@ metadata:
   name: README
   namespace: confluent
 data:
-  README.md: |
+  readme: |
     # Note
     This is the namespace for the confluent Kafka distribution
 ---
@@ -25,6 +25,6 @@ metadata:
   name: README
   namespace: exp
 data:
-  README.md: |
+  readme: |
     # Note
     This is the namespace for the various experiments
