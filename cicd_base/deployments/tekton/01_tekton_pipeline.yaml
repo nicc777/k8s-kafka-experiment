@@ -647,7 +647,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -704,7 +704,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -776,7 +776,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -855,7 +855,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -886,7 +886,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -977,7 +977,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -1000,7 +1000,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -1072,7 +1072,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -1090,7 +1090,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -1147,7 +1147,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -1231,7 +1231,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -1262,7 +1262,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -1342,7 +1342,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -1579,7 +1579,7 @@ data:
     # to users that `kubectl edit` this config map.
     #
     # These sample configuration options may be copied out of
-    # this example block and unindented to be in the data block
+    # this example block and unintended to be in the data block
     # to actually change the configuration.
 
     # default-timeout-minutes contains the default number of
@@ -1593,7 +1593,7 @@ data:
     # default-managed-by-label-value contains the default value given to the
     # "app.kubernetes.io/managed-by" label applied to all Pods created for
     # TaskRuns. If a user's requested TaskRun specifies another value for this
-    # label, the user's request supercedes.
+    # label, the user's request supersedes.
     default-managed-by-label-value: "tekton-pipelines"
 
     # default-pod-template contains the default pod template to use for
@@ -1624,7 +1624,7 @@ data:
     # of combinations from a Matrix, if none is specified.
     default-max-matrix-combinations-count: "256"
 
-    # default-forbidden-env contains comma seperated environment variables that cannot be
+    # default-forbidden-env contains comma separated environment variables that cannot be
     # overridden by podTemplate.
     default-forbidden-env:
 
@@ -1729,17 +1729,17 @@ data:
     # to users that `kubectl edit` this config map.
     #
     # These sample configuration options may be copied out of
-    # this example block and unindented to be in the data block
+    # this example block and unintended to be in the data block
     # to actually change the configuration.
 
-    # formats contains a comma seperated list of event formats to be used
+    # formats contains a comma separated list of event formats to be used
     # the only format supported today is "tektonv1". An empty string is not
     # a valid configuration. To disable events, do not specify the sink.
     formats: "tektonv1"
 
     # sink contains the event sink to be used for TaskRun, PipelineRun and
     # CustomRun. If no sink is specified, no CloudEvent is generated.
-    # This setting supercedes the "default-cloud-events-sink" from the
+    # This setting supersedes the "default-cloud-events-sink" from the
     # "config-defaults" config map
     sink: "https://events.sink/cdevents"
 
@@ -1772,7 +1772,7 @@ data:
   # Setting this flag to "true" will prevent Tekton to create an
   # Affinity Assistant for every TaskRun sharing a PVC workspace
   #
-  # The default behaviour is for Tekton to create Affinity Assistants
+  # The default behavior is for Tekton to create Affinity Assistants
   #
   # See more in the Affinity Assistant documentation
   # https://github.com/tektoncd/pipeline/blob/main/docs/affinityassistants.md
@@ -1796,7 +1796,7 @@ data:
   # service accounts and injecting any credentials it finds into your
   # Steps.
   #
-  # The default behaviour currently is for Tekton to search service
+  # The default behavior currently is for Tekton to search service
   # accounts for secrets matching a specified format and automatically
   # mount those into your Steps.
   #
@@ -1810,7 +1810,7 @@ data:
   # TaskRun's sidecar containers to be running before starting the first
   # step. This will allow Tasks to be run in environments that don't
   # support the DownwardAPI volume type, but may lead to unintended
-  # behaviour if sidecars are used.
+  # behavior if sidecars are used.
   #
   # See https://github.com/tektoncd/pipeline/issues/4937 for more info.
   await-sidecar-readiness: "true"
@@ -2384,8 +2384,6 @@ spec:
       app.kubernetes.io/part-of: tekton-pipelines
   template:
     metadata:
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
       labels:
         app.kubernetes.io/name: controller
         app.kubernetes.io/component: controller
@@ -2573,8 +2571,6 @@ spec:
       app.kubernetes.io/part-of: tekton-pipelines
   template:
     metadata:
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
       labels:
         app.kubernetes.io/name: events
         app.kubernetes.io/component: events
@@ -3339,8 +3335,6 @@ spec:
       app.kubernetes.io/part-of: tekton-pipelines
   template:
     metadata:
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
       labels:
         app.kubernetes.io/name: resolvers
         app.kubernetes.io/component: resolvers
@@ -3559,8 +3553,6 @@ spec:
       app.kubernetes.io/part-of: tekton-pipelines
   template:
     metadata:
-  annotations:
-    argocd.argoproj.io/sync-wave: "1"
       labels:
         app.kubernetes.io/name: webhook
         app.kubernetes.io/component: webhook
@@ -3724,5 +3716,3 @@ spec:
     app.kubernetes.io/component: webhook
     app.kubernetes.io/instance: default
     app.kubernetes.io/part-of: tekton-pipelines
-
----

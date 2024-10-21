@@ -1549,8 +1549,6 @@ spec:
       app.kubernetes.io/part-of: tekton-triggers
   template:
     metadata:
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
       labels:
         app.kubernetes.io/name: controller
         app.kubernetes.io/component: controller
@@ -1679,8 +1677,6 @@ spec:
       app.kubernetes.io/part-of: tekton-triggers
   template:
     metadata:
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
       labels:
         app.kubernetes.io/name: webhook
         app.kubernetes.io/component: webhook
@@ -1732,5 +1728,3 @@ spec:
                 - "ALL"
             seccompProfile:
               type: RuntimeDefault
-
----
