@@ -2,6 +2,8 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   name: confluent-operator-custom-values
 data:
   values.yaml: |
@@ -10,6 +12,8 @@ data:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   name: helm-add-repo
 spec:
   params:
@@ -28,6 +32,8 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   name: helm-install
 spec:
   params:
@@ -47,6 +53,8 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   name: install-helm-chart-pipeline
 spec:
   workspaces:
@@ -75,6 +83,8 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
   name: install-helm-chart-pipelinerun
 spec:
   pipelineRef:
