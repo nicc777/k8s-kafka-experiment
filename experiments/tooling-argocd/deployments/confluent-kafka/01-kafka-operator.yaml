@@ -31,6 +31,7 @@ spec:
         helm repo add $(params.repo) $(params.repoUrl)
         helm repo update
         helm upgrade --install confluent-kafka-operator $(params.chart) --namespace $(params.namespace) -f /workspace/confluent-operator-custom-values/values.yaml
+        sleep 30
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
