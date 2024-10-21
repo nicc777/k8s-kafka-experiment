@@ -68,6 +68,9 @@ spec:
           value: confluentinc
         - name: repoUrl
           value: https://packages.confluent.io/helm
+      workspaces:
+        - name: confluent-operator-custom-values
+          workspace: confluent-operator-custom-values
     - name: install-helm-chart
       taskRef:
         name: helm-install
