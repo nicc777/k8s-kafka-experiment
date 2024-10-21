@@ -48,7 +48,7 @@ spec:
       image: alpine/helm:3.5.2
       script: |
         #!/bin/sh
-        helm install confluent-kafka-operator $(params.chart) --namespace $(params.namespace) -f /workspace/confluent-operator-custom-values/values.yaml
+        helm upgrade --install confluent-kafka-operator $(params.chart) --namespace $(params.namespace) -f /workspace/confluent-operator-custom-values/values.yaml
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
