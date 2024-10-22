@@ -62,7 +62,7 @@ spec:
     bindings:
     - name: git-pipeline-binding
     template:
-      name: pipeline-template
+      ref: pipeline-template
     # interceptors:
     # - ref:
     #     name: "cel"
