@@ -2,6 +2,8 @@
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
   name: run-shell-script
 spec:
   steps:
@@ -15,6 +17,8 @@ spec:
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
   name: shell-script-pipeline
 spec:
   tasks:
@@ -25,6 +29,8 @@ spec:
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
   name: pipeline-template
 spec:
   # params:
@@ -46,6 +52,8 @@ spec:
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
   name: el-shell-script
 spec:
   serviceAccountName: tekton-triggers-admin
@@ -65,6 +73,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
+  annotations:
+    argocd.argoproj.io/sync-wave: "8"
   name: el-shell-script
 spec:
   # type: NodePort
