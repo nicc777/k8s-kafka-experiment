@@ -78,7 +78,7 @@ metadata:
     argocd.argoproj.io/sync-wave: "12"
   name: el-shell-script
 spec:
-  # type: NodePort
+  type: NodePort
   selector:
     eventlistener: el-shell-script
   ports:
