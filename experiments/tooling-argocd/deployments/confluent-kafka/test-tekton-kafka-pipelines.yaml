@@ -63,12 +63,12 @@ spec:
     - name: git-pipeline-binding
     template:
       name: pipeline-template
-    interceptors:
-    - ref:
-        name: "cel"
-      params:
-      - name: "filter"
-        value: "header.match('X-GitHub-Event', 'push')"
+    # interceptors:
+    # - ref:
+    #     name: "cel"
+    #   params:
+    #   - name: "filter"
+    #     value: "header.match('X-GitHub-Event', 'push')"
 ---
 apiVersion: v1
 kind: Service
