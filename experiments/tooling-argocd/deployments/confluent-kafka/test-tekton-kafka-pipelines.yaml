@@ -59,8 +59,9 @@ spec:
   serviceAccountName: tekton-triggers-admin
   triggers:
   - name: trigger
-    bindings:
-    - name: git-pipeline-binding
+    # bindings:
+    # - name: git-pipeline-binding
+    #   value: i-called
     template:
       ref: pipeline-template
     # interceptors:
