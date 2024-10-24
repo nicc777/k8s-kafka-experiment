@@ -49,6 +49,26 @@ spec:
       resources: []
       params: []
 ---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: Trigger
+metadata:
+  name: trigger-test
+spec:
+  interceptors:
+  - ref:
+      name: "cel"
+  #   params:
+  #   - name: "filter"
+  #     value: "header.match('X-GitHub-Event', 'pull_request')"
+  #   - name: "overlays"
+  #     value:
+  #     - key: extensions.truncated_sha
+  #       expression: "body.pull_request.head.sha.truncate(7)"
+  # bindings:
+  # - ref: pipeline-binding
+  template:
+    ref: ppipeline-template-test
+---
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
 metadata:
@@ -58,15 +78,15 @@ metadata:
 spec:
   serviceAccountName: tekton-webhook-service-account
   triggers:
-  - name: trigger
+  - name: trigger-test
     # bindings:
     # - name: git-pipeline-binding
     #   value: i-called
-    template:
-      ref: pipeline-template-test
-    interceptors:
-    - ref:
-        name: "cel"
+    # template:
+    #   ref: pipeline-template-test
+    # interceptors:
+    # - ref:
+    #     name: "cel"
     #   params:
     #   - name: "filter"
     #     value: "header.match('X-GitHub-Event', 'push')"
