@@ -76,7 +76,7 @@ kind: Service
 metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "12"
-  name: el-shell-script
+  name: el-shell-script-svc
 spec:
   type: NodePort
   selector:
