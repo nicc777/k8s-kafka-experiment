@@ -4,7 +4,7 @@ kind: Task
 metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "8"
-  name: run-shell-script
+  name: run-shell-script-test
 spec:
   steps:
   - name: run-script
@@ -19,19 +19,19 @@ kind: Pipeline
 metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "9"
-  name: shell-script-pipeline
+  name: shell-script-pipeline-test
 spec:
   tasks:
   - name: run-script
     taskRef:
-      name: run-shell-script
+      name: run-shell-script-test
 ---
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: TriggerTemplate
 metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "10"
-  name: pipeline-template
+  name: pipeline-template-test
 spec:
   # params: 
   # - name: gitrevision
@@ -42,10 +42,10 @@ spec:
   - apiVersion: tekton.dev/v1beta1
     kind: PipelineRun
     metadata:
-      generateName: shell-script-pipeline-run-
+      generateName: shell-script-pipeline-test-run-
     spec:
       pipelineRef:
-        name: shell-script-pipeline
+        name: shell-script-pipeline-test
       resources: []
       params: []
 ---
@@ -54,16 +54,16 @@ kind: EventListener
 metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "11"
-  name: el-shell-script
+  name: el-shell-script-test
 spec:
-  serviceAccountName: tekton-triggers-admin
+  serviceAccountName: tekton-webhook-service-account
   triggers:
   - name: trigger
     # bindings:
     # - name: git-pipeline-binding
     #   value: i-called
     template:
-      ref: pipeline-template
+      ref: pipeline-template-test
     # interceptors:
     # - ref:
     #     name: "cel"
@@ -78,9 +78,9 @@ metadata:
     argocd.argoproj.io/sync-wave: "12"
   name: el-shell-script-svc
 spec:
-  type: NodePort
+  # type: NodePort
   selector:
-    eventlistener: el-shell-script
+    eventlistener: el-shell-script-test
   ports:
     - protocol: TCP
       port: 8080
