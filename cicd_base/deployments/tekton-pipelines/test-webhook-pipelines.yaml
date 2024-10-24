@@ -54,9 +54,9 @@ kind: Trigger
 metadata:
   name: trigger-test
 spec:
-  # interceptors:
-  # - ref:
-  #     name: "cel"
+  interceptors:
+  - ref:
+      name: "cel"
   #   params:
   #   - name: "filter"
   #     value: "header.match('X-GitHub-Event', 'pull_request')"
