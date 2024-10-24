@@ -12,7 +12,9 @@ spec:
     script: |
       #!/bin/sh
       echo "Running shell script"
+      sleep 30
       echo "Hello from the shell script"
+      sleep 30
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Pipeline
