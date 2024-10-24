@@ -78,7 +78,7 @@ metadata:
 spec:
   serviceAccountName: tekton-webhook-service-account
   triggers:
-  - name: trigger-test
+  - triggerRef: trigger-test
     # bindings:
     # - name: git-pipeline-binding
     #   value: i-called
