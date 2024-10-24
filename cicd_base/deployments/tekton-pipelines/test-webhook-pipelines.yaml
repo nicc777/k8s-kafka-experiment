@@ -64,9 +64,9 @@ spec:
     #   value: i-called
     template:
       ref: pipeline-template-test
-    # interceptors:
-    # - ref:
-    #     name: "cel"
+    interceptors:
+    - ref:
+        name: "cel"
     #   params:
     #   - name: "filter"
     #     value: "header.match('X-GitHub-Event', 'push')"
