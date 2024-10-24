@@ -100,7 +100,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "12"
 spec:
-  serviceAccountName: tekton-triggers-example-sa
+  serviceAccountName: tekton-webhook-service-account
   triggers:
     - name: test-trig
       bindings:
