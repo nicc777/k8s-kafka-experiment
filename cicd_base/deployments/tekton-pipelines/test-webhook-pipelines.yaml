@@ -42,6 +42,8 @@ apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerBinding
 metadata:
   name: test-binding
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
 spec:
   params:
   - name: gitrevision
@@ -55,6 +57,8 @@ apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
 metadata:
   name: test-pipeline-template
+  annotations:
+    argocd.argoproj.io/sync-wave: "11"
 spec:
   params:
   - name: gitrevision
@@ -93,6 +97,8 @@ apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: listener-test
+  annotations:
+    argocd.argoproj.io/sync-wave: "12"
 spec:
   serviceAccountName: tekton-triggers-example-sa
   triggers:
