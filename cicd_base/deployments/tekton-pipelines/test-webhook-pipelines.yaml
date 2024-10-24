@@ -92,7 +92,7 @@ spec:
 apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
 metadata:
-  name: listener=test
+  name: listener-test
 spec:
   serviceAccountName: tekton-triggers-example-sa
   triggers:
