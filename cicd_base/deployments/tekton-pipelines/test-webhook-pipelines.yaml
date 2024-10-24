@@ -67,7 +67,7 @@ spec:
   # bindings:
   # - ref: pipeline-binding
   template:
-    ref: ppipeline-template-test
+    ref: pipeline-template-test
 ---
 apiVersion: triggers.tekton.dev/v1alpha1
 kind: EventListener
