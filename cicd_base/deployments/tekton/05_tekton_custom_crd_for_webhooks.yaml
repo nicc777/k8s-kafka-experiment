@@ -139,3 +139,24 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
   name: tekton-triggers-eventlistener-clusterroles
+
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tmp-admin-sa
+  namespace: my-namespace
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-sa-binding
+subjects:
+- kind: ServiceAccount
+  name: tmp-admin-sa
+  namespace: my-namespace
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+
