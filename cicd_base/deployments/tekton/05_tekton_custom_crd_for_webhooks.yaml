@@ -154,6 +154,7 @@ metadata:
 subjects:
 - kind: ServiceAccount
   name: tmp-admin-sa
+  namespace: default
 roleRef:
   kind: ClusterRole
   name: cluster-admin
