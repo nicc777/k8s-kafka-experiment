@@ -89,7 +89,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
-  name: tekton-taskrun-1--role
+  name: tekton-taskrun-1-role
   annotations:
     argocd.argoproj.io/sync-wave: "5"
 rules:
@@ -109,7 +109,7 @@ subjects:
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
-  name: tekton-taskrun-1--role
+  name: tekton-taskrun-1-role
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
