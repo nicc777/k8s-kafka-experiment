@@ -104,9 +104,31 @@ metadata:
     argocd.argoproj.io/sync-wave: "12"
 spec:
   serviceAccountName: tekton-webhook-service-account
+  # triggers:
+  #   - name: test-trig
+  #     # bindings:
+  #     # - ref: test-binding
+  #     template:
+  #       ref: test-pipeline-template
+
   triggers:
-    - name: test-trig
-      # bindings:
-      # - ref: test-binding
-      template:
-        ref: test-pipeline-template
+  - name: "test-trigger"
+    template:
+      spec: 
+        params:
+        - name: "my-param-name"
+        resourceTemplates:
+        - apiVersion: "tekton.dev/v1beta1"
+          kind: TaskRun
+          metadata:
+            generateName: "test-run-"
+          spec:
+            taskSpec:
+              steps:
+              - image: alpine:3.12
+                script: |
+                  #!/bin/sh
+                  echo "Running shell script"
+                  sleep 30
+                  echo "Hello from the shell script"
+                  sleep 30
