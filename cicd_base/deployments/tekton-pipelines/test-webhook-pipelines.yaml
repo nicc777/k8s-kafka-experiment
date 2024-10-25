@@ -23,8 +23,6 @@ spec:
   - name: "test-trigger"
     template:
       spec: 
-        params:
-        - name: "my-param-name"
         resourceTemplates:
         - apiVersion: "tekton.dev/v1beta1"
           kind: TaskRun
