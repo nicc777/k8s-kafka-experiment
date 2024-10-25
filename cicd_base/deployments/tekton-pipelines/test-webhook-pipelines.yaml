@@ -1,3 +1,16 @@
+apiVersion: tekton.dev/v1 # or tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: test-task
+spec:
+  steps:
+  - image: alpine:3.12
+    script: |
+      #!/bin/sh
+      echo "Running shell script"
+      sleep 3
+      echo "Hello from the shell script"
+      sleep 3
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
@@ -17,12 +30,5 @@ spec:
           metadata:
             generateName: "test-run-"
           spec:
-            taskSpec:
-              steps:
-              - image: alpine:3.12
-                script: |
-                  #!/bin/sh
-                  echo "Running shell script"
-                  sleep 30
-                  echo "Hello from the shell script"
-                  sleep 30
+            taskRef:
+              name: test-task
