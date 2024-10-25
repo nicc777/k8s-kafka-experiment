@@ -8,9 +8,9 @@ spec:
     onError: continue
     script: |
       #!/bin/sh
-      echo "Running shell script"
+      echo "Running shell script 1"
       sleep 30
-      echo "Hello from the shell script"
+      echo "Hello from the shell script 1"
       sleep 30
 ---
 apiVersion: triggers.tekton.dev/v1beta1
@@ -27,7 +27,21 @@ spec:
         - apiVersion: "tekton.dev/v1beta1"
           kind: TaskRun
           metadata:
-            generateName: "test-run-"
+            generateName: "test-run-1-"
           spec:
             taskRef:
               name: test-task
+        - apiVersion: "tekton.dev/v1beta1"
+          kind: TaskRun
+          metadata:
+            generateName: "test-run-2-"
+          spec:
+            taskSpec:
+              steps:
+              - image: alpine:3.12
+                script: |
+                  #!/bin/sh
+                  echo "Running shell script 2"
+                  sleep 30
+                  echo "Hello from the shell script 2"
+                  sleep 30
