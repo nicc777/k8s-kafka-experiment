@@ -5,6 +5,7 @@ metadata:
 spec:
   steps:
   - image: alpine:3.12
+    onError: continue
     script: |
       #!/bin/sh
       echo "Running shell script"
