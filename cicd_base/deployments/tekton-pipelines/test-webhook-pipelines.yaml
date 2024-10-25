@@ -18,8 +18,8 @@ kind: EventListener
 metadata:
   name: listener-test
 spec:
-  serviceAccountName: tekton-webhook-service-account
-  # serviceAccountName: tmp-admin-sa
+  # serviceAccountName: tekton-webhook-service-account
+  serviceAccountName: tmp-admin-sa
   triggers:
   - name: "test-trigger"
     template:
