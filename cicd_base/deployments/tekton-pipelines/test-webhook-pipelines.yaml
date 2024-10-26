@@ -1,7 +1,49 @@
+
+# PERMISSIONS
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tekton-triggers-example-sa
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: triggers-example-eventlistener-binding
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+subjects:
+- kind: ServiceAccount
+  name: tekton-triggers-example-sa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-eventlistener-roles
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: triggers-example-eventlistener-clusterbinding
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+subjects:
+- kind: ServiceAccount
+  name: tekton-triggers-example-sa
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-eventlistener-clusterroles
+
+# PIPELINES....
+---
 apiVersion: tekton.dev/v1beta1
 kind: Task
 metadata:
   name: test-task
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   steps:
   - image: alpine:3.12
@@ -17,9 +59,11 @@ apiVersion: triggers.tekton.dev/v1beta1
 kind: EventListener
 metadata:
   name: listener-test
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
 spec:
   # serviceAccountName: tekton-webhook-service-account
-  serviceAccountName: tmp-admin-sa
+  serviceAccountName: tekton-triggers-example-sa
   triggers:
   - name: "test-trigger"
     template:
