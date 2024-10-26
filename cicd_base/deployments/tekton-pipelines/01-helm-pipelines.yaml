@@ -123,6 +123,8 @@ spec:
             mountPath: /data/custom-helm-values/valkey
 
 ---
+# FIXME
+# Current error: 2024-10-26T15:13:00.556984628Z Error: INSTALLATION FAILED: Unable to continue with install: could not get information about the resource NetworkPolicy "valkey" in namespace "exp": networkpolicies.networking.k8s.io "valkey" is forbidden: User "system:serviceaccount:default:default" cannot get resource "networkpolicies" in API group "networking.k8s.io" in the namespace "exp"
 apiVersion: v1
 kind: ConfigMap
 metadata:
