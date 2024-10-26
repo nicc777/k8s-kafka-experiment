@@ -106,25 +106,13 @@ spec:
           script: |
             #! /bin/bash
             echo "Command: $(tt.params.command)"
-            echo "THIS TEST WORKED - 006"
-            value=$(tt.params.command)
-            case $value in
-              "apply")
-                sh /scripts/apply.sh
-                ;;
-              "delete")
-                sh /scripts/apply.sh
-                ;;
-              *)
-                echo "Unknown Command !!!"
-                ;;
-            esac
-
+            echo "THIS TEST WORKED - 007"
+            sh /scripts/$(tt.params.command)/exec.sh
           volumeMounts:
           - name: apply-volume
-            mountPath: /scripts
+            mountPath: /scripts/apply
           - name: delete-volume
-            mountPath: /scripts
+            mountPath: /scripts/delete
 
 ---
 apiVersion: v1
@@ -132,7 +120,7 @@ kind: ConfigMap
 metadata:
   name: test-apply-script
 data:
-  apply.sh: |
+  exec.sh: |
     echo "I AM AN APPLY SCRIPT"
 ---
 apiVersion: v1
@@ -140,6 +128,6 @@ kind: ConfigMap
 metadata:
   name: test-delete-script
 data:
-  delete.sh: |
-    echo "I AM AN APPLY SCRIPT"
+  exec.sh: |
+    echo "I AM AN DELETE SCRIPT"
 
