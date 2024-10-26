@@ -108,6 +108,7 @@ spec:
         - image: ubuntu
           script: |
             #!/bin/bash
+            apt update && apt install -y curl
             echo "I am running as user " `whoami`
             sh /scripts/$(tt.params.command)/exec.sh || true
           volumeMounts:
@@ -126,7 +127,6 @@ metadata:
 data:
   exec.sh: |
     echo "I AM AN APPLY SCRIPT"
-    apt update && apt install -y curl
     curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     helm version
     ls -lahrt /data/custom-helm-values/valkey/*
