@@ -36,66 +36,79 @@ roleRef:
   kind: ClusterRole
   name: tekton-triggers-eventlistener-clusterroles
 
-# PIPELINES....
+# WEBHOOK....
 ---
-apiVersion: tekton.dev/v1beta1
-kind: Task
-metadata:
-  name: test-task
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
-spec:
-  steps:
-  - name: "echo-test-1"
-    image: alpine:3.12
-    script: |
-      #!/bin/sh
-      echo "Running shell script 1"
-      sleep 30
-      echo "Hello from the shell script 1"
-      sleep 30
+  apiVersion: triggers.tekton.dev/v1beta1
+  kind: EventListener
+  metadata:
+    name: test-event-listener
+  spec:
+    triggers:
+    - name: test-event-listener
+      interceptors:
+      - ref:
+          name: "github"
+        params:
+        - name: "secretRef"
+          value:
+            secretName: github-secret
+            secretKey: secretToken
+        - name: "eventTypes"
+          value: ["pull_request"]
+      - name: "only when PRs are opened"
+        ref:
+          name: "cel"
+        params:
+        - name: "filter"
+          value: "body.action in ['opened', 'synchronize', 'reopened']"
+      bindings:
+        - ref: test-trigger-binding
+      template:
+        ref: test-trigger-template
+    resources:
+      kubernetesResource:
+        spec:
+          template:
+            spec:
+              serviceAccountName: tekton-triggers-example-sa
+              containers:
+              - resources:
+                  requests:
+                    memory: "64Mi"
+                    cpu: "250m"
+                  limits:
+                    memory: "128Mi"
+                    cpu: "500m"
 ---
 apiVersion: triggers.tekton.dev/v1beta1
-kind: EventListener
+kind: TriggerBinding
 metadata:
-  name: listener-test
-  annotations:
-    argocd.argoproj.io/sync-wave: "2"
+  name: test-trigger-binding
 spec:
-  # serviceAccountName: tekton-webhook-service-account
-  serviceAccountName: tekton-triggers-example-sa
-  triggers:
-  - name: "test-trigger-task-1"
-    template:
-      apiVersion: tekton.dev/v1alpha1
-      kind: TriggerTemplate
-      metadata:
-        name: test-task-template
-      spec:
-        resourcetemplates:
-        - apiVersion: tekton.dev/v1beta1
-          kind: TaskRun
-          metadata:
-            name: test-task-run
-          spec:
-            taskRef:
-              name: test-task
-  - name: "test-trigger-task-2"
-    template:
-      spec: 
-        resourceTemplates:
-        - apiVersion: "tekton.dev/v1beta1"
-          kind: TaskRun
-          metadata:
-            generateName: "test-run-2-"
-          spec:
-            taskSpec:
-              steps:
-              - name: "echo-test-2"
-                image: alpine:3.12
-                script: |
-                  #!/bin/sh
-                  echo "Running shell script 2"
-                  sleep 30
-                  echo "Hello from the shell script 2"
-                  sleep 30
+  params:
+  - name: gitrevision
+    value: $(body.pull_request.head.sha)
+  - name: gitrepositoryurl
+    value: $(body.repository.clone_url)
+
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: test-trigger-template
+spec:
+  params:
+  - name: gitrevision
+  - name: gitrepositoryurl
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: TaskRun
+    metadata:
+      generateName: github-run-
+    spec:
+      taskSpec:
+        steps:
+        - image: ubuntu
+          script: |
+            #! /bin/bash
+            echo "THIS TEST WORKED"
