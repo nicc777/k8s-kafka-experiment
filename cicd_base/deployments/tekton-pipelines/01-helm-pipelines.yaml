@@ -1,0 +1,154 @@
+
+# PERMISSIONS
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: helm-pipelines-sa
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: triggers-example-eventlistener-binding
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+subjects:
+- kind: ServiceAccount
+  name: helm-pipelines-sa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-eventlistener-roles
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: triggers-example-eventlistener-clusterbinding
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+subjects:
+- kind: ServiceAccount
+  name: helm-pipelines-sa
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-eventlistener-clusterroles
+
+# WEBHOOK....
+---
+  apiVersion: triggers.tekton.dev/v1beta1
+  kind: EventListener
+  metadata:
+    name: helm-pipelines-event-listener
+  spec:
+    triggers:
+    - name: helm-pipelines-event-listener
+      interceptors: 
+      - name: "Command"
+        ref:
+          name: "cel"
+        params:
+        - name: "filter"
+          value: "body.command in ['apply', 'delete']"
+      bindings:
+        - ref: helm-pipelines-trigger-binding
+      template:
+        ref: helm-pipelines-trigger-template
+    resources:
+      kubernetesResource:
+        spec:
+          template:
+            spec:
+              serviceAccountName: helm-pipelines-sa
+              containers:
+              - resources:
+                  requests:
+                    memory: "64Mi"
+                    cpu: "250m"
+                  limits:
+                    memory: "128Mi"
+                    cpu: "500m"
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: helm-pipelines-trigger-binding
+spec:
+  params: 
+  - name: command
+    value: $(body.command)
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: helm-pipelines-trigger-template
+spec:
+  params:
+  - name: command
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: TaskRun
+    metadata:
+      generateName: test-run-
+    spec:
+      taskSpec:
+        volumes:
+        - name: apply-volume
+          configMap:
+            name: helm-pipelines-apply-script-cm
+        - name: delete-volume
+          configMap:
+            name: helm-pipelines-delete-script-cm
+        - name: valkey-values-volume
+          configMap:
+            name: helm-pipelines-valkey-values-cm
+        steps:
+        - image: ubuntu
+          script: |
+            #!/bin/bash
+            echo "I am running as user " `whoami`
+            snap install helm --classic
+            sh /scripts/$(tt.params.command)/exec.sh
+          volumeMounts:
+          - name: apply-volume
+            mountPath: /scripts/apply
+          - name: delete-volume
+            mountPath: /scripts/delete
+          - name: valkey-values-volume
+            mountPath: /data/custom-helm-values/valkey
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helm-pipelines-apply-script-cm
+data:
+  exec.sh: |
+    echo "I AM AN APPLY SCRIPT"
+    ls -lahrt /data/custom-helm-values/valkey/*
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helm-pipelines-delete-script-cm
+data:
+  exec.sh: |
+    echo "I AM AN DELETE SCRIPT"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helm-pipelines-valkey-values-cm
+data:
+  values.yaml: |
+    auth:
+      enabled: false
+      sentinel: false
+    replica:
+      replicaCount: 1
+    metrics:
+      enabled: true
+
+

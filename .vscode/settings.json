@@ -5,6 +5,8 @@
         "APIV",
         "argocd",
         "argoproj",
+        "clusterbinding",
+        "clusterroles",
         "clustertask",
         "clustertasks",
         "contenttype",
