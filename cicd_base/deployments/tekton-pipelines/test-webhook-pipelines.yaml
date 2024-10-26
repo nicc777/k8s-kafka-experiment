@@ -65,17 +65,28 @@ spec:
   # serviceAccountName: tekton-webhook-service-account
   serviceAccountName: tekton-triggers-example-sa
   triggers:
-  - name: "test-trigger"
+  - name: "test-trigger-task-1"
+    bindings:
+    - kind: ClusterTriggerBinding
+      name: test-webhook-binding
     template:
-      spec: 
-        resourceTemplates:
-        - apiVersion: "tekton.dev/v1beta1"
+      apiVersion: tekton.dev/v1alpha1
+      kind: TriggerTemplate
+      metadata:
+        name: test-task-template
+      spec:
+        resourcetemplates:
+        - apiVersion: tekton.dev/v1beta1
           kind: TaskRun
           metadata:
-            generateName: "test-run-1-"
+            name: test-task-run
           spec:
             taskRef:
               name: test-task
+  - name: "test-trigger-task-2"
+    template:
+      spec: 
+        resourceTemplates:
         - apiVersion: "tekton.dev/v1beta1"
           kind: TaskRun
           metadata:
