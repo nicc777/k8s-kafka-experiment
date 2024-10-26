@@ -109,7 +109,7 @@ spec:
           script: |
             #!/bin/bash
             echo "I am running as user " `whoami`
-            snap install helm --classic
+            snap install helm --classic || true
             sh /scripts/$(tt.params.command)/exec.sh
           volumeMounts:
           - name: apply-volume
