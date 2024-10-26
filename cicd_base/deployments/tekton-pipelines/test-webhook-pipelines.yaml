@@ -106,7 +106,7 @@ spec:
           script: |
             #! /bin/bash
             echo "Command: $(tt.params.command)"
-            echo "THIS TEST WORKED - 005"
+            echo "THIS TEST WORKED - 006"
             value=$(tt.params.command)
             case $value in
               "apply")
@@ -121,9 +121,9 @@ spec:
             esac
 
           volumeMounts:
-          - name: test-apply-script
+          - name: apply-volume
             mountPath: /scripts
-          - name: test-delete-script
+          - name: delete-volume
             mountPath: /scripts
 
 ---
