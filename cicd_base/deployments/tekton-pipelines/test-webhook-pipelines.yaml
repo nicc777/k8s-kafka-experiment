@@ -37,14 +37,6 @@ roleRef:
   name: tekton-triggers-eventlistener-clusterroles
 
 # WEBHOOK....
-# ---
-# apiVersion: v1
-# kind: Secret
-# metadata:
-#   name: test-secret
-# type: Opaque
-# stringData:
-#   secretToken: "1234567"
 ---
   apiVersion: triggers.tekton.dev/v1beta1
   kind: EventListener
@@ -54,15 +46,6 @@ roleRef:
     triggers:
     - name: test-event-listener
       interceptors: 
-      # - ref:
-      #     name: "github"
-      #   params:
-      #   - name: "secretRef"
-      #     value:
-      #       secretName: test-secret
-      #       secretKey: secretToken
-      #   - name: "eventTypes"
-      #     value: ["pull_request"]
       - name: "Command"
         ref:
           name: "cel"
@@ -96,7 +79,6 @@ spec:
   params: 
   - name: command
     value: $(body.command)
-
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
@@ -117,4 +99,40 @@ spec:
           script: |
             #! /bin/bash
             echo "Command: $(tt.params.command)"
-            echo "THIS TEST WORKED - 003"
+            echo "THIS TEST WORKED - 004"
+            value=$(tt.params.command)
+            case $value in
+              "apply")
+                sh /scripts/apply.sh
+                ;;
+              "delete")
+                sh /scripts/apply.sh
+                ;;
+              *)
+                echo "Unknown Command !!!"
+                ;;
+            esac
+
+          volumeMounts:
+          - name: test-apply-script
+            mountPath: /scripts
+          - name: test-delete-script
+            mountPath: /scripts
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-apply-script
+data:
+  apply.sh: |
+    echo "I AM AN APPLY SCRIPT"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: test-delete-script
+data:
+  delete.sh: |
+    echo "I AM AN APPLY SCRIPT"
+
