@@ -94,12 +94,19 @@ spec:
       generateName: test-run-
     spec:
       taskSpec:
+        volumes:
+        - name: apply-volume
+          configMap:
+            name: test-apply-script
+        - name: delete-volume
+          configMap:
+            name: test-delete-script
         steps:
         - image: ubuntu
           script: |
             #! /bin/bash
             echo "Command: $(tt.params.command)"
-            echo "THIS TEST WORKED - 004"
+            echo "THIS TEST WORKED - 005"
             value=$(tt.params.command)
             case $value in
               "apply")
