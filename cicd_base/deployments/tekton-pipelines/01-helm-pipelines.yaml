@@ -108,7 +108,9 @@ spec:
         - image: ubuntu
           script: |
             #!/bin/bash
+            export DEBIAN_FRONTEND=noninteractive
             apt update && apt install -y curl
+            curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
             echo "I am running as user " `whoami`
             sh /scripts/$(tt.params.command)/exec.sh || true
           volumeMounts:
@@ -127,9 +129,8 @@ metadata:
 data:
   exec.sh: |
     echo "I AM AN APPLY SCRIPT"
-    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
     helm version
-    ls -lahrt /data/custom-helm-values/valkey/*
+    helm install -n exp -f /data/custom-helm-values/valkey/values.yaml valkey oci://registry-1.docker.io/bitnamicharts/valkey
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -138,6 +139,8 @@ metadata:
 data:
   exec.sh: |
     echo "I AM AN DELETE SCRIPT"
+    helm version
+    helm delete -n exp valkey 
 ---
 apiVersion: v1
 kind: ConfigMap
