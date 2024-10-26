@@ -109,8 +109,7 @@ spec:
           script: |
             #!/bin/bash
             echo "I am running as user " `whoami`
-            snap install helm --classic || true
-            sh /scripts/$(tt.params.command)/exec.sh
+            sh /scripts/$(tt.params.command)/exec.sh || true
           volumeMounts:
           - name: apply-volume
             mountPath: /scripts/apply
@@ -127,6 +126,8 @@ metadata:
 data:
   exec.sh: |
     echo "I AM AN APPLY SCRIPT"
+    curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+    helm version
     ls -lahrt /data/custom-helm-values/valkey/*
 ---
 apiVersion: v1
