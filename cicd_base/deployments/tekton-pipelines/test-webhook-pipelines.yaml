@@ -93,11 +93,11 @@ kind: TriggerBinding
 metadata:
   name: test-trigger-binding
 spec:
-  params: []
-  # - name: gitrevision
-  #   value: $(body.pull_request.head.sha)
-  # - name: gitrepositoryurl
-  #   value: $(body.repository.clone_url)
+  params: 
+  - name: gitrevision
+    value: dummy-revision
+  - name: gitrepositoryurl
+    value: dummy-url
 
 ---
 apiVersion: triggers.tekton.dev/v1beta1
@@ -105,9 +105,9 @@ kind: TriggerTemplate
 metadata:
   name: test-trigger-template
 spec:
-  params: []
-  # - name: gitrevision
-  # - name: gitrepositoryurl
+  params:
+  - name: gitrevision
+  - name: gitrepositoryurl
   resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: TaskRun
@@ -119,4 +119,4 @@ spec:
         - image: ubuntu
           script: |
             #! /bin/bash
-            echo "THIS TEST WORKED - 001"
+            echo "THIS TEST WORKED - 002"
