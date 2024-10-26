@@ -66,9 +66,6 @@ spec:
   serviceAccountName: tekton-triggers-example-sa
   triggers:
   - name: "test-trigger-task-1"
-    bindings:
-    - kind: ClusterTriggerBinding
-      name: test-webhook-binding
     template:
       apiVersion: tekton.dev/v1alpha1
       kind: TriggerTemplate
