@@ -53,7 +53,7 @@ roleRef:
   spec:
     triggers:
     - name: test-event-listener
-      interceptors: []
+      interceptors: 
       # - ref:
       #     name: "github"
       #   params:
@@ -63,12 +63,12 @@ roleRef:
       #       secretKey: secretToken
       #   - name: "eventTypes"
       #     value: ["pull_request"]
-      # - name: "only when PRs are opened"
-      #   ref:
-      #     name: "cel"
-      #   params:
-      #   - name: "filter"
-      #     value: "body.action in ['opened', 'synchronize', 'reopened']"
+      - name: "Command"
+        ref:
+          name: "cel"
+        params:
+        - name: "filter"
+          value: "body.command in ['apply', 'delete']"
       bindings:
         - ref: test-trigger-binding
       template:
@@ -94,10 +94,8 @@ metadata:
   name: test-trigger-binding
 spec:
   params: 
-  - name: gitrevision
-    value: dummy-revision
-  - name: gitrepositoryurl
-    value: dummy-url
+  - name: command
+    value: $(body.command)
 
 ---
 apiVersion: triggers.tekton.dev/v1beta1
@@ -106,8 +104,7 @@ metadata:
   name: test-trigger-template
 spec:
   params:
-  - name: gitrevision
-  - name: gitrepositoryurl
+  - name: command
   resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: TaskRun
@@ -119,4 +116,5 @@ spec:
         - image: ubuntu
           script: |
             #! /bin/bash
-            echo "THIS TEST WORKED - 002"
+            echo "Command: $(tt.params.command)"
+            echo "THIS TEST WORKED - 003"
