@@ -91,7 +91,7 @@ spec:
   - apiVersion: tekton.dev/v1beta1
     kind: TaskRun
     metadata:
-      generateName: test-run-
+      generateName: helm-pipelines-run-
     spec:
       taskSpec:
         volumes:
