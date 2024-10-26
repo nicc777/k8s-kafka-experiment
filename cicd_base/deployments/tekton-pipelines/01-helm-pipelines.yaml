@@ -10,7 +10,7 @@ metadata:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: triggers-example-eventlistener-binding
+  name: helm-pipelines-eventlistener-binding
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 subjects:
@@ -24,7 +24,7 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: triggers-example-eventlistener-clusterbinding
+  name: helm-pipeline-eventlistener-clusterbinding
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 subjects:
