@@ -135,7 +135,17 @@ data:
   exec.sh: |
     echo "I AM AN APPLY SCRIPT"
     helm version
-    helm install -n exp -f /data/custom-helm-values/valkey/values.yaml valkey oci://registry-1.docker.io/bitnamicharts/valkey
+    #!/bin/bash
+    export NAMESPACE="exp"
+    export VALKEY_RELEASE_NAME="valkey"
+    export VALKEY_CHART_URI="oci://registry-1.docker.io/bitnamicharts/valkey"
+    if helm ls -n $NAMESPACE --filter ^$VALKEY_RELEASE_NAME$ | grep -q $VALKEY_RELEASE_NAME; then
+      echo "Helm release $VALKEY_RELEASE_NAME already exists in namespace $NAMESPACE."
+    else
+      echo "Installing Helm chart $VALKEY_CHART_URI as release $VALKEY_RELEASE_NAME in namespace $NAMESPACE."
+      helm install -f /data/custom-helm-values/valkey/values.yaml $VALKEY_RELEASE_NAME $VALKEY_CHART_URI --namespace $NAMESPACE
+    fi
+    # helm install -n exp -f /data/custom-helm-values/valkey/values.yaml valkey oci://registry-1.docker.io/bitnamicharts/valkey
 ---
 apiVersion: v1
 kind: ConfigMap
