@@ -6,10 +6,6 @@
   - [Step 2: Running the experiment](#step-2-running-the-experiment)
   - [Step 3: Post Experiment Cleanup](#step-3-post-experiment-cleanup)
 - [Final Cleanup](#final-cleanup)
-- [Common Tasks](#common-tasks)
-  - [ArgoCD](#argocd)
-    - [Get the admin Password](#get-the-admin-password)
-    - [Access the UI](#access-the-ui)
 
 
 # Experiments Root
@@ -97,12 +93,15 @@ kubectl apply -f ./kafka-platform-deployments/application/kafka-platform.yaml
 
 # Deploy the Kafka UI (non-confluent project)
 helm repo add kafka-ui https://provectus.github.io/kafka-ui-charts
+helm repo update
 helm upgrade --install -n exp -f kafka-ui-values.yaml kafka-ui kafka-ui/kafka-ui
 
 # Start the Port Forwarder to the Kafka UI
 # Use the "--address=0.0.0.0" parameter if you are running the experiment on another computer in order to expose the UI to your lab
-kubectl port-forward --address=0.0.0.0 -n confluent service/kafka-ui 8090:80
+kubectl port-forward --address=0.0.0.0 -n exp service/kafka-ui 8090:80
 ```
+
+Open the Kafka UI in the browser: http://127.0.0.1:8090/
 
 ## Step 2: Running the experiment
 
@@ -122,61 +121,41 @@ List of experiment:
 
 ## Step 3: Post Experiment Cleanup
 
-Before each experiment starts, ensure the previous experiment was completely removed:
+Before each new experiment starts, ensure the previous experiment was completely removed:
 
 ```shell
+# Kill the port forwarding in Terminals 4 before proceeding...
+
 # Follow these steps after you followed the specific experiment cleanup instructions
 
 # IMPORTANT: Ensure you are back into the ./experiments directory from the project root directory perspective. If you were in a specific experiment directory, go back one level:
 cd ../
 
 # Delete the Kafka UI
-helm delete -n confluent kafka-ui
+helm delete kafka-ui -n exp
 
 # Delete the running Kafka components
 kubectl delete -f ./kafka-platform-deployments/application/kafka-platform.yaml
 
-# Cleanup the Memory caches
-helm delete -n exp valkey-backend valkey-ui
+# Cleanup the Memory caches and kafka operator
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete"}' http://127.0.0.1:7091
 ```
 
 # Final Cleanup
 
-Finally, remove the namespaces
+Any additional deployments not covered in this guide.
+
+Then, ensure all remaining port forwarding sessions are terminated.
+
+Finally, remove Tekton:
 
 ```shell
-# Delete the confluent kafka operator
-helm delete confluent-operator -n confluent
+# Remove pipelines required for setting up the experiments
+kubectl delete -f cicd_base/applications/02_tekton_pipelines.yaml
 
-# Cleanup namespaces
-kubectl delete namespace confluent
-
-kubectl delete namespace exp
+# Remove Tekton base
+kubectl delete -f cicd_base/applications/01_tekton.yaml
 ```
 
-# Common Tasks
-
-## ArgoCD
-
-### Get the admin Password
-
-```shell
-kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-```
-
-### Access the UI
-
-```shell
-kubectl port-forward service/argo-cd-argocd-server 7090:80 -n argocd
-```
-
-And open http://127.0.0.1:7090 in your browser.
-
-> [!NOTE]
-> By default the port forwarder will only listen on localhost. If you need to expose it on your LAN to access the UI from another computer, use the following instead:
-
-```shell
-kubectl port-forward service/argo-cd-argocd-server 7090:80 -n argocd --address 0.0.0.0
-```
 
 
