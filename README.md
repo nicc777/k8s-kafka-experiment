@@ -1,5 +1,6 @@
 
 - [k8s-kafka-experiment](#k8s-kafka-experiment)
+  - [Project Progress](#project-progress)
 - [Workload Description used to Exercise Kafka](#workload-description-used-to-exercise-kafka)
   - [Basic Workload Scenario](#basic-workload-scenario)
   - [Workflow Versions](#workflow-versions)
@@ -20,6 +21,19 @@ Just some experiments on running Kafka and simple applications in Kubernetes, ex
 > USE AT YOUR OWN RISK
 
 To start experimenting, start with the [Experiment README](./experiments/README.md)
+
+## Project Progress
+
+| Major Feature               | Description                                               | Status         | Status Notes                                                                                 |
+|-----------------------------|-----------------------------------------------------------|----------------|----------------------------------------------------------------------------------------------|
+| Infrastructure Preparations | Manifests and documentation to setup the experimental Lab | :construction: | Mostly done, but still more need to migrate to Tekton pipelines. Still too many manual steps |
+| Application v1              | Application with basic data flow via Kafka                | :construction: | Started working on some code, but still a far way to go.                                     |
+| Application Upgrade Process | Add pipelines to automate blue/green & canary deployments | :hourglass:    | Not started                                                                                  |
+| Application v2              | Add feature to count widget defects                       | :hourglass:    | Not started                                                                                  |
+| Application v3              | Add total manufacturing cost data                         | :hourglass:    | Not started                                                                                  |
+| Experiment 4                | Chaos testing                                             | :hourglass:    | Not started                                                                                  |
+
+The idea is to use blue/gree with canary deployments between application upgrades.
 
 # Workload Description used to Exercise Kafka
 
