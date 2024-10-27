@@ -142,6 +142,7 @@ data:
       echo "Helm release $VALKEY_RELEASE_NAME already exists in namespace $NAMESPACE."
     else
       echo "Installing Helm chart $VALKEY_CHART_URI as release $VALKEY_RELEASE_NAME in namespace $NAMESPACE."
+      kubectl create namespace $NAMESPACE
       helm install -f /data/custom-helm-values/valkey/values.yaml $VALKEY_RELEASE_NAME $VALKEY_CHART_URI --namespace $NAMESPACE
     fi
     # KAFKA
@@ -153,6 +154,7 @@ data:
       echo "Helm release $KAFKA_RELEASE_NAME already exists in namespace confluent."
     else
       echo "Installing Helm chart $KAFKA_CHART_URI as release $KAFKA_RELEASE_NAME in namespace confluent."
+      kubectl create namespace confluent
       helm upgrade --install $KAFKA_RELEASE_NAME $KAFKA_CHART_URI --namespace confluent
     fi
 ---
@@ -168,6 +170,8 @@ data:
     helm repo add confluentinc https://packages.confluent.io/helm
     helm repo update 
     helm delete -n confluent confluent-operator
+    kubectl create namespace exp
+    kubectl create namespace confluent
 ---
 apiVersion: v1
 kind: ConfigMap
