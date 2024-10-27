@@ -106,7 +106,7 @@ spec:
             name: helm-pipelines-valkey-values-cm
         steps:
         - image: ubuntu
-          name: "Install helm charts"
+          name: install-helm-charts
           script: |
             #!/bin/bash
             export DEBIAN_FRONTEND=noninteractive
