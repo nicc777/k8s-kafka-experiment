@@ -105,13 +105,13 @@ spec:
           configMap:
             name: helm-pipelines-valkey-values-cm
         steps:
-        - image: ubuntu
+        - image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
           name: install-helm-charts
           script: |
             #!/bin/bash
             export DEBIAN_FRONTEND=noninteractive
-            apt update && apt install -y curl
-            curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+            #apt update && apt install -y curl
+            #curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
             echo "I am running as user " `whoami`
             sh /scripts/$(tt.params.command)/exec.sh || true
           volumeMounts:
@@ -145,7 +145,7 @@ data:
       echo "Installing Helm chart $VALKEY_CHART_URI as release $VALKEY_RELEASE_NAME in namespace $NAMESPACE."
       helm install -f /data/custom-helm-values/valkey/values.yaml $VALKEY_RELEASE_NAME $VALKEY_CHART_URI --namespace $NAMESPACE
     fi
-    # helm install -n exp -f /data/custom-helm-values/valkey/values.yaml valkey oci://registry-1.docker.io/bitnamicharts/valkey
+    
 ---
 apiVersion: v1
 kind: ConfigMap
