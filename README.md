@@ -268,3 +268,6 @@ kubectl port-forward service/argo-cd-argocd-server -n argocd --address=0.0.0.0 7
   * [Valkey Home Page](https://valkey.io/)
   * Bitname Managed [Helm Chart](https://github.com/bitnami/charts/blob/main/bitnami/valkey/README.md)
 * This project use a [generic Python container](https://github.com/nicc777/container-python4aws) with all the require libraries, packages and other tools pre-installed for easy Python script deployment and testing in Kubernetes
+* Tekton related resources:
+  * [Home Page](https://tekton.dev/)
+  * [Trigger Examples](https://github.com/tektoncd/triggers/tree/main/examples)
