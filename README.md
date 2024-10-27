@@ -31,7 +31,7 @@ To start experimenting, start with the [Experiment README](./experiments/README.
 | Application Upgrade Process | Add pipelines to automate blue/green & canary deployments | :hourglass:    | Not started                                                                                  |
 | Application v2              | Add feature to count widget defects                       | :hourglass:    | Not started                                                                                  |
 | Application v3              | Add total manufacturing cost data                         | :hourglass:    | Not started                                                                                  |
-| Experiment 4                | Chaos testing                                             | :hourglass:    | Not started                                                                                  |
+| Reliability Experiment      | Chaos testing                                             | :hourglass:    | Not started                                                                                  |
 
 The idea is to use blue/gree with canary deployments between application upgrades.
 
