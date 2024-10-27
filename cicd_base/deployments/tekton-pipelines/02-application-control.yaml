@@ -141,7 +141,7 @@ spec:
             export COMMAND=$(tt.params.command)
             export APP_VERSION=$(tt.params.app_version)
             export CANARY_CONFIG=$(tt.params.canary_config)
-            sh /tmp//tmp/k8s-kafka-experiment/backend-service/test.sh || true
+            sh /tmp/k8s-kafka-experiment/backend-service/test.sh || true
           # volumeMounts:
           # - name: apply-volume
           #   mountPath: /scripts/apply
