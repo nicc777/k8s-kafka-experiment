@@ -43,16 +43,7 @@ roleRef:
 # {
 #   "command": "string",
 #   "app_version": "v1|v2|v3",
-#   "canary_config": {
-#     "app_1": {
-#       "version": "v1|v2|v3",
-#       "weight": 123
-#     },
-#     "app_2": {
-#       "version": "v1|v2|v3",
-#       "weight": 123
-#     }
-#   }
+#   "canary_config": "v1:90,v2:10"
 # }
 ---
   apiVersion: triggers.tekton.dev/v1beta1
