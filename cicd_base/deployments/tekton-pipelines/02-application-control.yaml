@@ -1,0 +1,169 @@
+
+# PERMISSIONS
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: app-ctrl-sa
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: app-ctrl-eventlistener-binding
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+subjects:
+- kind: ServiceAccount
+  name: app-ctrl-sa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-eventlistener-roles
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: app-ctrl-eventlistener-clusterbinding
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+subjects:
+- kind: ServiceAccount
+  name: app-ctrl-sa
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-eventlistener-clusterroles
+
+# WEBHOOK....
+
+# Expected body JSON template:
+#
+# {
+#   "command": "string",
+#   "app_version": "v1|v2|v3",
+#   "canary_config": {
+#     "app_1": {
+#       "version": "v1|v2|v3",
+#       "weight": 123
+#     },
+#     "app_2": {
+#       "version": "v1|v2|v3",
+#       "weight": 123
+#     }
+#   }
+# }
+---
+  apiVersion: triggers.tekton.dev/v1beta1
+  kind: EventListener
+  metadata:
+    name: app-ctrl-event-listener
+  spec:
+    triggers:
+    - name: app-ctrl-event-listener
+      interceptors: 
+      - name: "Command"
+        ref:
+          name: "cel"
+        params:
+        - name: "filter"
+          value: "body.command in ['test', 'build_and_deploy_app_version', 'delete_app_version', 'deploy_canary', 'delete_canary']"
+      bindings:
+        - ref: app-ctrl-trigger-binding
+      template:
+        ref: app-ctrl-trigger-template
+    resources:
+      kubernetesResource:
+        spec:
+          template:
+            spec:
+              serviceAccountName: app-ctrl-sa
+              containers:
+              - resources:
+                  requests:
+                    memory: "64Mi"
+                    cpu: "250m"
+                  limits:
+                    memory: "128Mi"
+                    cpu: "500m"
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: app-ctrl-trigger-binding
+spec:
+  params: 
+  - name: command
+    value: $(body.command)
+  - name: app_version
+    value: $(body.app_version)
+  - name: canary_config
+    value: $(body.canary_config)
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: app-ctrl-trigger-template
+spec:
+  params:
+  - name: command
+    default: "test"
+  - name: app_version
+    default: "v1"
+  - name: canary_config
+    default: "{}"
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: TaskRun
+    metadata:
+      generateName: app-ctrl-run-
+    spec:
+      taskSpec:
+        # volumes:
+        # - name: apply-volume
+        #   configMap:
+        #     name: app-ctrl-apply-script-cm
+        # - name: delete-volume
+        #   configMap:
+        #     name: app-ctrl-delete-script-cm
+        # - name: valkey-values-volume
+        #   configMap:
+        #     name: app-ctrl-valkey-values-cm
+        steps:
+        - image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
+          name: manage-base-resources
+          script: |
+            #!/usr/bin/env bash
+            cd /tmp
+            git clone https://github.com/nicc777/k8s-kafka-experiment.git
+            cd k8s-kafka-experiment/backend-service
+            export COMMAND=$(tt.params.command)
+            export APP_VERSION=$(tt.params.app_version)
+            export CANARY_CONFIG=$(tt.params.canary_config)
+            sh /tmp//tmp/k8s-kafka-experiment/backend-service/test.sh || true
+          # volumeMounts:
+          # - name: apply-volume
+          #   mountPath: /scripts/apply
+          # - name: delete-volume
+          #   mountPath: /scripts/delete
+          # - name: valkey-values-volume
+          #   mountPath: /data/custom-helm-values/valkey
+
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: app-ctrl-valkey-values-cm
+# data:
+#   values.yaml: |
+#     auth:
+#       enabled: false
+#       sentinel: false
+#     replica:
+#       replicaCount: 1
+#     metrics:
+#       enabled: true
+
+
+
