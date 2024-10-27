@@ -170,8 +170,8 @@ data:
     helm repo add confluentinc https://packages.confluent.io/helm
     helm repo update 
     helm delete -n confluent confluent-operator
-    kubectl create namespace exp
-    kubectl create namespace confluent
+    kubectl delete namespace exp
+    kubectl delete namespace confluent
 ---
 apiVersion: v1
 kind: ConfigMap
