@@ -164,7 +164,9 @@ data:
   exec.sh: |
     echo "I AM AN DELETE SCRIPT"
     helm version
-    helm delete -n exp valkey 
+    helm delete -n exp valkey
+    helm repo add confluentinc https://packages.confluent.io/helm
+    helm repo update 
     helm delete -n confluent confluent-operator
 ---
 apiVersion: v1
