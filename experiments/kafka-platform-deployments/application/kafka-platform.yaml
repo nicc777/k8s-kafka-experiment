@@ -15,7 +15,7 @@ spec:
     path: experiments/kafka-platform-deployments/deployments
   destination:
     server: https://kubernetes.default.svc
-    namespace: confluent
+    namespace: exp
   info:
     - name: 'README'
       value: 'https://github.com/nicc777/k8s-kafka-experiment/blob/main/README.md'

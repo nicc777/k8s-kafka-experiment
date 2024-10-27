@@ -3,7 +3,6 @@ apiVersion: platform.confluent.io/v1beta1
 kind: Zookeeper
 metadata:
   name: zookeeper
-  namespace: confluent
 spec:
   replicas: 3
   image:
@@ -16,7 +15,6 @@ apiVersion: platform.confluent.io/v1beta1
 kind: Kafka
 metadata:
   name: kafka
-  namespace: confluent
 spec:
   replicas: 3
   image:
@@ -33,7 +31,6 @@ apiVersion: platform.confluent.io/v1beta1
 kind: SchemaRegistry
 metadata:
   name: schemaregistry
-  namespace: confluent
 spec:
   replicas: 2
   image:
