@@ -110,8 +110,6 @@ spec:
           script: |
             #!/bin/bash
             export DEBIAN_FRONTEND=noninteractive
-            #apt update && apt install -y curl
-            #curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
             echo "I am running as user " `whoami`
             sh /scripts/$(tt.params.command)/exec.sh || true
           volumeMounts:
@@ -137,6 +135,7 @@ data:
     helm version
     #!/bin/bash
     export NAMESPACE="exp"
+    # VALKEY
     export VALKEY_RELEASE_NAME="valkey"
     export VALKEY_CHART_URI="oci://registry-1.docker.io/bitnamicharts/valkey"
     if helm ls -n $NAMESPACE --filter ^$VALKEY_RELEASE_NAME$ | grep -q $VALKEY_RELEASE_NAME; then
@@ -145,7 +144,17 @@ data:
       echo "Installing Helm chart $VALKEY_CHART_URI as release $VALKEY_RELEASE_NAME in namespace $NAMESPACE."
       helm install -f /data/custom-helm-values/valkey/values.yaml $VALKEY_RELEASE_NAME $VALKEY_CHART_URI --namespace $NAMESPACE
     fi
-    
+    # KAFKA
+    helm repo add confluentinc https://packages.confluent.io/helm
+    helm repo update
+    export KAFKA_RELEASE_NAME="confluent-operator"
+    export KAFKA_CHART_URI="confluentinc/confluent-for-kubernetes"
+    if helm ls -n confluent --filter ^$KAFKA_RELEASE_NAME$ | grep -q $KAFKA_RELEASE_NAME; then
+      echo "Helm release $KAFKA_RELEASE_NAME already exists in namespace confluent."
+    else
+      echo "Installing Helm chart $KAFKA_CHART_URI as release $KAFKA_RELEASE_NAME in namespace confluent."
+      helm upgrade --install $KAFKA_RELEASE_NAME $KAFKA_CHART_URI --namespace confluent
+    fi
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -156,6 +165,7 @@ data:
     echo "I AM AN DELETE SCRIPT"
     helm version
     helm delete -n exp valkey 
+    helm delete -n confluent confluent-operator
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -170,5 +180,6 @@ data:
       replicaCount: 1
     metrics:
       enabled: true
+
 
 
