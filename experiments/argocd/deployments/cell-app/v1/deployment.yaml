@@ -1,0 +1,80 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: schema-raw-data-v1-cm
+  namespace: confluent
+data:
+  schema: |
+    {
+      "namespace": "tld.example",
+      "type": "record",
+        "name": "TestRawData",
+        "fields": [
+            { "name": "sku", "type": "string" },
+            { "name": "manufactured_qty", "type": "int" },
+            { "name": "year", "type": "int" },
+            { "name": "month", "type": "int" },
+            { "name": "day", "type": "int" },
+            { "name": "hour", "type": "int" }
+        ]
+    }
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Schema
+metadata:
+  name: schema-raw-data-v1-schema
+  namespace: confluent
+spec:
+  data:
+    configRef: schema-raw-data-v1-cm
+    format: avro
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend-app
+  namespace: testing
+  labels:
+    app: backend-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend-app
+  template:
+    metadata:
+      labels:
+        app: backend-app
+    spec:
+      serviceAccountName: fastapi-serviceaccount
+      containers:
+      - name: backend-app
+        image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
+        volumeMounts:
+        - name: backend-app-code-vol
+          mountPath: "/tmp"
+          readOnly: true
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        command: ["/bin/sh"]
+        args: ["-c", "python3 /tmp/app.py"]
+      volumes:
+      - name: backend-app-code-vol
+        configMap:
+          name: raw_data_generator-main-cm
+          items:
+          - key: app
+            path: app.py

@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 
 # Checkout our projectcd
-cd /tmp
-git clone https://github.com/nicc777/k8s-kafka-experiment.git
-cd k8s-kafka-experiment/backend-service
+cd /tmp/k8s-kafka-experiment/backend-service
 
 ehoc "- Current directory: ${PWD}"
 

@@ -85,17 +85,6 @@ kubectl get TaskRuns -n default
 # Now get the logs:
 kubectl logs TASKRUN-NAME-pod -c step-manage-base-resources -n default
 
-# Now, in Terminal 4, run the following to 
-cd experiments 
-
-# Deploy the main kafka components - the actual schema configurations will be applied in each experiment as needed
-kubectl apply -f ./kafka-platform-deployments/application/kafka-platform.yaml
-
-# Deploy the Kafka UI (non-confluent project)
-helm repo add kafka-ui https://provectus.github.io/kafka-ui-charts
-helm repo update
-helm upgrade --install -n exp -f kafka-ui-values.yaml kafka-ui kafka-ui/kafka-ui
-
 # Start the Port Forwarder to the Kafka UI
 # Use the "--address=0.0.0.0" parameter if you are running the experiment on another computer in order to expose the UI to your lab
 kubectl port-forward --address=0.0.0.0 -n exp service/kafka-ui 8090:80
@@ -130,9 +119,6 @@ Before each new experiment starts, ensure the previous experiment was completely
 
 # IMPORTANT: Ensure you are back into the ./experiments directory from the project root directory perspective. If you were in a specific experiment directory, go back one level:
 cd ../
-
-# Delete the Kafka UI
-helm delete kafka-ui -n exp
 
 # Delete the running Kafka components
 kubectl delete -f ./kafka-platform-deployments/application/kafka-platform.yaml

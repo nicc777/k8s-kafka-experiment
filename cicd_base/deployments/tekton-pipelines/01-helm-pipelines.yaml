@@ -111,6 +111,9 @@ spec:
             #!/bin/bash
             export DEBIAN_FRONTEND=noninteractive
             echo "I am running as user " `whoami`
+            cd /tmp
+            git clone https://github.com/nicc777/k8s-kafka-experiment.git
+            cd k8s-kafka-experiment
             sh /scripts/$(tt.params.command)/exec.sh || true
           volumeMounts:
           - name: apply-volume
@@ -134,6 +137,7 @@ data:
     echo "I AM AN APPLY SCRIPT"
     helm version
     #!/bin/bash
+    cd /tmp/k8s-kafka-experiment
     export NAMESPACE="exp"
     # VALKEY
     export VALKEY_RELEASE_NAME="valkey"
@@ -156,6 +160,24 @@ data:
       echo "Installing Helm chart $KAFKA_CHART_URI as release $KAFKA_RELEASE_NAME in namespace confluent."
       kubectl create namespace confluent
       helm upgrade --install $KAFKA_RELEASE_NAME $KAFKA_CHART_URI --namespace confluent
+      sleep 5
+      # Get the controller pod
+      export POD_NAME=$(kubectl get pods -n confluent --no-headers -o custom-columns=":metadata.name" | grep "confluent-operator-")
+      echo "Controller Pod Name: $POD_NAME"
+      # Install the Kafka cluster
+      kubectl wait --for=condition=ready pod/$POD_NAME -n confluent --timeout=300s
+      if [ $? -eq 0 ]; then
+          echo "Pod is running and ready"
+          kubectl apply -f ./experiments/kafka-platform-deployments/application/kafka-platform.yaml
+          sleep 30
+          # Deploy the Kafka UI (non-confluent project)
+          helm repo add kafka-ui https://provectus.github.io/kafka-ui-charts
+          helm repo update
+          helm upgrade --install -n exp -f kafka-ui-values.yaml kafka-ui kafka-ui/kafka-ui
+      else
+          echo "Timed out waiting for Kafka Controller"
+          exit 1
+      fi
     fi
 ---
 apiVersion: v1
@@ -165,10 +187,13 @@ metadata:
 data:
   exec.sh: |
     echo "I AM AN DELETE SCRIPT"
+    cd /tmp/k8s-kafka-experiment
     helm version
-    helm delete -n exp valkey
     helm repo add confluentinc https://packages.confluent.io/helm
+    helm repo add kafka-ui https://provectus.github.io/kafka-ui-charts
     helm repo update 
+    helm delete -n exp kafka-ui
+    helm delete -n exp valkey
     helm delete -n confluent confluent-operator
     kubectl delete namespace exp
     kubectl delete namespace confluent
