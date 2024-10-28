@@ -116,13 +116,6 @@ Before each new experiment starts, ensure the previous experiment was completely
 # Kill the port forwarding in Terminals 4 before proceeding...
 
 # Follow these steps after you followed the specific experiment cleanup instructions
-
-# IMPORTANT: Ensure you are back into the ./experiments directory from the project root directory perspective. If you were in a specific experiment directory, go back one level:
-cd ../
-
-# Delete the running Kafka components
-kubectl delete -f ./kafka-platform-deployments/application/kafka-platform.yaml
-
 # Cleanup the Memory caches and kafka operator
 curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete"}' http://127.0.0.1:7091
 ```

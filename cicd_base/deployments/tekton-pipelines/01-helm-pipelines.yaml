@@ -104,6 +104,9 @@ spec:
         - name: valkey-values-volume
           configMap:
             name: helm-pipelines-valkey-values-cm
+        - name: kafka-ui-values-volume
+          configMap:
+            name: helm-pipelines-kafka-ui-values-cm
         steps:
         - image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
           name: manage-base-resources
@@ -122,6 +125,8 @@ spec:
             mountPath: /scripts/delete
           - name: valkey-values-volume
             mountPath: /data/custom-helm-values/valkey
+          - name: kafka-ui-values-volume
+            mountPath: /data/custom-helm-values/kafka-ui
 
 ---
 # FIXME
@@ -162,18 +167,22 @@ data:
       helm upgrade --install $KAFKA_RELEASE_NAME $KAFKA_CHART_URI --namespace confluent
       sleep 5
       # Get the controller pod
-      export POD_NAME=$(kubectl get pods -n confluent --no-headers -o custom-columns=":metadata.name" | grep "confluent-operator-")
-      echo "Controller Pod Name: $POD_NAME"
+      export KAFKA_CONTROLLER_POD_NAME=$(kubectl get pods -n confluent --no-headers -o custom-columns=":metadata.name" | grep "confluent-operator-")
+      echo "Controller Pod Name: $KAFKA_CONTROLLER_POD_NAME"
       # Install the Kafka cluster
-      kubectl wait --for=condition=ready pod/$POD_NAME -n confluent --timeout=300s
+      kubectl wait --for=condition=ready pod/$KAFKA_CONTROLLER_POD_NAME -n confluent --timeout=300s
       if [ $? -eq 0 ]; then
           echo "Pod is running and ready"
           kubectl apply -f ./experiments/kafka-platform-deployments/application/kafka-platform.yaml
-          sleep 30
-          # Deploy the Kafka UI (non-confluent project)
-          helm repo add kafka-ui https://provectus.github.io/kafka-ui-charts
-          helm repo update
-          helm upgrade --install -n exp -f kafka-ui-values.yaml kafka-ui kafka-ui/kafka-ui
+          kubectl wait --for=condition=ready pod/kafka-0 -n confluent --timeout=300s
+          if [ $? -eq 0 ]; then
+            helm repo add kafka-ui https://provectus.github.io/kafka-ui-charts
+            helm repo update
+            helm upgrade --install -n exp -f /data/custom-helm-values/kafka-ui/values.yaml kafka-ui kafka-ui/kafka-ui
+          else
+              echo "Timed out waiting for Kafka Services"
+              exit 1
+          fi          
       else
           echo "Timed out waiting for Kafka Controller"
           exit 1
@@ -211,6 +220,25 @@ data:
       replicaCount: 1
     metrics:
       enabled: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helm-pipelines-kafka-ui-values-cm
+data:
+  values.yaml: |
+    yamlApplicationConfig:
+    kafka:
+      clusters:
+      - name: exp
+        bootstrapServers: kafka-0.kafka.confluent.svc.cluster.local:9092
+    auth:
+      type: disabled
+    management:
+      health:
+        ldap:
+          enabled: false
+
 
 
 
