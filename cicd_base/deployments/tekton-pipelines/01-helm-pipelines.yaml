@@ -107,11 +107,6 @@ spec:
         - name: kafka-ui-values-volume
           configMap:
             name: helm-pipelines-kafka-ui-values-cm
-        workspaces:
-        - name: workdir
-          persistentVolumeClaim:
-            claimName: helm-pipelines-pvc
-          subPath: /tmp/workdir
         steps:
         - image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
           name: manage-base-resources
@@ -119,10 +114,6 @@ spec:
             #!/bin/bash
             export DEBIAN_FRONTEND=noninteractive
             echo "I am running as user " `whoami`
-            echo "workspace: $(workspaces.workdir.path)"
-            echo "test" > $(workspaces.workdir.path)/test.txt
-            ls -lahrt $(workspaces.workdir.path)/
-            cat $(workspaces.workdir.path)/test.txt
             cd /tmp
             git clone https://github.com/nicc777/k8s-kafka-experiment.git
             cd k8s-kafka-experiment
@@ -254,18 +245,7 @@ data:
       health:
         ldap:
           enabled: false
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: helm-pipelines-pvc
-spec:
-  resources:
-    requests:
-      storage: 1Gi
-  volumeMode: Filesystem
-  accessModes:
-    - ReadWriteOnce
+
 
 
 
