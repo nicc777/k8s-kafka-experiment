@@ -62,6 +62,7 @@
         "validatingwebhookconfigurations",
         "valkey",
         "verificationpolicies",
-        "verificationpolicy"
+        "verificationpolicy",
+        "workdir"
     ]
 }
