@@ -199,6 +199,8 @@ data:
   exec.sh: |
     echo "I AM AN DELETE SCRIPT"
     cd /tmp/k8s-kafka-experiment
+    kubectl delete -f ./experiments/kafka-platform-deployments/application/kafka-platform.yaml
+    echo "Going to sleep for 2 minutes while we wait for kafka to uninstall before we delete namespaces"
     helm version
     helm repo add confluentinc https://packages.confluent.io/helm
     helm repo add kafka-ui https://provectus.github.io/kafka-ui-charts
@@ -206,10 +208,11 @@ data:
     helm delete -n exp kafka-ui
     helm delete -n exp valkey
     helm delete -n confluent confluent-operator
-    echo "Going to sleep for 2 minutes while we wait for kafka to uninstall before we delete namespaces"
+    echo "Going to sleep for 2 minutes while we wait for kafka-operator to uninstall before we delete namespaces"
     sleep 120
     kubectl delete namespace exp
     kubectl delete namespace confluent
+    echo "All commands executed"
 ---
 apiVersion: v1
 kind: ConfigMap
