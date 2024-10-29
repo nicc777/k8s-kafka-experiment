@@ -127,9 +127,9 @@ metadata:
   name: raw-data-generator-cm
 data:
   # Environment Variables
-  KAFKA_BOOTSTRAP_SERVER_HOST: "xxx"
-  KAFKA_BOOTSTRAP_SERVER_PORT: "xxx"
-  KAFKA_SCHEMA_SERVER_HOST: "xxx"
+  KAFKA_BOOTSTRAP_SERVER_HOST: "kafka-0.confluent.svc.cluster.local"
+  KAFKA_BOOTSTRAP_SERVER_PORT: "9092"
+  KAFKA_SCHEMA_SERVER_HOST: "schemaregistry-0.confluent.svc.cluster.local"
   KAFKA_SCHEMA_SERVER_PORT: "xxx"
   KAFKA_TOPIC: "xxx"
   SCHEMA_VERSION: "xxx"

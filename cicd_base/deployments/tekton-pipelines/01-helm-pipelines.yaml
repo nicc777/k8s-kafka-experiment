@@ -239,7 +239,7 @@ data:
     kafka:
       clusters:
       - name: exp
-        bootstrapServers: kafka-0.kafka.confluent.svc.cluster.local:9092
+        bootstrapServers: kafka-0.confluent.svc.cluster.local:9092
     auth:
       type: disabled
     management:
