@@ -180,7 +180,8 @@ data:
           if [ $? -eq 0 ]; then
             helm repo add kafka-ui https://provectus.github.io/kafka-ui-charts
             helm repo update
-            helm upgrade --install -n exp -f /data/custom-helm-values/kafka-ui/values.yaml kafka-ui kafka-ui/kafka-ui
+            :pods
+
           else
               echo "Timed out waiting for Kafka Services"
               exit 1
@@ -239,7 +240,7 @@ data:
     kafka:
       clusters:
       - name: exp
-        bootstrapServers: kafka-0.confluent.svc.cluster.local:9092
+        bootstrapServers: kafka.confluent.svc.cluster.local:9092
     auth:
       type: disabled
     management:
