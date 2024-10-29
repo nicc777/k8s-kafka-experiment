@@ -47,7 +47,6 @@ spec:
       labels:
         app: backend-app
     spec:
-      serviceAccountName: fastapi-serviceaccount
       containers:
       - name: backend-app
         image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
@@ -70,11 +69,11 @@ spec:
           initialDelaySeconds: 3
           periodSeconds: 3
         command: ["/bin/sh"]
-        args: ["-c", "python3 /tmp/app.py"]
+        args: ["-c", "python3 /tmp/main.py"]
       volumes:
       - name: backend-app-code-vol
         configMap:
-          name: raw_data_generator-main-cm
+          name: raw-data-generator-cm
           items:
-          - key: app
-            path: app.py
+          - key: main.py
+            path: main.py

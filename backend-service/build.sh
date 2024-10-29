@@ -15,7 +15,7 @@ echo "- Building application version ${APP_VERSION}"
 echo "- Packaging Configmap's for Python files"
 
 echo "  - raw_data_generator"
-kubectl create configmap raw_data_generator-main-cm --from-file=v1/raw_data_generator/main.py -n exp
+kubectl create configmap raw-data-generator-cm --from-file=$APP_VERSION/raw_data_generator/main.py --dry-run=client -o yaml > /tmp/k8s-kafka-experiment/experiments/argocd/deployments/cell-app/$APP_VERSION/deployment.yaml
 kubectl describe configmap raw_data_generator-main-cm -n exp
 
 
