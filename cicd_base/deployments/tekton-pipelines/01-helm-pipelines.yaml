@@ -237,16 +237,16 @@ metadata:
 data:
   values.yaml: |
     yamlApplicationConfig:
-    kafka:
-      clusters:
-      - name: exp
-        bootstrapServers: kafka.confluent.svc.cluster.local:9092
-    auth:
-      type: disabled
-    management:
-      health:
-        ldap:
-          enabled: false
+      kafka:
+        clusters:
+        - name: exp
+          bootstrapServers: kafka.confluent.svc.cluster.local:9092
+      auth:
+        type: disabled
+      management:
+        health:
+          ldap:
+            enabled: false
 
 
 
