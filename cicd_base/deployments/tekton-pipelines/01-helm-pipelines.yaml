@@ -190,6 +190,7 @@ data:
           exit 1
       fi
     fi
+    echo "TASK DONE"
 ---
 apiVersion: v1
 kind: ConfigMap
