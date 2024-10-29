@@ -237,18 +237,17 @@ metadata:
   name: helm-pipelines-kafka-ui-values-cm
 data:
   values.yaml: |
-    kafka:
-      clusters:
-      - name: exp
-        bootstrapServers: kafka.confluent.svc.cluster.local:9092
-    auth:
-      type: disabled
-    management:
-      health:
-        ldap:
-          enabled: false
-    env:
-      DYNAMIC_CONFIG_ENABLED: true
+    yamlApplicationConfig:
+      kafka:
+        clusters:
+        - name: exp
+          bootstrapServers: kafka.confluent.svc.cluster.local:9092
+      auth:
+        type: disabled
+      management:
+        health:
+          ldap:
+            enabled: false
 
 
 
