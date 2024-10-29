@@ -5,6 +5,7 @@
         "APIV",
         "argocd",
         "argoproj",
+        "asctime",
         "bitnamicharts",
         "cicd",
         "CIVO",
@@ -25,6 +26,7 @@
         "eventlistener",
         "eventlisteners",
         "finalizer",
+        "getenv",
         "gethostname",
         "gitrepositoryurl",
         "gitrevision",
@@ -42,6 +44,7 @@
         "pipelinerun",
         "pipelineruns",
         "ppqrb",
+        "randint",
         "resolutionrequest",
         "resolutionrequests",
         "resourcetemplates",
@@ -56,6 +59,7 @@
         "tekton",
         "tektoncd",
         "tektonv",
+        "traceback",
         "triggerbindings",
         "triggertemplates",
         "validatingwebhook",
@@ -63,6 +67,7 @@
         "valkey",
         "verificationpolicies",
         "verificationpolicy",
-        "workdir"
+        "workdir",
+        "zfill"
     ]
 }
