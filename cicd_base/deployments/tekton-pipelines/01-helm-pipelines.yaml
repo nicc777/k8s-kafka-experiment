@@ -180,8 +180,10 @@ data:
           if [ $? -eq 0 ]; then
             helm repo add kafka-ui https://provectus.github.io/kafka-ui-charts
             helm repo update
-            :pods
-
+            helm upgrade --install -n exp \
+              -f /data/custom-helm-values/kafka-ui/values.yaml \
+              --set yamlApplicationConfigConfigMap.name="helm-pipelines-kafka-ui-values-cm",yamlApplicationConfigConfigMap.keyName="config.yml"
+              kafka-ui kafka-ui/kafka-ui
           else
               echo "Timed out waiting for Kafka Services"
               exit 1
