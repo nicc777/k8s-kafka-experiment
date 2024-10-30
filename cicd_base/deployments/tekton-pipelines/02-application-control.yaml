@@ -135,21 +135,23 @@ spec:
             case $COMMAND in
                 build_and_deploy_app_version)
                     echo "Building and deploying version ${APP_VERSION} of the application"
-                    sh /tmp/k8s-kafka-experiment/backend-service/build.sh || true
+                    bash /tmp/k8s-kafka-experiment/backend-service/build.sh || true
                     ;;
                 delete_app_version)
                     echo "Deleting version ${APP_VERSION} of the application"
-                    sh /tmp/k8s-kafka-experiment/backend-service/delete_deployments.sh || true
+                    bash /tmp/k8s-kafka-experiment/backend-service/delete_deployments.sh || true
                     ;;
                 deploy_canary)
                     echo "Enabling a canary release of the app"
+                    bash /tmp/k8s-kafka-experiment/backend-service/canary_deploy.sh || true
                     ;;
                 delete_canary)
                     echo "Removing the canary and setting version ${APP_VERSION} as the primary running version"
+                    bash /tmp/k8s-kafka-experiment/backend-service/canary_delete.sh || true
                     ;;
                 *)
                     echo "Running default TEST script"
-                    sh /tmp/k8s-kafka-experiment/backend-service/test.sh || true
+                    bash /tmp/k8s-kafka-experiment/backend-service/test.sh || true
                     ;;
             esac
           # volumeMounts:

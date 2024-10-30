@@ -64,6 +64,9 @@ else
     echo "$FILE does not exist."
 fi
 
+echo "- Deployment"
+bash /tmp/k8s-kafka-experiment/backend-service/apply_deployments.sh || true
+
 echo "DONE"
 
 
