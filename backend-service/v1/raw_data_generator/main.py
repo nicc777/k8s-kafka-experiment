@@ -83,22 +83,23 @@ schema_registry_client = CachedSchemaRegistryClient(KAFKA_SERVER_CONNECTION_CONF
 
 # Function to load specific schema version
 def load_schema():
-    schema_version = schema_registry_client.get_version(subject=SCHEMA_SUBJECT, avro_schema=PARSED_SCHEMA)
-    check = schema_registry_client.check_registration(subject=SCHEMA_SUBJECT, avro_schema=PARSED_SCHEMA)
-    logger.debug('{} - load_schema() - type(data) : {}'.format(HOSTNAME, type(schema_version)))
-    logger.debug('{} - load_schema() - repr(data) : {}'.format(HOSTNAME, repr(schema_version)))
-    logger.debug('{} - load_schema() - type(check) : {}'.format(HOSTNAME, type(check)))
-    logger.debug('{} - load_schema() - repr(check) : {}'.format(HOSTNAME, repr(check)))
-    return schema_registry_client.get_by_version(subject=SCHEMA_SUBJECT, version=schema_version)
+    latest_schema_version = schema_registry_client.get_version(subject=SCHEMA_SUBJECT, avro_schema=PARSED_SCHEMA)
+    logger.debug('{} - load_schema() - type(data) : {}'.format(HOSTNAME, type(latest_schema_version)))
+    logger.debug('{} - load_schema() - repr(data) : {}'.format(HOSTNAME, repr(latest_schema_version)))
+    if latest_schema_version != SCHEMA_VERSION:
+        logger.warning('{} - There is a newer version of the schema available: {}'.format(HOSTNAME, latest_schema_version))
+    data = schema_registry_client.get_by_version(subject=SCHEMA_SUBJECT, version=SCHEMA_VERSION)
+    logger.debug('{} - load_schema() - type(data) : {}'.format(HOSTNAME, type(data)))
+    logger.debug('{} - load_schema() - repr(data) : {}'.format(HOSTNAME, repr(data)))
+    return data
                                               
 
 def produce_with_schema(topic, data, schema_subject, schema_version):
     schema = load_schema()
     avro_producer = AvroProducer(KAFKA_SERVER_CONNECTION_CONFIG, default_value_schema=schema)
 
-    if schema.validate(data):
+    if schema is not None:
         avro_producer.produce(topic=topic, value=data)
-        avro_producer.flush()
         print(f"Message with schema version {schema_version} sent successfully!")
     else:
         print(f"Data validation failed for schema version {schema_version}.")
