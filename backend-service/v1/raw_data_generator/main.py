@@ -83,13 +83,13 @@ schema_registry_client = CachedSchemaRegistryClient(KAFKA_SERVER_CONNECTION_CONF
 
 # Function to load specific schema version
 def load_schema():
-    data = schema_registry_client.get_version(subject=SCHEMA_SUBJECT, avro_schema=PARSED_SCHEMA)
+    schema_version = schema_registry_client.get_version(subject=SCHEMA_SUBJECT, avro_schema=PARSED_SCHEMA)
     check = schema_registry_client.check_registration(subject=SCHEMA_SUBJECT, avro_schema=PARSED_SCHEMA)
-    logger.debug('{} - load_schema() - type(data) : {}'.format(HOSTNAME, type(data)))
-    logger.debug('{} - load_schema() - repr(data) : {}'.format(HOSTNAME, repr(data)))
+    logger.debug('{} - load_schema() - type(data) : {}'.format(HOSTNAME, type(schema_version)))
+    logger.debug('{} - load_schema() - repr(data) : {}'.format(HOSTNAME, repr(schema_version)))
     logger.debug('{} - load_schema() - type(check) : {}'.format(HOSTNAME, type(check)))
     logger.debug('{} - load_schema() - repr(check) : {}'.format(HOSTNAME, repr(check)))
-    return data
+    return schema_registry_client.get_by_version(subject=SCHEMA_SUBJECT, version=schema_version)
                                               
 
 def produce_with_schema(topic, data, schema_subject, schema_version):
