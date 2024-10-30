@@ -7,6 +7,7 @@ import json
 import sys
 import traceback
 from confluent_kafka.avro import AvroProducer
+from confluent_kafka.avro import loads as avro_loads
 from confluent_kafka.avro.cached_schema_registry_client import CachedSchemaRegistryClient
 
 
@@ -29,6 +30,20 @@ KAFKA_TOPIC = os.getenv('KAFKA_TOPIC', 'raw-data-in')
 SCHEMA_VERSION = int(os.getenv('SCHEMA_VERSION', '1'))
 SCHEMA_SUBJECT = os.getenv('SCHEMA_SUBJECT', 'TestRawData')
 SCHEMA_NAMESPACE = os.getenv('SCHEMA_NAMESPACE', 'tld.example')
+SCHEMA = {
+    "namespace": "tld.example",
+    "type": "record",
+    "name": "testrawdata",
+    "fields": [
+        { "name": "sku", "type": "string" },
+        { "name": "manufactured_qty", "type": "int" },
+        { "name": "year", "type": "int" },
+        { "name": "month", "type": "int" },
+        { "name": "day", "type": "int" },
+        { "name": "hour", "type": "int" },
+    ]
+}
+PARSED_SCHEMA = parsed = avro_loads(json.loads(SCHEMA))
 
 
 logger = logging.getLogger('raw_data_generator')
@@ -56,6 +71,7 @@ logger.debug('{} - SCHEMA_VERSION               : {}'.format(HOSTNAME, SCHEMA_VE
 logger.debug('{} - SCHEMA_SUBJECT               : {}'.format(HOSTNAME, SCHEMA_SUBJECT))
 logger.debug('{} - SCHEMA_NAMESPACE             : {}'.format(HOSTNAME, SCHEMA_NAMESPACE))
 
+
 KAFKA_SERVER_CONNECTION_CONFIG = {
     'bootstrap.servers': '{}:{}'.format(KAFKA_BOOTSTRAP_SERVER_HOST, KAFKA_BOOTSTRAP_SERVER_PORT),
     'schema.registry.url': '{}://{}:{}'.format(KAFKA_SCHEMA_SERVER_PROTOCOL, KAFKA_SCHEMA_SERVER_HOST, KAFKA_SCHEMA_SERVER_PORT)
@@ -66,18 +82,18 @@ schema_registry_client = CachedSchemaRegistryClient(KAFKA_SERVER_CONNECTION_CONF
 
 
 # Function to load specific schema version
-def load_schema(subject_name, version):
-    data = schema_registry_client.get_version(subject=SCHEMA_SUBJECT, avro_schema=SCHEMA_SUBJECT)
-    check = schema_registry_client.check_registration(subject=SCHEMA_SUBJECT, avro_schema=SCHEMA_SUBJECT)
+def load_schema():
+    data = schema_registry_client.get_version(subject=SCHEMA_SUBJECT, avro_schema=PARSED_SCHEMA)
+    check = schema_registry_client.check_registration(subject=SCHEMA_SUBJECT, avro_schema=PARSED_SCHEMA)
     logger.debug('{} - load_schema() - type(data) : {}'.format(HOSTNAME, type(data)))
     logger.debug('{} - load_schema() - repr(data) : {}'.format(HOSTNAME, repr(data)))
     logger.debug('{} - load_schema() - type(check) : {}'.format(HOSTNAME, type(check)))
     logger.debug('{} - load_schema() - repr(check) : {}'.format(HOSTNAME, repr(check)))
-    return schema_registry_client.get_version(subject_name, version).schema
+    return data
                                               
 
 def produce_with_schema(topic, data, schema_subject, schema_version):
-    schema = load_schema(schema_subject, schema_version)
+    schema = load_schema()
     avro_producer = AvroProducer(KAFKA_SERVER_CONNECTION_CONFIG, default_value_schema=schema)
 
     if schema.validate(data):
