@@ -3,7 +3,8 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: raw-data-generator-demo-v1
-  namespace: exp
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
   labels:
     app: raw-data-generator-demo-v1
 spec:
@@ -23,6 +24,9 @@ spec:
         - name: raw-data-generator-code-vol
           mountPath: "/tmp"
           readOnly: true
+        - name: launcher-script-vol
+          mountPath: "/tmp"
+          readOnly: true
         ports:
         - containerPort: 8080
         livenessProbe:
@@ -37,8 +41,8 @@ spec:
             port: 8080
           initialDelaySeconds: 3
           periodSeconds: 3
-        command: ["/bin/sh"]
-        args: ["-c", "python3 /tmp/main.py"]
+        command: ["/bin/bash"]
+        args: ["/tmp/launcher.sh"]
       volumes:
       - name: raw-data-generator-code-vol
         configMap:
@@ -46,6 +50,12 @@ spec:
           items:
           - key: main.py
             path: main.py
+      - name: launcher-script-vol
+        configMap:
+          name: launcher-script-cm
+          items:
+          - key: launcher.sh
+            path: launcher.sh
 ---
 apiVersion: v1
 kind: Service
@@ -59,3 +69,4 @@ spec:
   - protocol: TCP
     port: 8080
     targetPort: 8080
+
