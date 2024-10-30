@@ -20,7 +20,7 @@ metadata:
   name: __CONFIGMAP_NAME__-python-cm
 data:
   main.py: |
-  #!/usr/bin/env python3
+    #!/usr/bin/env python3
 EOF
 mkdir /tmp/code-configmaps
 cd /tmp/code-configmaps
