@@ -128,7 +128,6 @@ spec:
             #!/usr/bin/env bash
             cd /tmp
             git clone https://github.com/nicc777/k8s-kafka-experiment.git
-            cd k8s-kafka-experiment/backend-service
             export COMMAND=$(tt.params.command)
             export APP_VERSION=$(tt.params.app_version)
             export CANARY_CONFIG=$(tt.params.canary_config)

@@ -26,7 +26,7 @@ mkdir /tmp/code-configmaps
 cd /tmp/code-configmaps
 
 echo "  - raw_data_generator"
-FILE="/tmp/k8s-kafka-experiment/backend-service/backend-service/$APP_VERSION/raw_data_generator/main.py"
+FILE="/tmp/k8s-kafka-experiment/backend-service/$APP_VERSION/raw_data_generator/main.py"
 TARGET="/tmp/code-configmaps/raw-data-generator-cm.yaml"
 if [ -e "$FILE" ]; then
     echo "$FILE exists."
@@ -39,7 +39,7 @@ else
 fi
 
 echo "  - back_end"
-FILE="/tmp/k8s-kafka-experiment/backend-service/backend-service/$APP_VERSION/back_end/main.py"
+FILE="/tmp/k8s-kafka-experiment/backend-service/$APP_VERSION/back_end/main.py"
 TARGET="/tmp/code-configmaps/back-end-cm.yaml"
 if [ -e "$FILE" ]; then
     echo "$FILE exists."
@@ -52,7 +52,7 @@ else
 fi
 
 echo "  - ui"
-FILE="/tmp/k8s-kafka-experiment/backend-service/backend-service/$APP_VERSION/ui/main.py"
+FILE="/tmp/k8s-kafka-experiment/backend-service/$APP_VERSION/ui/main.py"
 TARGET="/tmp/code-configmaps/ui-cm.yaml"
 if [ -e "$FILE" ]; then
     echo "$FILE exists."
