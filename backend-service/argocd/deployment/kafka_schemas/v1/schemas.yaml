@@ -17,7 +17,7 @@ data:
     {
       "namespace": "tld.example",
       "type": "record",
-        "name": "TestRawData",
+        "name": "test-raw-data",
         "fields": [
             { "name": "sku", "type": "string" },
             { "name": "manufactured_qty", "type": "int" },
