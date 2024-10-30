@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: raw-data-generator-demo-v1
+  namespace: exp
+  labels:
+    app: raw-data-generator-demo-v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: raw-data-generator-demo-v1
+  template:
+    metadata:
+      labels:
+        app: raw-data-generator-demo-v1
+    spec:
+      containers:
+      - name: raw-data-generator-demo-v1
+        image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
+        volumeMounts:
+        - name: raw-data-generator-code-vol
+          mountPath: "/tmp"
+          readOnly: true
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        command: ["/bin/sh"]
+        args: ["-c", "python3 /tmp/main.py"]
+      volumes:
+      - name: raw-data-generator-code-vol
+        configMap:
+          name: raw-data-generator-python-cm
+          items:
+          - key: main.py
+            path: main.py
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: raw-data-generator-demo-v1-service
+  namespace: exp
+spec:
+  selector:
+    app.kubernetes.io/name: raw-data-generator-demo-v1
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
