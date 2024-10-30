@@ -19,6 +19,7 @@ SKU = 'SKU_{}'.format(
     str(random.randint(1,999999)).zfill(6)
 )
 DEBUG = bool(int(os.getenv('DEBUG', '0')))
+MAX_COUNTER_VALUE = int(os.getenv('MAX_COUNTER_VALUE', '-1'))
 MAX_RATE_PER_SECOND = int(os.getenv('MAX_RATE_PER_SECOND', '2'))
 MAX_INTERVAL_PER_LOOP = 999999999 / MAX_RATE_PER_SECOND
 SLEEP_BUFFER = 10
@@ -177,7 +178,8 @@ def produce_raw_data():
     now_ns = time.time_ns()
     counter = 0
     counter_timestamp_start = time.time_ns()
-    while True:
+    produce_more_data = True
+    while produce_more_data:
         counter += 1
         producer.poll(0.0)
         try:
@@ -202,10 +204,22 @@ def produce_raw_data():
                 value=avro_serializer(simulated_raw_data, SerializationContext(KAFKA_TOPIC, MessageField.VALUE)),
                 on_delivery=delivery_report
             )
+            logger.info('{} - Produce {} messages'.format(HOSTNAME, counter))
         except:
             logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
             continue
         now_ns = do_sleep(now_ns=now_ns, counter_timestamp_start=counter_timestamp_start, counter=counter)
+        if MAX_COUNTER_VALUE > 0:
+            if counter > MAX_COUNTER_VALUE:
+                produce_more_data = False
+                logger.warning('{} - Reached MAX_COUNTER_VALUE of {} - stopping...'.format(HOSTNAME, MAX_COUNTER_VALUE))
+                producer.flush()
     
 
 produce_raw_data()
+
+
+while True:
+    logger.info('{} - Contemplating the meaning of life...'.format(HOSTNAME))
+    time.sleep(3.0)
+
