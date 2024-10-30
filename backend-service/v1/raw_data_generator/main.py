@@ -6,10 +6,13 @@ import time
 import json
 import sys
 import traceback
-from confluent_kafka.avro import AvroProducer
-from confluent_kafka.avro import loads as avro_loads
-from confluent_kafka.avro.cached_schema_registry_client import CachedSchemaRegistryClient
+from uuid import uuid4
+from confluent_kafka import Producer
+from confluent_kafka.serialization import StringSerializer, SerializationContext, MessageField
+from confluent_kafka.schema_registry import SchemaRegistryClient
+from confluent_kafka.schema_registry.avro import AvroSerializer
 
+# EXAMPLE taken from https://github.com/confluentinc/confluent-kafka-python/blob/master/examples/avro_producer.py
 
 HOSTNAME = socket.gethostname()
 SKU = 'SKU_{}'.format(
@@ -43,7 +46,21 @@ SCHEMA = {
         { "name": "hour", "type": "int" },
     ]
 }
-PARSED_SCHEMA = parsed = avro_loads(json.dumps(SCHEMA))
+MONTH_DAYS = [
+    00,
+    31,     # 1
+    28,     # 2
+    31,     # 3
+    30,     # 4
+    31,     # 5
+    30,     # 6
+    31,     # 7
+    31,     # 8
+    30,     # 9
+    31,     # 10
+    30,     # 11
+    31,     # 12
+]
 
 
 logger = logging.getLogger('raw_data_generator')
@@ -72,65 +89,51 @@ logger.debug('{} - SCHEMA_SUBJECT               : {}'.format(HOSTNAME, SCHEMA_SU
 logger.debug('{} - SCHEMA_NAMESPACE             : {}'.format(HOSTNAME, SCHEMA_NAMESPACE))
 
 
-KAFKA_SERVER_CONNECTION_CONFIG = {
-    'bootstrap.servers': '{}:{}'.format(KAFKA_BOOTSTRAP_SERVER_HOST, KAFKA_BOOTSTRAP_SERVER_PORT),
-    'schema.registry.url': '{}://{}:{}'.format(KAFKA_SCHEMA_SERVER_PROTOCOL, KAFKA_SCHEMA_SERVER_HOST, KAFKA_SCHEMA_SERVER_PORT)
-}
-
-# Initialize Schema Registry client
-schema_registry_client = CachedSchemaRegistryClient(KAFKA_SERVER_CONNECTION_CONFIG['schema.registry.url'])
-
-
-# Function to load specific schema version
-def load_schema():
-    latest_schema_version = schema_registry_client.get_version(subject=SCHEMA_SUBJECT, avro_schema=PARSED_SCHEMA)
-    logger.debug('{} - load_schema() - type(data) : {}'.format(HOSTNAME, type(latest_schema_version)))
-    logger.debug('{} - load_schema() - repr(data) : {}'.format(HOSTNAME, repr(latest_schema_version)))
-    if latest_schema_version != SCHEMA_VERSION:
-        logger.warning('{} - There is a newer version of the schema available: {}'.format(HOSTNAME, latest_schema_version))
-    data = schema_registry_client.get_by_version(subject=SCHEMA_SUBJECT, version=SCHEMA_VERSION)
-    logger.debug('{} - load_schema() - type(data) : {}'.format(HOSTNAME, type(data)))
-    logger.debug('{} - load_schema() - repr(data) : {}'.format(HOSTNAME, repr(data)))
-    return data
-                                              
-
-def produce_with_schema(topic, data, schema_subject, schema_version):
-    schema = load_schema()
-    avro_producer = AvroProducer(KAFKA_SERVER_CONNECTION_CONFIG, default_value_schema=schema)
-
-    if schema is not None:
-        avro_producer.produce(topic=topic, value=data)
-        print(f"Message with schema version {schema_version} sent successfully!")
-    else:
-        print(f"Data validation failed for schema version {schema_version}.")
+class RawData:
+    def __init__(
+        self,
+        sku: str,
+        manufactured_qty: int,
+        year: int,
+        month: int,
+        day: int,
+        hour: int
+    ):
+        self.sku = sku
+        self.manufactured_qty = manufactured_qty
+        self.year = year
+        self.month = month
+        self.day = day
+        self.hour = hour
 
 
-now_ns = time.time_ns()
-counter = 0
-counter_timestamp_start = time.time_ns()
-while True:
-    counter += 1
-    raw_data = {
-        "sku": '{}'.format(SKU),
-        "manufactured_qty": 0,
-        "year": 2024,
-        "month": 1,
-        "day": 15,
-        "hour": 3
-    }
-    logger.info('{} - DATA: {}'.format(HOSTNAME, json.dumps(raw_data, default=str)))
-    try:
-        produce_with_schema(
-            KAFKA_TOPIC,
-            raw_data,
-            '{}.{}-value'.format(
-                SCHEMA_NAMESPACE,
-                SCHEMA_SUBJECT
-            ),
-            SCHEMA_VERSION
+def raw_data_to_dict(raw_data: RawData, ctx):
+    return dict(
+        sku=raw_data.sku,
+        manufactured_qty=raw_data.manufactured_qty,
+        year=raw_data.year,
+        month=raw_data.month,
+        day=raw_data.day,
+        hour=raw_data.hour
+    )
+
+
+def delivery_report(err, msg):
+    if err is not None:
+        logger.error('{} - Delivery failed for User record {}: {}'.format(HOSTNAME, msg.key(), err))
+        return
+    logger.error(
+        '{} - User record {} successfully produced to {} [{}] at offset {}'.format(
+            HOSTNAME,
+            msg.key(),
+            msg.topic(),
+            msg.partition(),
+            msg.offset()
         )
-    except:
-        logger.error('EXCEPTION: {}'.format(traceback.format_exc()))
+    )
+
+
+def do_sleep(now_ns: float, counter_timestamp_start: float, counter:int):
     now_ns_step = time.time_ns()
     time_diff = now_ns_step - now_ns
     sleep_time = 0.0
@@ -151,11 +154,58 @@ while True:
                 current_rate
             )
         )
+    return time.time_ns()
+
+
+def produce_raw_data():
+    schema_str = json.dumps(SCHEMA)
+    schema_registry_conf = {
+        'url': '{}://{}:{}'.format(KAFKA_SCHEMA_SERVER_PROTOCOL, KAFKA_SCHEMA_SERVER_HOST, KAFKA_SCHEMA_SERVER_PORT)
+    }
+    schema_registry_client = SchemaRegistryClient(schema_registry_conf)
+    avro_serializer = AvroSerializer(
+        schema_registry_client,
+        schema_str,
+        raw_data_to_dict
+    )
+    string_serializer = StringSerializer('utf_8')
+    producer_conf = {
+        'bootstrap.servers': '{}:{}'.format(KAFKA_BOOTSTRAP_SERVER_HOST, KAFKA_BOOTSTRAP_SERVER_PORT)
+    }
+    producer = Producer(producer_conf)
+
     now_ns = time.time_ns()
+    counter = 0
+    counter_timestamp_start = time.time_ns()
+    while True:
+        counter += 1
+        producer.poll(0.0)
+        try:
+            month = random.randint(1, 12)
+            simulated_raw_data = RawData(
+                sku=SKU,
+                manufactured_qty=random.randint(50, 100),
+                year=random.randint(2000, 2024),
+                month=month,
+                day=random.randint(1, MONTH_DAYS[month]),
+                hour=random.randint(8, 20)
+            )
+            logger.debug(
+                '{} - RAW DATA Generated: {}'.format(
+                    HOSTNAME,
+                    json.dumps(raw_data_to_dict(raw_data=simulated_raw_data, ctx=None), sort_keys=True)
+                )
+            )
+            producer.produce(
+                topic=KAFKA_TOPIC,
+                key=string_serializer(str(uuid4())),
+                value=avro_serializer(simulated_raw_data, SerializationContext(KAFKA_TOPIC, MessageField.VALUE)),
+                on_delivery=delivery_report
+            )
+        except:
+            logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
+            continue
+        now_ns = do_sleep(now_ns=now_ns, counter_timestamp_start=counter_timestamp_start, counter=counter)
+    
 
-
-
-
-
-
-
+produce_raw_data()
