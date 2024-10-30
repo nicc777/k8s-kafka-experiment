@@ -2,7 +2,7 @@
 apiVersion: platform.confluent.io/v1beta1
 kind: Schema
 metadata:
-  name: test-raw-data
+  name: testrawdata
 spec:
   data:
     configRef: schema-test-raw-data
@@ -17,7 +17,7 @@ data:
     {
       "namespace": "tld.example",
       "type": "record",
-        "name": "test-raw-data",
+        "name": "testrawdata",
         "fields": [
             { "name": "sku", "type": "string" },
             { "name": "manufactured_qty", "type": "int" },
