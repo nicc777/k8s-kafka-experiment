@@ -13,12 +13,26 @@ echo "- Current directory: ${PWD}"
 echo "- Deleting application version ${APP_VERSION}"
 
 cd /tmp/k8s-kafka-experiment
-kubectl apply -f backend-service/argocd/application/application_version_$APP_VERSION.yaml
 FILE="backend-service/argocd/application/application_version_$APP_VERSION.yaml"
 if [ -e "$FILE" ]; then
     echo "  - $FILE exists."
-    kubectl delete -f backend-service/argocd/application/application_version_$APP_VERSION.yaml -n argocd || true
-    kubectl delete -f backend-service/argocd/application/kafka_schemas_$APP_VERSION.yaml -n argocd || true    
+    kubectl delete -f $FILE -n argocd || true
+else
+    echo "  - $FILE does not exist."
+fi
+
+FILE="backend-service/argocd/application/kafka_schemas_$APP_VERSION.yaml"
+if [ -e "$FILE" ]; then
+    echo "  - $FILE exists."
+    kubectl delete -f $FILE -n argocd || true 
+else
+    echo "  - $FILE does not exist."
+fi
+
+FILE="backend-service/argocd/application/kafka_topics.yaml"
+if [ -e "$FILE" ]; then
+    echo "  - $FILE exists."
+    kubectl delete -f $FILE -n argocd || true
 else
     echo "  - $FILE does not exist."
 fi

@@ -1,6 +1,7 @@
 # See:
 #   https://docs.confluent.io/operator/current/co-manage-topics.html
 #   https://docs.confluent.io/platform/current/installation/configuration/topic-configs.html
+apiVersion: platform.confluent.io/v1beta1
 kind: KafkaTopic
 metadata:
   name: raw-data-in
