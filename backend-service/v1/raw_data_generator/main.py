@@ -64,7 +64,7 @@ MONTH_DAYS = [
 ]
 
 
-logger = logging.getLogger('raw_data_generator')
+logger = logging.getLogger('raw-data-generator')
 logger.setLevel(logging.INFO)
 if DEBUG is True:
     logger.setLevel(logging.DEBUG)

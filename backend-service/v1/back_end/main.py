@@ -15,6 +15,7 @@ from confluent_kafka.schema_registry.avro import AvroDeserializer
 # EXAMPLE taken from https://github.com/confluentinc/confluent-kafka-python/blob/master/examples/avro_consumer.py
 
 HOSTNAME = socket.gethostname()
+GROUP_ID = HOSTNAME.replace('_', '-')
 SKU = 'SKU_{}'.format(
     str(random.randint(1,999999)).zfill(6)
 )
@@ -49,7 +50,7 @@ SCHEMA = {
 }
 
 
-logger = logging.getLogger('raw_data_generator')
+logger = logging.getLogger(GROUP_ID)
 logger.setLevel(logging.INFO)
 if DEBUG is True:
     logger.setLevel(logging.DEBUG)
@@ -134,7 +135,7 @@ def consume_raw_data():
     )
     consumer_conf = {
         'bootstrap.servers': '{}:{}'.format(KAFKA_BOOTSTRAP_SERVER_HOST, KAFKA_BOOTSTRAP_SERVER_PORT),
-        'group.id': KAFKA_TOPIC,
+        'group.id': GROUP_ID,
         'auto.offset.reset': "earliest"
     }
     consumer = Consumer(consumer_conf)
