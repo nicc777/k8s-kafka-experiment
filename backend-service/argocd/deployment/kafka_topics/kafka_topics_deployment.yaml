@@ -10,7 +10,7 @@ spec:
   partitionCount: 24
   configs:
     cleanup.policy: "delete"
-    # Retention is 1 day
-    retention.ms: 86400000
+    # Retention is 1 day - value must be submitted as a string !!
+    retention.ms: "86400000"
   kafkaClusterRef:
     name: kafka
