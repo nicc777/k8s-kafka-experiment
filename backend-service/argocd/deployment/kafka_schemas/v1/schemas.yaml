@@ -1,3 +1,7 @@
+# Documentation links:
+#   https://docs.confluent.io/operator/current/co-manage-schemas.html
+#   https://docs.confluent.io/operator/current/co-api.html#tag/Schema
+#   https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/serdes-avro.html
 ---
 apiVersion: platform.confluent.io/v1beta1
 kind: Schema
@@ -17,13 +21,13 @@ data:
     {
       "namespace": "tld.example",
       "type": "record",
-        "name": "testrawdata",
-        "fields": [
-            { "name": "sku", "type": "string" },
-            { "name": "manufactured_qty", "type": "int" },
-            { "name": "year", "type": "int" },
-            { "name": "month", "type": "int" },
-            { "name": "day", "type": "int" },
-            { "name": "hour", "type": "int" }
-        ]
+      "name": "testrawdata",
+      "fields": [
+          { "name": "sku", "type": "string" },
+          { "name": "manufactured_qty", "type": "int" },
+          { "name": "year", "type": "int" },
+          { "name": "month", "type": "int" },
+          { "name": "day", "type": "int" },
+          { "name": "hour", "type": "int" }
+      ]
     }
