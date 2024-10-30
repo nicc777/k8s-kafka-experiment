@@ -1,0 +1,15 @@
+# See:
+#   https://docs.confluent.io/operator/current/co-manage-topics.html
+#   https://docs.confluent.io/platform/current/installation/configuration/topic-configs.html
+kind: KafkaTopic
+metadata:
+  name: raw-data-in
+spec:
+  replicas: 1
+  partitionCount: 24
+  configs:
+    cleanup.policy: "delete"
+    # Retention is 1 day
+    retention.ms: 86400000
+  kafkaClusterRef:
+    name: kafka

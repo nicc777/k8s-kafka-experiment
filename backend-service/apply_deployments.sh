@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
 cd /tmp/k8s-kafka-experiment
-kubectl apply -f backend-service/argocd/application/application_version_$APP_VERSION.yaml
+kubectl apply -f backend-service/argocd/application/kafka_topics.yaml -n argocd
+kubectl apply -f backend-service/argocd/application/application_version_$APP_VERSION.yaml -n argocd
 FILE="backend-service/argocd/application/application_version_$APP_VERSION.yaml"
 if [ -e "$FILE" ]; then
     echo "  - $FILE exists."

@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: kafka-topics
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    name: kafka-topics
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/nicc777/k8s-kafka-experiment.git
+    targetRevision: HEAD
+    path: backend-service/argocd/deployment/kafka_topics
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: confluent
+  info:
+    - name: 'README'
+      value: 'https://github.com/nicc777/k8s-kafka-experiment/blob/main/README.md'
+  syncPolicy:
+    automated: 
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+    - RespectIgnoreDifferences=true
+    - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
