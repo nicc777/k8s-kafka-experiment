@@ -33,9 +33,6 @@ if [ -e "$FILE" ]; then
     cp -vf /tmp/cm_template.yaml $TARGET
     sed -i "s/__CONFIGMAP_NAME__/raw-data-generator/g" $TARGET
     cat $FILE | sed 's/^/    /' >> $TARGET
-    echo "----------------------------------------"
-    cat $TARGET
-    echo "----------------------------------------"
     kubectl apply -f $TARGET -n exp
 else
     echo "$FILE does not exist."
