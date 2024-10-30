@@ -46,11 +46,11 @@ logger.info('{} - SKU: {}'.format(HOSTNAME, SKU))
 logger.debug('{} - MAX_RATE_PER_SECOND          : {}'.format(HOSTNAME, MAX_RATE_PER_SECOND))
 logger.debug('{} - MAX_INTERVAL_PER_LOOP        : {}'.format(HOSTNAME, MAX_INTERVAL_PER_LOOP))
 logger.debug('{} - SLEEP_BUFFER                 : {}'.format(HOSTNAME, SLEEP_BUFFER))
-logger.debug('{} - KAFKA_BOOTSTRAP_SERVER_HOST  : {}'.format(KAFKA_BOOTSTRAP_SERVER_HOST))
-logger.debug('{} - KAFKA_BOOTSTRAP_SERVER_PORT  : {}'.format(KAFKA_BOOTSTRAP_SERVER_PORT))
-logger.debug('{} - KAFKA_SCHEMA_SERVER_PROTOCOL : {}'.format(KAFKA_SCHEMA_SERVER_PROTOCOL))
-logger.debug('{} - KAFKA_SCHEMA_SERVER_HOST     : {}'.format(KAFKA_SCHEMA_SERVER_HOST))
-logger.debug('{} - KAFKA_SCHEMA_SERVER_PORT     : {}'.format(KAFKA_SCHEMA_SERVER_PORT))
+logger.debug('{} - KAFKA_BOOTSTRAP_SERVER_HOST  : {}'.format(HOSTNAME, KAFKA_BOOTSTRAP_SERVER_HOST))
+logger.debug('{} - KAFKA_BOOTSTRAP_SERVER_PORT  : {}'.format(HOSTNAME, KAFKA_BOOTSTRAP_SERVER_PORT))
+logger.debug('{} - KAFKA_SCHEMA_SERVER_PROTOCOL : {}'.format(HOSTNAME, KAFKA_SCHEMA_SERVER_PROTOCOL))
+logger.debug('{} - KAFKA_SCHEMA_SERVER_HOST     : {}'.format(HOSTNAME, KAFKA_SCHEMA_SERVER_HOST))
+logger.debug('{} - KAFKA_SCHEMA_SERVER_PORT     : {}'.format(HOSTNAME, KAFKA_SCHEMA_SERVER_PORT))
 
 
 KAFKA_SERVER_CONNECTION_CONFIG = {
