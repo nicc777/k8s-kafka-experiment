@@ -65,7 +65,7 @@ else
 fi
 
 echo "- Deployment"
-bash /tmp/k8s-kafka-experiment/backend-service/apply_deployments.sh || true
+APP_VERSION=$APP_VERSION bash /tmp/k8s-kafka-experiment/backend-service/apply_deployments.sh || true
 
 echo "DONE"
 
