@@ -9,4 +9,5 @@ data:
   launcher.sh: |
     #!/usr/bin/env bash
     pip3 install confluent-kafka avro-python3
-    /bin/sh -c python3 /tmp/code/main.py
+    echo "STARTING APP..."
+    python3 /tmp/code/main.py
