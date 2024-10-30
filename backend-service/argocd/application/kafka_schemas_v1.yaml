@@ -1,21 +1,20 @@
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
-  name: application-cell-v1
+  name: kafka-schemas-v1
   namespace: argocd
   finalizers:
     - resources-finalizer.argocd.argoproj.io
   labels:
-    name: application-cell-v1
+    name: kafka-schemas-v1
 spec:
   project: default
   source:
     repoURL: https://github.com/nicc777/k8s-kafka-experiment.git
     targetRevision: HEAD
-    path: backend-service/argocd/deployment/call_application/v1
-  destination:
+    path: backend-service/argocd/deployment/kafka_schemas/v1
     server: https://kubernetes.default.svc
-    namespace: exp
+    namespace: confluent
   info:
     - name: 'README'
       value: 'https://github.com/nicc777/k8s-kafka-experiment/blob/main/README.md'
