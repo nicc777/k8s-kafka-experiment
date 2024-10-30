@@ -22,10 +22,10 @@ spec:
         image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
         volumeMounts:
         - name: raw-data-generator-code-vol
-          mountPath: "/tmp"
+          mountPath: "/tmp/code"
           readOnly: true
         - name: launcher-script-vol
-          mountPath: "/tmp"
+          mountPath: "/tmp/scripts"
           readOnly: true
         ports:
         - containerPort: 8080
@@ -42,7 +42,7 @@ spec:
           initialDelaySeconds: 3
           periodSeconds: 3
         command: ["/bin/bash"]
-        args: ["/tmp/launcher.sh"]
+        args: ["/tmp/scripts/launcher.sh"]
       volumes:
       - name: raw-data-generator-code-vol
         configMap:
