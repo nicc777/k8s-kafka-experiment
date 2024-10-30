@@ -103,7 +103,7 @@ spec:
   - name: app_version
     default: "v1"
   - name: canary_config
-    default: "{}"
+    default: ""
   resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: TaskRun
@@ -132,7 +132,26 @@ spec:
             export COMMAND=$(tt.params.command)
             export APP_VERSION=$(tt.params.app_version)
             export CANARY_CONFIG=$(tt.params.canary_config)
-            sh /tmp/k8s-kafka-experiment/backend-service/test.sh || true
+            case $COMMAND in
+                build_and_deploy_app_version)
+                    echo "Building and deploying version ${APP_VERSION} of the application"
+                    sh /tmp/k8s-kafka-experiment/backend-service/build.sh || true
+                    ;;
+                delete_app_version)
+                    echo "Deleting version ${APP_VERSION} of the application"
+                    sh /tmp/k8s-kafka-experiment/backend-service/delete_deployments.sh || true
+                    ;;
+                deploy_canary)
+                    echo "Enabling a canary release of the app"
+                    ;;
+                delete_canary)
+                    echo "Removing the canary and setting version ${APP_VERSION} as the primary running version"
+                    ;;
+                *)
+                    echo "Running default TEST script"
+                    sh /tmp/k8s-kafka-experiment/backend-service/test.sh || true
+                    ;;
+            esac
           # volumeMounts:
           # - name: apply-volume
           #   mountPath: /scripts/apply
