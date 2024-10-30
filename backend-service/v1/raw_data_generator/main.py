@@ -43,7 +43,7 @@ SCHEMA = {
         { "name": "hour", "type": "int" },
     ]
 }
-PARSED_SCHEMA = parsed = avro_loads(json.loads(SCHEMA))
+PARSED_SCHEMA = parsed = avro_loads(json.dumps(SCHEMA))
 
 
 logger = logging.getLogger('raw_data_generator')
