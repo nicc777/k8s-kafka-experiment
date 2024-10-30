@@ -35,8 +35,9 @@ spec:
           value: "raw-data-in"
         - name: SCHEMA_VERSION
           value: "1"
+        # SCHEMA_SUBJECT is linked to the kind: Schema.metadata.name deployed before this application starts... 
         - name: SCHEMA_SUBJECT
-          value: "TestRawData"
+          value: "test-raw-data"
         - name: SCHEMA_NAMESPACE
           value: "tld.example"
         volumeMounts:
