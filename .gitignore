@@ -163,3 +163,4 @@ cython_debug/
 
 # OTHER
 *.drawio.bkpnohup.out
+nohup.out

@@ -16,7 +16,7 @@ import valkey
 # EXAMPLE taken from https://github.com/confluentinc/confluent-kafka-python/blob/master/examples/avro_consumer.py
 
 HOSTNAME = socket.gethostname()
-GROUP_ID = int(os.getenv('GROUP_ID', HOSTNAME.replace('_', '-')))
+GROUP_ID = os.getenv('GROUP_ID', HOSTNAME.replace('_', '-'))
 SKU = 'SKU_{}'.format(
     str(random.randint(1,999999)).zfill(6)
 )
