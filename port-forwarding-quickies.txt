@@ -1,0 +1,5 @@
+nohup kubectl port-forward --address=0.0.0.0 -n argocd service/argo-cd-argocd-server 7090:80 &
+nohup kubectl port-forward --address=0.0.0.0 -n tekton-pipelines service/tekton-dashboard 9097:9097 &
+nohup kubectl port-forward --address=0.0.0.0 -n default service/el-helm-pipelines-event-listener 7091:8080 & 
+nohup kubectl port-forward --address=0.0.0.0 -n default service/el-app-ctrl-event-listener 7092:8080 &
+nohup kubectl port-forward --address=0.0.0.0 -n exp service/kafka-ui 8090:80 &
