@@ -94,6 +94,26 @@ Open the Kafka UI in the browser: http://127.0.0.1:8090/
 
 ## Step 2: Running the experiment
 
+The experiments can be controlled by the cammand-and-control pipeline, for which another terminal is required for port forwarding:
+
+```shell
+# Create port forwarding session:
+kubectl port-forward service/el-app-ctrl-event-listener 7092:8080 -n default
+
+# TEST:
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"test", "app-version": "v1", "canary_config": "v1:90,v2:10"}' http://127.0.0.1:7092
+```
+
+Other `command` options include:
+
+| Command                        | Use Case                                                                                 |
+|--------------------------------|------------------------------------------------------------------------------------------|
+| `test`                         | Required for testing. The values for `app-version` and `canary_config` is not important. |
+| `build_and_deploy_app_version` | Deployes a specific version, as dicdated by the experiment to be run.                    |
+| `delete_app_version`           | Deletes a specific application version, as dicdated by the experiment                    |
+| `deploy_canary`                | Used to set the load balancing options between two versions of an application.           |
+| `delete_canary`                | Reset all routing to the selected application version                                    |
+
 Change into the relevant experiment sub-directory and follow the instructions in the README.
 
 List of experiment:
