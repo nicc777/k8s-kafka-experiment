@@ -3,3 +3,7 @@ nohup kubectl port-forward --address=0.0.0.0 -n tekton-pipelines service/tekton-
 nohup kubectl port-forward --address=0.0.0.0 -n default service/el-helm-pipelines-event-listener 7091:8080 & 
 nohup kubectl port-forward --address=0.0.0.0 -n default service/el-app-ctrl-event-listener 7092:8080 &
 nohup kubectl port-forward --address=0.0.0.0 -n exp service/kafka-ui 8090:80 &
+
+SSH
+
+ssh -i .\.ssh\YOUR_KEY.pem -L 7090:127.0.0.1:7090 -L 9097:127.0.0.1:9097 -L 8090:127.0.0.1:8090 ubuntu@CLOUD_HOST

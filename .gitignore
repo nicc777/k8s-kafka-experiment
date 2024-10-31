@@ -162,4 +162,4 @@ cython_debug/
 #.idea/
 
 # OTHER
-*.drawio.bkp
+*.drawio.bkpnohup.out
