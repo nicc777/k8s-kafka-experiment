@@ -42,7 +42,7 @@ spec:
           value: "tld.example"
         # If MAX_COUNTER_VALUE is -1 (default), the data production will continue indefinitely. 
         - name: MAX_COUNTER_VALUE
-          value: "3"
+          value: "10000"
         volumeMounts:
         - name: raw-data-generator-code-vol
           mountPath: "/tmp/code"
