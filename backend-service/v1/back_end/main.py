@@ -131,6 +131,7 @@ def delivery_report(err, msg):
 
 
 def store_data_in_valkey(raw_data: RawData, retries: int=0)->bool:
+    global VALKEY_WRITE_CLIENT
     try:
         key = 'manufactured:{}:{}:{}:{}:{}'.format(
             raw_data.sku,
@@ -147,7 +148,6 @@ def store_data_in_valkey(raw_data: RawData, retries: int=0)->bool:
         sleep_time = 0.5 + (retries*0.5)
         logger.warning('{} - Will retry: sleeping {} seconds'.format(HOSTNAME, sleep_time))
         time.sleep(sleep_time)
-        global VALKEY_WRITE_CLIENT
         VALKEY_WRITE_CLIENT = None
         time.sleep(0.1)
         VALKEY_WRITE_CLIENT = valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0)
