@@ -10,12 +10,13 @@ from confluent_kafka import Consumer
 from confluent_kafka.serialization import SerializationContext, MessageField
 from confluent_kafka.schema_registry import SchemaRegistryClient
 from confluent_kafka.schema_registry.avro import AvroDeserializer
+import valkey
 
 
 # EXAMPLE taken from https://github.com/confluentinc/confluent-kafka-python/blob/master/examples/avro_consumer.py
 
 HOSTNAME = socket.gethostname()
-GROUP_ID = HOSTNAME.replace('_', '-')
+GROUP_ID = int(os.getenv('GROUP_ID', HOSTNAME.replace('_', '-')))
 SKU = 'SKU_{}'.format(
     str(random.randint(1,999999)).zfill(6)
 )
@@ -48,6 +49,8 @@ SCHEMA = {
         { "name": "hour", "type": "int" },
     ]
 }
+VALKEY_SERVER_HOST = os.getenv('VALKEY_SERVER_HOST', 'valkey-primary')
+VALKEY_SERVER_PORT = int(os.getenv('VALKEY_SERVER_PORT', '6379'))
 
 
 logger = logging.getLogger(GROUP_ID)
@@ -74,6 +77,11 @@ logger.debug('{} - KAFKA_TOPIC                  : {}'.format(HOSTNAME, KAFKA_TOP
 logger.debug('{} - SCHEMA_VERSION               : {}'.format(HOSTNAME, SCHEMA_VERSION))
 logger.debug('{} - SCHEMA_SUBJECT               : {}'.format(HOSTNAME, SCHEMA_SUBJECT))
 logger.debug('{} - SCHEMA_NAMESPACE             : {}'.format(HOSTNAME, SCHEMA_NAMESPACE))
+logger.debug('{} - VALKEY_SERVER_HOST           : {}'.format(HOSTNAME, VALKEY_SERVER_HOST))
+logger.debug('{} - VALKEY_SERVER_PORT           : {}'.format(HOSTNAME, VALKEY_SERVER_PORT))
+
+
+VALKEY_WRITE_CLIENT = valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0)
 
 
 class RawData:
@@ -122,6 +130,32 @@ def delivery_report(err, msg):
     )
 
 
+def store_data_in_valkey(raw_data: RawData, retries: int=0)->bool:
+    try:
+        key = 'manufactured:{}:{}:{}:{}:{}'.format(
+            raw_data.sku,
+            raw_data.year,
+            raw_data.month,
+            raw_data.day,
+            raw_data.hour
+        )
+        VALKEY_WRITE_CLIENT.incrby(name=key, amount=raw_data.manufactured_qty)
+    except:
+        logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
+        if retries > 3:
+            return False
+        sleep_time = 0.5 + (retries*0.5)
+        logger.warning('{} - Will retry: sleeping {} seconds'.format(HOSTNAME, sleep_time))
+        time.sleep(sleep_time)
+        global VALKEY_WRITE_CLIENT
+        VALKEY_WRITE_CLIENT = None
+        time.sleep(0.1)
+        VALKEY_WRITE_CLIENT = valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0)
+        new_retry_qty = retries + 1
+        store_data_in_valkey(raw_data=raw_data, retries=new_retry_qty)
+    return True
+
+
 def consume_raw_data():
     schema_str = json.dumps(SCHEMA)
     schema_registry_conf = {
@@ -162,9 +196,12 @@ def consume_raw_data():
                         raw_data_in.manufactured_qty
                     )
                 )
+                if store_data_in_valkey(raw_data=raw_data_in) is False:
+                    # TODO Reject message so that another consumer in our group can try and process it
+                    logger.warning('{} - REJECTED Message and putting it back in queue for processing'.format(HOSTNAME))
         except:
             logger.error(
-                '{} - EXCEPTON: {}'.format(HOSTNAME, traceback.format_exc())
+                '{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc())
             )
             break
 

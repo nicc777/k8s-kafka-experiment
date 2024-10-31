@@ -8,7 +8,7 @@ metadata:
   labels:
     app: raw-data-generator-demo-v1
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: raw-data-generator-demo-v1
@@ -91,7 +91,7 @@ metadata:
   labels:
     app: back-end-demo-v1
 spec:
-  replicas: 1
+  replicas: 3
   selector:
     matchLabels:
       app: back-end-demo-v1
@@ -116,6 +116,9 @@ spec:
           value: "8081"
         - name: KAFKA_TOPIC
           value: "raw-data-in"
+        # Specify the group ID in order to have multiple nodes process the incoming data. Default group id is the hostname of the Pod
+        - name: GROUP_ID
+          value: "raw-group1"
         - name: SCHEMA_VERSION
           value: "1"
         # SCHEMA_SUBJECT is linked to the kind: Schema.metadata.name deployed before this application starts... 
@@ -123,6 +126,10 @@ spec:
           value: "testrawdata"
         - name: SCHEMA_NAMESPACE
           value: "tld.example"
+        - name: VALKEY_SERVER_HOST
+          value: "valkey-primary"
+        - name: VALKEY_SERVER_PORT
+          value: "6379"
         volumeMounts:
         - name: back-end-code-vol
           mountPath: "/tmp/code"

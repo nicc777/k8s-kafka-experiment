@@ -8,6 +8,6 @@ metadata:
 data:
   launcher.sh: |
     #!/usr/bin/env bash
-    pip3 install confluent-kafka avro-python3
+    pip3 install confluent-kafka avro-python3 valkey
     echo "STARTING APP..."
     python3 /tmp/code/main.py
