@@ -77,7 +77,7 @@ spec:
             path: main.py
       - name: launcher-script-vol
         configMap:
-          name: launcher-script-cm
+          name: launcher-script-v1-cm
           items:
           - key: launcher.sh
             path: launcher.sh
@@ -127,7 +127,7 @@ spec:
         - name: SCHEMA_NAMESPACE
           value: "tld.example"
         - name: VALKEY_SERVER_HOST
-          value: "valkey-primary"
+          value: "valkey-backend-primary"
         - name: VALKEY_SERVER_PORT
           value: "6379"
         volumeMounts:
@@ -164,7 +164,7 @@ spec:
             path: main.py
       - name: launcher-script-vol
         configMap:
-          name: launcher-script-cm
+          name: launcher-script-v1-cm
           items:
           - key: launcher.sh
             path: launcher.sh

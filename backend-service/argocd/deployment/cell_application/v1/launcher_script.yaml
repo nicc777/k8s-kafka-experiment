@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: launcher-script-cm
+  name: launcher-script-v1-cm
   annotations:
     argocd.argoproj.io/sync-wave: "1"
 data:
