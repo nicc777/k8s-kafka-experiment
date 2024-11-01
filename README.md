@@ -115,7 +115,7 @@ import random
 DEFECTS_MIN = 1
 DEFECTS_MAX_SUBTRACTOR = 25
 MIN_WIDGETS = 50
-MAX_WIDTGETS = 100
+MAX_WIDGETS = 100
 
 def max_defects_possible(base_qty: int)->int:
     return base_qty - DEFECTS_MAX_SUBTRACTOR
@@ -130,7 +130,7 @@ def calc_final_defect_qty(base_qty:int)->int:
         defect_qty = 1
     return defect_qty
 
-qty_widgets_manufactured = random.randrange(MIN_WIDGETS,MAX_WIDTGETS)
+qty_widgets_manufactured = random.randrange(MIN_WIDGETS,MAX_WIDGETS)
 qty_defects = calc_final_defect_qty(base_qty=qty_widgets_manufactured)
 ```
 
@@ -266,7 +266,7 @@ kubectl port-forward service/argo-cd-argocd-server -n argocd --address=0.0.0.0 7
   * [Kafka UI Helm Charts](https://docs.kafka-ui.provectus.io/configuration/helm-charts/quick-start) documentation
 * Valkey Resources:
   * [Valkey Home Page](https://valkey.io/)
-  * Bitname Managed [Helm Chart](https://github.com/bitnami/charts/blob/main/bitnami/valkey/README.md)
+  * Bitnami Managed [Helm Chart](https://github.com/bitnami/charts/blob/main/bitnami/valkey/README.md)
 * This project use a [generic Python container](https://github.com/nicc777/container-python4aws) with all the require libraries, packages and other tools pre-installed for easy Python script deployment and testing in Kubernetes
 * Tekton related resources:
   * [Home Page](https://tekton.dev/)

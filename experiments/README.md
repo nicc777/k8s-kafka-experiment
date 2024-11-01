@@ -94,7 +94,7 @@ Open the Kafka UI in the browser: http://127.0.0.1:8090/
 
 ## Step 2: Running the experiment
 
-The experiments can be controlled by the cammand-and-control pipeline, for which another terminal is required for port forwarding:
+The experiments can be controlled by the command-and-control pipeline, for which another terminal is required for port forwarding:
 
 ```shell
 # Create port forwarding session:
@@ -109,8 +109,8 @@ Other `command` options include:
 | Command                        | Use Case                                                                                 |
 |--------------------------------|------------------------------------------------------------------------------------------|
 | `test`                         | Required for testing. The values for `app-version` and `canary_config` is not important. |
-| `build_and_deploy_app_version` | Deployes a specific version, as dicdated by the experiment to be run.                    |
-| `delete_app_version`           | Deletes a specific application version, as dicdated by the experiment                    |
+| `build_and_deploy_app_version` | Deploys a specific version, as dictated by the experiment to be run.                     |
+| `delete_app_version`           | Deletes a specific application version, as dictated by the experiment                    |
 | `deploy_canary`                | Used to set the load balancing options between two versions of an application.           |
 | `delete_canary`                | Reset all routing to the selected application version                                    |
 

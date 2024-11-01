@@ -101,9 +101,12 @@ spec:
         - name: delete-volume
           configMap:
             name: helm-pipelines-delete-script-cm
-        - name: valkey-values-volume
+        - name: valkey-backend-values-volume
           configMap:
-            name: helm-pipelines-valkey-values-cm
+            name: helm-pipelines-valkey-backend-values-cm
+        - name: valkey-frontend-values-volume
+          configMap:
+            name: helm-pipelines-valkey-frontend-values-cm
         - name: kafka-ui-values-volume
           configMap:
             name: helm-pipelines-kafka-ui-values-cm
@@ -123,8 +126,10 @@ spec:
             mountPath: /scripts/apply
           - name: delete-volume
             mountPath: /scripts/delete
-          - name: valkey-values-volume
-            mountPath: /data/custom-helm-values/valkey
+          - name: valkey-backend-values-volume
+            mountPath: /data/custom-helm-values/valkey-backend
+          - name: valkey-frontend-values-volume
+            mountPath: /data/custom-helm-values/valkey-frontend
           - name: kafka-ui-values-volume
             mountPath: /data/custom-helm-values/kafka-ui
 
@@ -152,7 +157,7 @@ data:
     else
       echo "Installing Helm chart $VALKEY_CHART_URI as release $VALKEY_RELEASE_NAME in namespace $NAMESPACE."
       kubectl create namespace $NAMESPACE
-      helm install -f /data/custom-helm-values/valkey/values.yaml $VALKEY_RELEASE_NAME $VALKEY_CHART_URI --namespace $NAMESPACE
+      helm install -f /data/custom-helm-values/valkey-backend/values.yaml $VALKEY_RELEASE_NAME $VALKEY_CHART_URI --namespace $NAMESPACE
     fi
     # KAFKA
     helm repo add confluentinc https://packages.confluent.io/helm
@@ -220,9 +225,25 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: helm-pipelines-valkey-values-cm
+  name: helm-pipelines-valkey-backend-values-cm
 data:
   values.yaml: |
+    nameOverride: valkey-backend
+    auth:
+      enabled: false
+      sentinel: false
+    replica:
+      replicaCount: 1
+    metrics:
+      enabled: true
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helm-pipelines-valkey-frontend-values-cm
+data:
+  values.yaml: |
+    nameOverride: valkey-frontend
     auth:
       enabled: false
       sentinel: false
