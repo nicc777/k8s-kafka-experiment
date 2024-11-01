@@ -2,9 +2,26 @@
 This script will periodically read all data from DB and produce a stream of
 summary messages to be send to the front-end stats aggregator 
 
-INPUT       : Read data from Valkey
+INPUT       : Read data from Valkey                     (1)
 PROCESSING  : Calculate summary statistics
-OUTPUT      : Place suumary stats on message queue
+OUTPUT      : Place summary stats on message queue      (2)
+
+                                           
++-------------------------------+        +-----+   (2)  #################################      (1)
+| front_end_aggregator_consumer |........|     |<-------# Back_end_aggregator_producer  #------------+
++-------------------------------+        |  K  |        #################################            |
+                                         |  A  |                                                     |
+                                         |  F  |                                                     |
+                                         |  K  |                                                    \/
+            +-----+                      |  A  |        +-------------------------------+        +-----+
+            | DB  |                      |     |        | back_end                      |        | DB  |
+            +-----+                      |     |        +-------------------------------+        +-----+
+                                         |     |
+                                         |     |  
+                                         |     |        
++-------------------------------+        |     |        +-------------------------------+
+| front_end_ui                  |        |     |        | raw_data_generator            |
++-------------------------------+        +-----+        +-------------------------------+
 """
 
 import os
@@ -15,17 +32,19 @@ import time
 import json
 import sys
 import traceback
-from confluent_kafka import Consumer
-from confluent_kafka.serialization import SerializationContext, MessageField
+from uuid import uuid4
+from confluent_kafka import Producer
+from confluent_kafka.serialization import StringSerializer, SerializationContext, MessageField
 from confluent_kafka.schema_registry import SchemaRegistryClient
-from confluent_kafka.schema_registry.avro import AvroDeserializer
+from confluent_kafka.schema_registry.avro import AvroSerializer
 import valkey
 
-
-# EXAMPLE taken from https://github.com/confluentinc/confluent-kafka-python/blob/master/examples/avro_consumer.py
+# EXAMPLE taken from https://github.com/confluentinc/confluent-kafka-python/blob/master/examples/avro_producer.py
 
 HOSTNAME = socket.gethostname()
-GROUP_ID = os.getenv('GROUP_ID', HOSTNAME.replace('_', '-'))
+SKU = 'SKU_{}'.format(
+    str(random.randint(1,999999)).zfill(6)
+)
 DEBUG = bool(int(os.getenv('DEBUG', '0')))
 MAX_COUNTER_VALUE = int(os.getenv('MAX_COUNTER_VALUE', '-1'))
 MAX_RATE_PER_SECOND = int(os.getenv('MAX_RATE_PER_SECOND', '2'))
@@ -59,7 +78,7 @@ VALKEY_SERVER_HOST = os.getenv('VALKEY_SERVER_HOST', 'valkey-primary')
 VALKEY_SERVER_PORT = int(os.getenv('VALKEY_SERVER_PORT', '6379'))
 
 
-logger = logging.getLogger(GROUP_ID)
+logger = logging.getLogger('raw-data-generator')
 logger.setLevel(logging.INFO)
 if DEBUG is True:
     logger.setLevel(logging.DEBUG)
@@ -70,6 +89,7 @@ if DEBUG is True:
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
+logger.info('{} - SKU                          : {}'.format(HOSTNAME, SKU))
 logger.debug('{} - MAX_RATE_PER_SECOND          : {}'.format(HOSTNAME, MAX_RATE_PER_SECOND))
 logger.debug('{} - MAX_INTERVAL_PER_LOOP        : {}'.format(HOSTNAME, MAX_INTERVAL_PER_LOOP))
 logger.debug('{} - SLEEP_BUFFER                 : {}'.format(HOSTNAME, SLEEP_BUFFER))
@@ -84,9 +104,6 @@ logger.debug('{} - SCHEMA_SUBJECT               : {}'.format(HOSTNAME, SCHEMA_SU
 logger.debug('{} - SCHEMA_NAMESPACE             : {}'.format(HOSTNAME, SCHEMA_NAMESPACE))
 logger.debug('{} - VALKEY_SERVER_HOST           : {}'.format(HOSTNAME, VALKEY_SERVER_HOST))
 logger.debug('{} - VALKEY_SERVER_PORT           : {}'.format(HOSTNAME, VALKEY_SERVER_PORT))
-
-
-VALKEY_WRITE_CLIENT = valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0)
 
 
 class RawData:
@@ -107,16 +124,14 @@ class RawData:
         self.hour = hour
 
 
-def dict_to_raw_data(obj, ctx)->RawData:
-    if obj is None:
-        return None
-    return RawData(
-        sku=obj['sku'],
-        manufactured_qty=int(obj['manufactured_qty']),
-        year=int(obj['year']),
-        month=int(obj['month']),
-        day=int(obj['day']),
-        hour=int(obj['hour'])
+def raw_data_to_dict(raw_data: RawData, ctx):
+    return dict(
+        sku=raw_data.sku,
+        manufactured_qty=raw_data.manufactured_qty,
+        year=raw_data.year,
+        month=raw_data.month,
+        day=raw_data.day,
+        hour=raw_data.hour
     )
 
 
@@ -124,7 +139,7 @@ def delivery_report(err, msg):
     if err is not None:
         logger.error('{} - Delivery failed for User record {}: {}'.format(HOSTNAME, msg.key(), err))
         return
-    logger.error(
+    logger.info(
         '{} - User record {} successfully produced to {} [{}] at offset {}'.format(
             HOSTNAME,
             msg.key(),
@@ -135,85 +150,9 @@ def delivery_report(err, msg):
     )
 
 
-def store_data_in_valkey(raw_data: RawData, retries: int=0)->bool:
-    global VALKEY_WRITE_CLIENT
-    try:
-        key = 'manufactured:{}:{}:{}:{}:{}'.format(
-            raw_data.sku,
-            raw_data.year,
-            raw_data.month,
-            raw_data.day,
-            raw_data.hour
-        )
-        VALKEY_WRITE_CLIENT.incrby(name=key, amount=raw_data.manufactured_qty)
-    except:
-        logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
-        if retries > 3:
-            return False
-        sleep_time = 0.5 + (retries*0.5)
-        logger.warning('{} - Will retry: sleeping {} seconds'.format(HOSTNAME, sleep_time))
-        time.sleep(sleep_time)
-        VALKEY_WRITE_CLIENT = None
-        time.sleep(0.1)
-        VALKEY_WRITE_CLIENT = valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0)
-        new_retry_qty = retries + 1
-        store_data_in_valkey(raw_data=raw_data, retries=new_retry_qty)
-    return True
+def read_keys()->list:
+    keys = list()
+
+    return keys
 
 
-def consume_raw_data():
-    schema_str = json.dumps(SCHEMA)
-    schema_registry_conf = {
-        'url': '{}://{}:{}'.format(KAFKA_SCHEMA_SERVER_PROTOCOL, KAFKA_SCHEMA_SERVER_HOST, KAFKA_SCHEMA_SERVER_PORT)
-    }
-    schema_registry_client = SchemaRegistryClient(schema_registry_conf)
-    avro_deserializer = AvroDeserializer(
-        schema_registry_client,
-        schema_str,
-        dict_to_raw_data
-    )
-    consumer_conf = {
-        'bootstrap.servers': '{}:{}'.format(KAFKA_BOOTSTRAP_SERVER_HOST, KAFKA_BOOTSTRAP_SERVER_PORT),
-        'group.id': GROUP_ID,
-        'auto.offset.reset': "earliest"
-    }
-    consumer = Consumer(consumer_conf)
-    consumer.subscribe([KAFKA_TOPIC])
-
-    while True:
-        try:
-            # SIGINT can't be handled when polling, limit timeout to 1 second.
-            msg = consumer.poll(1.0)
-            if msg is None:
-                continue
-
-            raw_data_in: RawData
-            raw_data_in = avro_deserializer(msg.value(), SerializationContext(msg.topic(), MessageField.VALUE))
-            if raw_data_in is not None:
-                logger.debug(
-                    '{} - SKU: {} {}-{}-{} Hour {} TOTAL: {}'.format(
-                        HOSTNAME,
-                        raw_data_in.sku,
-                        str(raw_data_in.day).zfill(2),
-                        str(raw_data_in.month,).zfill(2),
-                        raw_data_in.year,
-                        str(raw_data_in.hour,).zfill(2),
-                        raw_data_in.manufactured_qty
-                    )
-                )
-                if store_data_in_valkey(raw_data=raw_data_in) is False:
-                    # TODO Reject message so that another consumer in our group can try and process it
-                    logger.warning('{} - REJECTED Message and putting it back in queue for processing'.format(HOSTNAME))
-        except:
-            logger.error(
-                '{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc())
-            )
-            break
-
-    consumer.close()
-
-
-while True:
-    consume_raw_data()
-    logger.warning('{} - Died due to an exception. Sleeping 3 seconds before trying again...'.format(HOSTNAME))
-    time.sleep(3)

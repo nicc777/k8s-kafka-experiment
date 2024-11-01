@@ -1,9 +1,25 @@
 """
 This script read the raw data of the message queue and populate the DB
 
-INPUT       : Read data from message queue
-PROCESSING  : Persist data in DB
+INPUT       : Read data from message queue  (1)
+PROCESSING  : Persist data in DB            (2)
 OUTPUT      : n/a
+                                           
++-------------------------------+        +-----+        +-------------------------------+      
+| front_end_aggregator_consumer |        |     |        | Back_end_aggregator_producer  |
++-------------------------------+        |  K  |        +-------------------------------+            
+                                         |  A  |                                                     
+                                         |  F  |                                                     
+                                         |  K  |                                                    
+            +-----+                      |  A  |   (1)  #################################  (2)   +-----+
+            | DB  |                      |     |<-------# back_end                      #------->| DB  |
+            +-----+                      |     |        #################################        +-----+
+                                         |     |
+                                         |     |  
+                                         |     |        
++-------------------------------+        |     |        +-------------------------------+
+| front_end_ui                  |        |     |        | raw_data_generator            |
++-------------------------------+        +-----+        +-------------------------------+
 """
 import os
 import random

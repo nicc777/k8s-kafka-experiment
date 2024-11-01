@@ -3,7 +3,24 @@ This script produces random data in places it on a message queue
 
 INPUT       : Random data records
 PROCESSING  : Build up raw data objects to be pushed onto a message queue
-OUTPUT      : Places raw data objects onto the message queue
+OUTPUT      : Places raw data objects onto the message queue                (1)
+
+                                           
++-------------------------------+        +-----+        +-------------------------------+      
+| front_end_aggregator_consumer |        |     |        | Back_end_aggregator_producer  |
++-------------------------------+        |  K  |        +-------------------------------+            
+                                         |  A  |                                                     
+                                         |  F  |                                                     
+                                         |  K  |                                                    
+            +-----+                      |  A  |        +-------------------------------+        +-----+
+            | DB  |                      |     |        | back_end                      |        | DB  |
+            +-----+                      |     |        +-------------------------------+        +-----+
+                                         |     |
+                                         |     |  
+                                         |     |        
++-------------------------------+        |     |   (1)  #################################
+| front_end_ui                  |        |     |<-------# raw_data_generator            #
++-------------------------------+        +-----+        #################################
 """
 import os
 import random
