@@ -31,3 +31,32 @@ data:
           { "name": "hour", "type": "int" }
       ]
     }
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Schema
+metadata:
+  name: testsummarystats
+spec:
+  data:
+    configRef: schema-test-raw-data
+    format: avro
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: schema-test-summary-stats
+data:
+  schema: |
+    {
+      "namespace": "tld.example",
+      "type": "record",
+      "name": "testsummarystats",
+      "fields": [
+          { "name": "sku", "type": "string" },
+          { "name": "manufactured_qty", "type": "int" },
+          { "name": "year", "type": "int" },
+          { "name": "month", "type": "int" }
+      ]
+    }
+
+

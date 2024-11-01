@@ -1,6 +1,7 @@
 # See:
 #   https://docs.confluent.io/operator/current/co-manage-topics.html
 #   https://docs.confluent.io/platform/current/installation/configuration/topic-configs.html
+---
 apiVersion: platform.confluent.io/v1beta1
 kind: KafkaTopic
 metadata:
@@ -14,3 +15,18 @@ spec:
     retention.ms: "86400000"
   kafkaClusterRef:
     name: kafka
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: KafkaTopic
+metadata:
+  name: summary-stats
+spec:
+  replicas: 1
+  partitionCount: 24
+  configs:
+    cleanup.policy: "delete"
+    # Retention is 1 hour - value must be submitted as a string !!
+    retention.ms: "3600000"
+  kafkaClusterRef:
+    name: kafka
+
