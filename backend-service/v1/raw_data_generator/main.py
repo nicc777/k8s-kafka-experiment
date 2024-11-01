@@ -123,7 +123,7 @@ def delivery_report(err, msg):
     if err is not None:
         logger.error('{} - Delivery failed for User record {}: {}'.format(HOSTNAME, msg.key(), err))
         return
-    logger.error(
+    logger.info(
         '{} - User record {} successfully produced to {} [{}] at offset {}'.format(
             HOSTNAME,
             msg.key(),
