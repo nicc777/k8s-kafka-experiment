@@ -1,3 +1,10 @@
+"""
+This script produces random data in places it on a message queue
+
+INPUT       : Random data records
+PROCESSING  : Build up raw data objects to be pushed onto a message queue
+OUTPUT      : Places raw data objects onto the message queue
+"""
 import os
 import random
 import socket

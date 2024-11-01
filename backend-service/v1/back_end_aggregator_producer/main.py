@@ -26,9 +26,6 @@ import valkey
 
 HOSTNAME = socket.gethostname()
 GROUP_ID = os.getenv('GROUP_ID', HOSTNAME.replace('_', '-'))
-SKU = 'SKU_{}'.format(
-    str(random.randint(1,999999)).zfill(6)
-)
 DEBUG = bool(int(os.getenv('DEBUG', '0')))
 MAX_COUNTER_VALUE = int(os.getenv('MAX_COUNTER_VALUE', '-1'))
 MAX_RATE_PER_SECOND = int(os.getenv('MAX_RATE_PER_SECOND', '2'))
@@ -73,7 +70,6 @@ if DEBUG is True:
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
-logger.info('{} - SKU                          : {}'.format(HOSTNAME, SKU))
 logger.debug('{} - MAX_RATE_PER_SECOND          : {}'.format(HOSTNAME, MAX_RATE_PER_SECOND))
 logger.debug('{} - MAX_INTERVAL_PER_LOOP        : {}'.format(HOSTNAME, MAX_INTERVAL_PER_LOOP))
 logger.debug('{} - SLEEP_BUFFER                 : {}'.format(HOSTNAME, SLEEP_BUFFER))

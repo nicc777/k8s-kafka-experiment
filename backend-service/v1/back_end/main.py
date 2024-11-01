@@ -1,3 +1,10 @@
+"""
+This script read the raw data of the message queue and populate the DB
+
+INPUT       : Read data from message queue
+PROCESSING  : Persist data in DB
+OUTPUT      : n/a
+"""
 import os
 import random
 import socket
