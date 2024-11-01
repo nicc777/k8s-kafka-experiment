@@ -67,6 +67,7 @@
         "tektoncd",
         "tektonv",
         "testrawdata",
+        "testsummarystats",
         "traceback",
         "triggerbindings",
         "triggertemplates",

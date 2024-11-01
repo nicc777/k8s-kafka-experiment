@@ -59,7 +59,7 @@ KAFKA_SCHEMA_SERVER_PORT = os.getenv('SCHEMA_SERVER_PORT', '8081')
 KAFKA_SCHEMA_SERVER_PROTOCOL = os.getenv('SCHEMA_SERVER_PROTOCOL', 'http')
 KAFKA_TOPIC = os.getenv('KAFKA_TOPIC', 'raw-data-in')
 SCHEMA_VERSION = int(os.getenv('SCHEMA_VERSION', '1'))
-SCHEMA_SUBJECT = os.getenv('SCHEMA_SUBJECT', 'TestRawData')
+SCHEMA_SUBJECT = os.getenv('SCHEMA_SUBJECT', 'TestSummaryStats')
 SCHEMA_NAMESPACE = os.getenv('SCHEMA_NAMESPACE', 'tld.example')
 SCHEMA = {
     "namespace": "tld.example",
@@ -69,9 +69,7 @@ SCHEMA = {
         { "name": "sku", "type": "string" },
         { "name": "manufactured_qty", "type": "int" },
         { "name": "year", "type": "int" },
-        { "name": "month", "type": "int" },
-        { "name": "day", "type": "int" },
-        { "name": "hour", "type": "int" },
+        { "name": "month", "type": "int" }
     ]
 }
 VALKEY_SERVER_HOST = os.getenv('VALKEY_SERVER_HOST', 'valkey-primary')
@@ -106,32 +104,39 @@ logger.debug('{} - VALKEY_SERVER_HOST           : {}'.format(HOSTNAME, VALKEY_SE
 logger.debug('{} - VALKEY_SERVER_PORT           : {}'.format(HOSTNAME, VALKEY_SERVER_PORT))
 
 
-class RawData:
+class SummaryData:
     def __init__(
         self,
         sku: str,
         manufactured_qty: int,
         year: int,
-        month: int,
-        day: int,
-        hour: int
+        month: int
     ):
         self.sku = sku
         self.manufactured_qty = manufactured_qty
         self.year = year
         self.month = month
-        self.day = day
-        self.hour = hour
 
 
-def raw_data_to_dict(raw_data: RawData, ctx):
+class Records:
+    def __init__(self):
+        self.records = dict()
+    def add_record(self, sku: str, year: int, month: int, manufactured_qty: int):
+        index = '{}:{}:{}'.format(sku, year, month)
+        if index not in self.records:
+            self.records[index] = manufactured_qty
+        else:
+            self.records[index] = self.records[index] + manufactured_qty
+    def keys(self)->tuple:
+        return tuple(self.records.keys())
+
+
+def summary_data_to_dict(raw_data: SummaryData, ctx):
     return dict(
         sku=raw_data.sku,
         manufactured_qty=raw_data.manufactured_qty,
         year=raw_data.year,
-        month=raw_data.month,
-        day=raw_data.day,
-        hour=raw_data.hour
+        month=raw_data.month
     )
 
 
@@ -150,9 +155,54 @@ def delivery_report(err, msg):
     )
 
 
-def read_keys()->list:
-    keys = list()
-
+def read_keys(client, year: int)->list:
+    try:
+        keys = list()
+        index = 'manufactured:*:{}:*'.format(year)
+        for key in client.scan_iter(index):
+            logger.debug('{} - Retrieved key (type={})  :  {}'.format(HOSTNAME, type(key), key))
+            keys.append(key)
+        logger.info('{}- Retrieved {} keys from DB'.format(HOSTNAME, len(keys)))
+    except:
+        logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
     return keys
 
+
+def summarize_data_from_db(client, key: str, current_records: Records):
+    try:
+        qty = int(client.get(key))
+        """
+            0       1    2    3    4    5
+        'manufactured:sku:year:month:day:hour'
+        """
+        key_elements = key.split(':')
+        current_records.add_record(
+            sku=key_elements[1],
+            year=int(key_elements[2]),
+            month=int(key_elements[3]),
+            manufactured_qty=qty
+        )
+    except:
+        logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
+
+
+while True:
+    logger.info('{} - Entering Main Loop'.format(HOSTNAME))
+    records = Records()
+    try:
+        valkey_client = valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0)
+        for year in range(2000,2025):
+            logger.info('{} - Getting data for year {}'.format(HOSTNAME, year))
+            for key in read_keys(client=valkey_client):
+                summarize_data_from_db(client=valkey_client, key=key, current_records=records)
+
+        logger.info('{} - Records: {}'.format(HOSTNAME, len(records.records)))
+        logger.info('{} - Processing Done - sleeping 3 seconds'.format(HOSTNAME))
+        valkey_client = None
+    except:
+        logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
+
+    # TODO - Push records onto summary queue
+
+    time.sleep(3.0)
 
