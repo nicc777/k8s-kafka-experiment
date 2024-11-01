@@ -168,14 +168,14 @@ def read_keys(client, year: int)->list:
     return keys
 
 
-def summarize_data_from_db(client, key: str, current_records: Records):
+def summarize_data_from_db(client, key: bytes, current_records: Records):
     try:
         qty = int(client.get(key))
         """
             0       1    2    3    4    5
         'manufactured:sku:year:month:day:hour'
         """
-        key_elements = key.split(':')
+        key_elements = key.decode('utf-8').split(':')
         current_records.add_record(
             sku=key_elements[1],
             year=int(key_elements[2]),
