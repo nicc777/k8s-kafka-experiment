@@ -149,9 +149,12 @@ data:
     #!/bin/bash
     cd /tmp/k8s-kafka-experiment
     export NAMESPACE="exp"
-    # VALKEY
-    export VALKEY_RELEASE_NAME="valkey"
+
+    # VALKEY COMMON
     export VALKEY_CHART_URI="oci://registry-1.docker.io/bitnamicharts/valkey"
+
+    # VALKEY-BACKEND
+    export VALKEY_RELEASE_NAME="valkey-backend"
     if helm ls -n $NAMESPACE --filter ^$VALKEY_RELEASE_NAME$ | grep -q $VALKEY_RELEASE_NAME; then
       echo "Helm release $VALKEY_RELEASE_NAME already exists in namespace $NAMESPACE."
     else
@@ -159,6 +162,17 @@ data:
       kubectl create namespace $NAMESPACE
       helm install -f /data/custom-helm-values/valkey-backend/values.yaml $VALKEY_RELEASE_NAME $VALKEY_CHART_URI --namespace $NAMESPACE
     fi
+
+    # VALKEY-FRONTEND
+    export VALKEY_RELEASE_NAME="valkey-frontend"
+    if helm ls -n $NAMESPACE --filter ^$VALKEY_RELEASE_NAME$ | grep -q $VALKEY_RELEASE_NAME; then
+      echo "Helm release $VALKEY_RELEASE_NAME already exists in namespace $NAMESPACE."
+    else
+      echo "Installing Helm chart $VALKEY_CHART_URI as release $VALKEY_RELEASE_NAME in namespace $NAMESPACE."
+      kubectl create namespace $NAMESPACE
+      helm install -f /data/custom-helm-values/valkey-frontend/values.yaml $VALKEY_RELEASE_NAME $VALKEY_CHART_URI --namespace $NAMESPACE
+    fi
+
     # KAFKA
     helm repo add confluentinc https://packages.confluent.io/helm
     helm repo update
