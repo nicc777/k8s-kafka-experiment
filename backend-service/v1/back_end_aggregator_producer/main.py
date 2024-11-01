@@ -193,7 +193,7 @@ while True:
         valkey_client = valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0)
         for year in range(2000,2025):
             logger.info('{} - Getting data for year {}'.format(HOSTNAME, year))
-            for key in read_keys(client=valkey_client):
+            for key in read_keys(client=valkey_client, year=year):
                 summarize_data_from_db(client=valkey_client, key=key, current_records=records)
 
         logger.info('{} - Records: {}'.format(HOSTNAME, len(records.records)))
