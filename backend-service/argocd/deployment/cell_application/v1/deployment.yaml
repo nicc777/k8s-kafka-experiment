@@ -168,4 +168,87 @@ spec:
           items:
           - key: launcher.sh
             path: launcher.sh
-
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: back-end-aggregator-producer-v1
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  labels:
+    app: back-end-aggregator-producer-v1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: back-end-aggregator-producer-v1
+  template:
+    metadata:
+      labels:
+        app: back-end-aggregator-producer-v1
+    spec:
+      containers:
+      - name: back-end-aggregator-producer-v1
+        image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
+        env:
+        - name: DEBUG
+          value: "1"
+        - name: KAFKA_BOOTSTRAP_SERVER
+          value: "kafka.confluent.svc.cluster.local"
+        - name: KAFKA_BOOTSTRAP_PORT
+          value: "9092"
+        - name: SCHEMA_SERVER_HOST
+          value: "schemaregistry.confluent.svc.cluster.local"
+        - name: SCHEMA_SERVER_PORT
+          value: "8081"
+        - name: KAFKA_TOPIC
+          value: "summary-stats"
+        - name: SCHEMA_VERSION
+          value: "1"
+        # SCHEMA_SUBJECT is linked to the kind: Schema.metadata.name deployed before this application starts... 
+        - name: SCHEMA_SUBJECT
+          value: "testsummarystats"
+        - name: SCHEMA_NAMESPACE
+          value: "tld.example"
+        - name: VALKEY_SERVER_HOST
+          value: "valkey-backend-primary"
+        - name: VALKEY_SERVER_PORT
+          value: "6379"
+        volumeMounts:
+        - name: back-end-aggregator-producer-code-vol
+          mountPath: "/tmp/code"
+          readOnly: true
+        - name: launcher-script-vol
+          mountPath: "/tmp/scripts"
+          readOnly: true
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/code/main.py
+          initialDelaySeconds: 1
+          periodSeconds: 1
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/code/main.py
+          initialDelaySeconds: 1
+          periodSeconds: 1
+        command: ["/bin/bash"]
+        args: ["/tmp/scripts/launcher.sh"]
+      volumes:
+      - name: back-end-aggregator-producer-code-vol
+        configMap:
+          name: back-end-aggregator-producer-python-cm
+          items:
+          - key: main.py
+            path: main.py
+      - name: launcher-script-vol
+        configMap:
+          name: launcher-script-v1-cm
+          items:
+          - key: launcher.sh
+            path: launcher.sh

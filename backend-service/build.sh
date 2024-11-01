@@ -51,18 +51,18 @@ else
     echo "$FILE does not exist."
 fi
 
-# echo "  - ui"
-# FILE="/tmp/k8s-kafka-experiment/backend-service/$APP_VERSION/ui/main.py"
-# TARGET="/tmp/code-configmaps/ui-cm.yaml"
-# if [ -e "$FILE" ]; then
-#     echo "$FILE exists."
-#     cp -vf /tmp/cm_template.yaml $TARGET
-#     sed -i "s/__CONFIGMAP_NAME__/ui/g" $TARGET
-#     cat $FILE | sed 's/^/    /' >> $TARGET
-#     kubectl apply -f $TARGET -n exp
-# else
-#     echo "$FILE does not exist."
-# fi
+echo "  - back_end_aggregator_producer"
+FILE="/tmp/k8s-kafka-experiment/backend-service/$APP_VERSION/back_end_aggregator_producer/main.py"
+TARGET="/tmp/code-configmaps/back-end-aggregator-producer-cm.yaml"
+if [ -e "$FILE" ]; then
+    echo "$FILE exists."
+    cp -vf /tmp/cm_template.yaml $TARGET
+    sed -i "s/__CONFIGMAP_NAME__/back-end-aggregator-producer/g" $TARGET
+    cat $FILE | sed 's/^/    /' >> $TARGET
+    kubectl apply -f $TARGET -n exp
+else
+    echo "$FILE does not exist."
+fi
 
 echo "- Deployment"
 APP_VERSION=$APP_VERSION bash /tmp/k8s-kafka-experiment/backend-service/apply_deployments.sh || true
