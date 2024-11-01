@@ -160,7 +160,7 @@ def read_keys(client, year: int)->list:
         keys = list()
         index = 'manufactured:*:{}:*'.format(year)
         for key in client.scan_iter(index):
-            logger.debug('{} - Retrieved key (type={})  :  {}'.format(HOSTNAME, type(key), key))
+            #logger.debug('{} - Retrieved key (type={})  :  {}'.format(HOSTNAME, type(key), key))
             keys.append(key)
         logger.info('{}- Retrieved {} keys from DB'.format(HOSTNAME, len(keys)))
     except:
