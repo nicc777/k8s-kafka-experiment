@@ -131,6 +131,7 @@ spec:
           name: manage-base-resources
           script: |
             #!/usr/bin/env bash
+            apt install -y bc
             cd /tmp
             git clone https://github.com/nicc777/k8s-kafka-experiment.git
             export COMMAND=$(tt.params.command)
