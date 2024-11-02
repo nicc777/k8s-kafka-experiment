@@ -347,7 +347,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "2"
   labels:
-    app: from-end-ui-rest-v1
+    app: front-end-ui-rest-v1
 spec:
   replicas: 5
   selector:
