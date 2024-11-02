@@ -138,8 +138,8 @@ class Records:
         key_items = index.split(':')
         return SummaryData(
             sku=key_items[0],
-            year=key_items[1],
-            month=key_items[2],
+            year=int(key_items[1]),
+            month=int(key_items[2]),
             manufactured_qty=qty
         )
 
