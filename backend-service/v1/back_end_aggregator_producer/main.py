@@ -239,7 +239,7 @@ def publish_summary(records: Records):
             except:
                 logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
                 continue
-            producer.Flush(300)
+            producer.Flush(30)
     except:
         logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
 
