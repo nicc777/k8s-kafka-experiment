@@ -381,14 +381,18 @@ spec:
           httpGet:
             path: /
             port: 8080
-          initialDelaySeconds: 3
+          initialDelaySeconds: 30
           periodSeconds: 3
+          timeoutSeconds: 5
+          failureThreshold: 3
         readinessProbe:
           httpGet:
             path: /
             port: 8080
-          initialDelaySeconds: 3
+          initialDelaySeconds: 30
           periodSeconds: 3
+          timeoutSeconds: 5
+          failureThreshold: 3
         command: ["/bin/bash"]
         args: ["/tmp/scripts/launcher.sh"]
       volumes:
