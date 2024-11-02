@@ -413,7 +413,7 @@ metadata:
   name: rest-api-v1
 spec:
   selector:
-    app.kubernetes.io/name: front-end-ui-rest-v1
+    app: front-end-ui-rest-v1
   ports:
     - protocol: TCP
       port: 8080
