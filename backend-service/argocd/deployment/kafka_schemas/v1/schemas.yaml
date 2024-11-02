@@ -38,7 +38,7 @@ metadata:
   name: testsummarystats
 spec:
   data:
-    configRef: schema-test-raw-data
+    configRef: schema-test-summary-stats
     format: avro
 ---
 apiVersion: v1
