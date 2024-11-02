@@ -287,6 +287,9 @@ spec:
           value: "8081"
         - name: KAFKA_TOPIC
           value: "summary-stats"
+        # Specify the group ID in order to have multiple nodes process the incoming data. Default group id is the hostname of the Pod
+        - name: GROUP_ID
+          value: "summary-group1"
         - name: SCHEMA_VERSION
           value: "1"
         # SCHEMA_SUBJECT is linked to the kind: Schema.metadata.name deployed before this application starts... 
