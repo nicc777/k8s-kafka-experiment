@@ -378,19 +378,17 @@ spec:
         ports:
         - containerPort: 8080
         livenessProbe:
-          exec:
-            command:
-            - cat
-            - /tmp/code/main.py
-          initialDelaySeconds: 1
-          periodSeconds: 1
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
         readinessProbe:
-          exec:
-            command:
-            - cat
-            - /tmp/code/main.py
-          initialDelaySeconds: 1
-          periodSeconds: 1
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 3
+          periodSeconds: 3
         command: ["/bin/bash"]
         args: ["/tmp/scripts/launcher.sh"]
       volumes:
