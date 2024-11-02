@@ -57,7 +57,7 @@ KAFKA_BOOTSTRAP_SERVER_PORT = os.getenv('KAFKA_BOOTSTRAP_PORT', '9092')
 KAFKA_SCHEMA_SERVER_HOST = os.getenv('SCHEMA_SERVER_HOST', 'localhost')
 KAFKA_SCHEMA_SERVER_PORT = os.getenv('SCHEMA_SERVER_PORT', '8081')
 KAFKA_SCHEMA_SERVER_PROTOCOL = os.getenv('SCHEMA_SERVER_PROTOCOL', 'http')
-KAFKA_TOPIC = os.getenv('KAFKA_TOPIC', 'raw-data-in')
+KAFKA_TOPIC = os.getenv('KAFKA_TOPIC', 'summary-stats')
 SCHEMA_VERSION = int(os.getenv('SCHEMA_VERSION', '1'))
 SCHEMA_SUBJECT = os.getenv('SCHEMA_SUBJECT', 'TestSummaryStats')
 SCHEMA_NAMESPACE = os.getenv('SCHEMA_NAMESPACE', 'tld.example')
@@ -129,6 +129,13 @@ class Records:
             self.records[index] = self.records[index] + manufactured_qty
     def keys(self)->tuple:
         return tuple(self.records.keys())
+    def pop(self)->SummaryData:
+        keys = self.keys()
+        if len(keys) == 0:
+            raise Exception('No More Records...')
+        index = random.choice(keys)
+        data = self.records.pop(index)
+        return data
 
 
 def summary_data_to_dict(raw_data: SummaryData, ctx):
@@ -186,6 +193,48 @@ def summarize_data_from_db(client, key: bytes, current_records: Records):
         logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
 
 
+def publish_summary(records: Records):
+    try:
+        schema_str = json.dumps(SCHEMA)
+        schema_registry_conf = {
+            'url': '{}://{}:{}'.format(KAFKA_SCHEMA_SERVER_PROTOCOL, KAFKA_SCHEMA_SERVER_HOST, KAFKA_SCHEMA_SERVER_PORT)
+        }
+        schema_registry_client = SchemaRegistryClient(schema_registry_conf)
+        avro_serializer = AvroSerializer(
+            schema_registry_client,
+            schema_str,
+            summary_data_to_dict
+        )
+        string_serializer = StringSerializer('utf_8')
+        producer_conf = {
+            'bootstrap.servers': '{}:{}'.format(KAFKA_BOOTSTRAP_SERVER_HOST, KAFKA_BOOTSTRAP_SERVER_PORT)
+        }
+        producer = Producer(producer_conf)
+
+        produce_more_data = True
+        while produce_more_data:
+            record = records.pop()
+            try:
+                logger.debug(
+                    '{} - RAW DATA Generated: {}'.format(
+                        HOSTNAME,
+                        json.dumps(summary_data_to_dict(raw_data=record, ctx=None), sort_keys=True)
+                    )
+                )
+                producer.produce(
+                    topic=KAFKA_TOPIC,
+                    key=string_serializer(str(uuid4())),
+                    value=avro_serializer(record, SerializationContext(KAFKA_TOPIC, MessageField.VALUE)),
+                    on_delivery=delivery_report
+                )
+                logger.debug('{} - Sent data:'.format(HOSTNAME, json.dumps(summary_data_to_dict(raw_data=record, ctx=None))))
+            except:
+                logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
+                continue
+    except:
+        logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
+
+
 while True:
     logger.info('{} - Entering Main Loop'.format(HOSTNAME))
     records = Records()
@@ -195,14 +244,11 @@ while True:
             logger.info('{} - Getting data for year {}'.format(HOSTNAME, year))
             for key in read_keys(client=valkey_client, year=year):
                 summarize_data_from_db(client=valkey_client, key=key, current_records=records)
-
         logger.info('{} - Records: {}'.format(HOSTNAME, len(records.records)))
+        publish_summary(records=records)
         logger.info('{} - Processing Done - sleeping 3 seconds'.format(HOSTNAME))
         valkey_client = None
     except:
         logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
-
-    # TODO - Push records onto summary queue
-
     time.sleep(3.0)
 
