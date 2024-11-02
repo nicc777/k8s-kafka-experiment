@@ -134,8 +134,14 @@ class Records:
         if len(keys) == 0:
             raise Exception('No More Records...')
         index = random.choice(keys)
-        data = self.records.pop(index)
-        return data
+        qty = self.records.pop(index)
+        key_items = index.split(':')
+        return SummaryData(
+            sku=key_items[0],
+            year=key_items[1],
+            month=key_items[2],
+            manufactured_qty=qty
+        )
 
 
 def summary_data_to_dict(raw_data: SummaryData, ctx):
@@ -182,7 +188,9 @@ def summarize_data_from_db(client, key: bytes, current_records: Records):
             0       1    2    3    4    5
         'manufactured:sku:year:month:day:hour'
         """
-        key_elements = key.decode('utf-8').split(':')
+        decoded_key = key.decode('utf-8')
+        logger.debug('{} - decoded_key={}'.format(HOSTNAME, decoded_key))
+        key_elements = decoded_key.split(':')
         current_records.add_record(
             sku=key_elements[1],
             year=int(key_elements[2]),
