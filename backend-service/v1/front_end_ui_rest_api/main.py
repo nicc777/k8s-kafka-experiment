@@ -112,6 +112,7 @@ def get_summary_data(client)->Results:
                 results.data.append(record)
     except:
         logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
+    return results
 
 
 @app.get("/results")
