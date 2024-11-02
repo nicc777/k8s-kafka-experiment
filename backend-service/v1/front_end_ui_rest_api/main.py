@@ -181,12 +181,12 @@ async def results()->Results:
 
 
 @app.get("/sku_names")
-async def get_sku_names()->SkuNames:
+async def sku_names()->SkuNames:
     return get_sku_names(client=valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0))
 
 
 @app.get("/query/{sku}/{year}")
-async def get_query(sku, year)->Results:
+async def query(sku, year)->Results:
     return get_annual_data_for_sku(client=valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0), sku=sku, year=year)
 
 
