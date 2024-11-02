@@ -229,6 +229,7 @@ def produce_raw_data():
                 on_delivery=delivery_report
             )
             logger.info('{} - Produce {} messages'.format(HOSTNAME, counter))
+            producer.flush(30)
         except:
             logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
             continue
