@@ -167,7 +167,7 @@ def get_annual_data_for_sku(client, sku: str, year: int)->Results:
                 month=month,
                 manufactured_qty=qty
             )
-        results.data.append(record)
+            results.data.append(record)
     except:
         logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
     return results
