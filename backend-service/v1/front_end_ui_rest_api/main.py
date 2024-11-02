@@ -33,9 +33,15 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 import uvicorn
 
+###############################################################################
+#                                                                             #
+# IMPORTANT !!!                                                               #
+#                                                                             #
+#   Update the VERSION if you implement a new REST API based on this app      #
+#                                                                             #
+###############################################################################
 
-# EXAMPLE taken from https://github.com/confluentinc/confluent-kafka-python/blob/master/examples/avro_consumer.py
-
+VERSION = "v1"
 HOSTNAME = socket.gethostname()
 DEBUG = bool(int(os.getenv('DEBUG', '0')))
 VALKEY_SERVER_HOST = os.getenv('VALKEY_SERVER_HOST', 'valkey-primary')
@@ -70,6 +76,10 @@ class ResultData(BaseModel):
 class Results(BaseModel):
     version: str = 'v1'
     data: list[ResultData]
+
+
+class SkuNames(BaseModel):
+    names: list[str]
 
 
 def read_keys(client, year: int)->list:
@@ -115,14 +125,74 @@ def get_summary_data(client)->Results:
     return results
 
 
+def get_sku_names(client)->Results:
+    """
+               0        1    2    3
+    KEY: 'manufactured:sku:year:month'
+
+    NOTE: We already know that every SKU is produced in every year, so we just need to check the sku's for one of the years
+    """
+    result = SkuNames(names=list())
+    try:
+        year = 2024
+        logger.info('{} - Getting data for year {}'.format(HOSTNAME, year))
+        keys = read_keys(client=client, year=2024)
+        for key in keys:
+            decoded_key = key.decode('utf-8')
+            logger.debug('{} - decoded_key={}'.format(HOSTNAME, decoded_key))
+            key_elements = decoded_key.split(':')
+            sku = key_elements[1]
+            if sku not in result.names:
+                result.names.append(sku)
+    except:
+        logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
+    return result
+
+
+def get_annual_data_for_sku(client, sku: str, year: int)->Results:
+    """
+               0        1    2    3
+    KEY: 'manufactured:sku:year:month'
+    """
+    results = Results(data=list())
+    try:
+        logger.info('{} - Getting data for sku "{}" for year {}'.format(HOSTNAME, sku, year))
+        key_as_str = 'manufactured:{}:{}:*'.format(sku, year)
+        key = key_as_str.encode('utf-8')
+        qty = int(client.get(key))
+        decoded_key = key.decode('utf-8')
+        logger.debug('{} - decoded_key={}'.format(HOSTNAME, decoded_key))
+        key_elements = decoded_key.split(':')
+        record = ResultData(
+            sku=key_elements[1],
+            year=int(key_elements[2]),
+            month=int(key_elements[3]),
+            manufactured_qty=qty
+        )
+        results.data.append(record)
+    except:
+        logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
+    return results
+
+
 @app.get("/results")
 async def results()->Results:
     return get_summary_data(client=valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0))
 
 
+@app.get("/sku_names")
+async def get_sku_names()->SkuNames:
+    return get_sku_names(client=valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0))
+
+
+@app.get("/query/{sku}/{year}")
+async def get_query(sku, year)->Results:
+    return get_annual_data_for_sku(client=valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0), sku=sku, year=year)
+
+
 @app.get("/")
 async def root():
-    return {"message": "ok"}
+    return {"message": "ok", "version": VERSION}
 
 
 if __name__ == "__main__":
