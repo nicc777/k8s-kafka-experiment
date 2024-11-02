@@ -64,7 +64,7 @@ SCHEMA_NAMESPACE = os.getenv('SCHEMA_NAMESPACE', 'tld.example')
 SCHEMA = {
     "namespace": "tld.example",
     "type": "record",
-    "name": "testrawdata",
+    "name": "testsummarystats",
     "fields": [
         { "name": "sku", "type": "string" },
         { "name": "manufactured_qty", "type": "int" },

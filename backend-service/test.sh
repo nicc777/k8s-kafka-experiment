@@ -8,8 +8,9 @@ ls -lahrt /tmp/k8s-kafka-experiment/backend-service/test.sh || true
 echo "----------------------------------------"
 kubectl get namespaces || true
 echo "----------------------------------------"
-echo "COMMAND       : ${COMMAND}"
-echo "APP_VERSION   : ${APP_VERSION}"
-echo "CANARY_CONFIG : ${CANARY_CONFIG}"
+echo "COMMAND                           : ${COMMAND}"
+echo "APP_VERSION                       : ${APP_VERSION}"
+echo "CANARY_CONFIG                     : ${CANARY_CONFIG}"
+echo "PAUSE_TIME_POST_SCHEMA_DEPLOYMENT : ${PAUSE_TIME_POST_SCHEMA_DEPLOYMENT}"
 echo "----------------------------------------"
 echo "TEST DONE"

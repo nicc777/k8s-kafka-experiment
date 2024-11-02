@@ -43,7 +43,8 @@ roleRef:
 # {
 #   "command": "string",
 #   "app_version": "v1|v2|v3",
-#   "canary_config": "v1:90,v2:10"
+#   "canary_config": "v1:90,v2:10",
+#   "pause_time_post_schema_deployment": 10
 # }
 ---
   apiVersion: triggers.tekton.dev/v1beta1
@@ -91,6 +92,8 @@ spec:
     value: $(body.app_version)
   - name: canary_config
     value: $(body.canary_config)
+  - name: pause_time_post_schema_deployment
+    value: $(body.pause_time_post_schema_deployment)
 ---
 apiVersion: triggers.tekton.dev/v1beta1
 kind: TriggerTemplate
@@ -104,6 +107,8 @@ spec:
     default: "v1"
   - name: canary_config
     default: ""
+  - name: pause_time_post_schema_deployment
+    default: "10"
   resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: TaskRun
@@ -131,6 +136,7 @@ spec:
             export COMMAND=$(tt.params.command)
             export APP_VERSION=$(tt.params.app_version)
             export CANARY_CONFIG=$(tt.params.canary_config)
+            export PAUSE_TIME_POST_SCHEMA_DEPLOYMENT=$(tt.params.pause_time_post_schema_deployment)
             case $COMMAND in
                 build_and_deploy_app_version)
                     echo "Building and deploying version ${APP_VERSION} of the application"
