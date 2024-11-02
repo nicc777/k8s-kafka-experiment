@@ -157,18 +157,16 @@ def get_annual_data_for_sku(client, sku: str, year: int)->Results:
     results = Results(data=list())
     try:
         logger.info('{} - Getting data for sku "{}" for year {}'.format(HOSTNAME, sku, year))
-        key_as_str = 'manufactured:{}:{}:*'.format(sku, year)
-        key = key_as_str.encode('utf-8')
-        qty = int(client.get(key))
-        decoded_key = key.decode('utf-8')
-        logger.debug('{} - decoded_key={}'.format(HOSTNAME, decoded_key))
-        key_elements = decoded_key.split(':')
-        record = ResultData(
-            sku=key_elements[1],
-            year=int(key_elements[2]),
-            month=int(key_elements[3]),
-            manufactured_qty=qty
-        )
+        for month in range(1,13):
+            key_as_str = 'manufactured:{}:{}:{}'.format(sku, year, month)
+            key = key_as_str.encode('utf-8')
+            qty = int(client.get(key))
+            record = ResultData(
+                sku=sku,
+                year=year,
+                month=month,
+                manufactured_qty=qty
+            )
         results.data.append(record)
     except:
         logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
