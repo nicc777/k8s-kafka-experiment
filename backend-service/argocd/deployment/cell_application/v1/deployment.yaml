@@ -394,7 +394,7 @@ spec:
       volumes:
       - name: front-end-ui-rest-code-vol
         configMap:
-          name: front-end-ui-rest-python-cm
+          name: front-end-ui-rest-api-python-cm
           items:
           - key: main.py
             path: main.py
