@@ -1,5 +1,5 @@
 """
-This script read the raw data of the message queue and populate the DB
+This script read the summary data of the message queue and populate the DB
 
 INPUT       : Read data from message queue  (1)
 PROCESSING  : Persist data in DB            (2)
@@ -18,7 +18,7 @@ OUTPUT      : n/a
                                          |     |  
                                          |     |        
 +-------------------------------+        |     |        +-------------------------------+
-| front_end_ui                  |        |     |        | raw_data_generator            |
+| front_end_ui_rest_api         |        |     |        | raw_data_generator            |
 +-------------------------------+        +-----+        +-------------------------------+
 """
 import os

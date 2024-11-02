@@ -19,7 +19,7 @@ OUTPUT      : Places raw data objects onto the message queue                (1)
                                          |     |  
                                          |     |        
 +-------------------------------+        |     |   (1)  #################################
-| front_end_ui                  |        |     |<-------# raw_data_generator            #
+| front_end_ui_rest_api         |        |     |<-------# raw_data_generator            #
 +-------------------------------+        +-----+        #################################
 """
 import os

@@ -339,4 +339,72 @@ spec:
           items:
           - key: launcher.sh
             path: launcher.sh
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: front-end-ui-rest-v1
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  labels:
+    app: from-end-ui-rest-v1
+spec:
+  replicas: 5
+  selector:
+    matchLabels:
+      app: front-end-ui-rest-v1
+  template:
+    metadata:
+      labels:
+        app: front-end-ui-rest-v1
+    spec:
+      containers:
+      - name: front-end-ui-rest-v1
+        image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
+        env:
+        - name: DEBUG
+          value: "1"
+        - name: VALKEY_SERVER_HOST
+          value: "valkey-frontend-primary"
+        - name: VALKEY_SERVER_PORT
+          value: "6379"
+        volumeMounts:
+        - name: front-end-ui-rest-code-vol
+          mountPath: "/tmp/code"
+          readOnly: true
+        - name: launcher-script-vol
+          mountPath: "/tmp/scripts"
+          readOnly: true
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/code/main.py
+          initialDelaySeconds: 1
+          periodSeconds: 1
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/code/main.py
+          initialDelaySeconds: 1
+          periodSeconds: 1
+        command: ["/bin/bash"]
+        args: ["/tmp/scripts/launcher.sh"]
+      volumes:
+      - name: front-end-ui-rest-code-vol
+        configMap:
+          name: front-end-ui-rest-python-cm
+          items:
+          - key: main.py
+            path: main.py
+      - name: launcher-script-vol
+        configMap:
+          name: launcher-script-v1-cm
+          items:
+          - key: launcher.sh
+            path: launcher.sh
+
 

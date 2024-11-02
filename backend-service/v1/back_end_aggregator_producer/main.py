@@ -20,7 +20,7 @@ OUTPUT      : Place summary stats on message queue      (2)
                                          |     |  
                                          |     |        
 +-------------------------------+        |     |        +-------------------------------+
-| front_end_ui                  |        |     |        | raw_data_generator            |
+| front_end_ui_rest_api         |        |     |        | raw_data_generator            |
 +-------------------------------+        +-----+        +-------------------------------+
 """
 
