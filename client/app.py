@@ -145,6 +145,7 @@ while True:
         )
         
     else:
+        os.system('cls' if os.name == 'nt' else 'clear')
         print('No data yet or error connecting...')
     print()
     print('Total requests: {}'.format(counter))
