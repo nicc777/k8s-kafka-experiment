@@ -1,12 +1,18 @@
 import os
 import time
+import copy
 import requests
+import json
 from tabulate import tabulate
 
 
 # THe below base URL should be sufficient if the standard instructions are
 # followed. Override with an environment variable as required.
 END_POINT_BASE_URL = os.getenv('END_POINT_BASE_URL', 'http://127.0.0.1:7098')
+
+# Default year is 2020. To choose any other year between 2000 and 2024, set the
+# YEAR environment variable.
+YEAR = os.getenv('YEAR', '2020')
 
 
 def get_sku_names()->list:
@@ -27,6 +33,8 @@ def get_data_from_query(sku_name: str, year: str)->dict:
     data = dict()
     data['version'] = 'unknown'
     data['total'] = 0
+    data['defects'] = 0
+    data['cost'] = 0
     try:
         url = '{}/query/{}/{}'.format(END_POINT_BASE_URL, sku_name, year)
         r = requests.get(url)
@@ -38,11 +46,53 @@ def get_data_from_query(sku_name: str, year: str)->dict:
             for record in returned_data['data']:
                 if 'manufactured_qty' in record:
                     total_manufactured += record['manufactured_qty']
+            # TODO add logic for v2 and v3 once we know that will look like
         if total_manufactured > 0:
-            data['total'] = total_manufactured
+            data['total'] = int(total_manufactured)
     except:
         pass
     return data
+
+
+def add_row_v1(
+    sku_data: dict,
+    sku_name: str,
+    previous_manufactured_total: int,
+    previous_version: str
+)->list:
+    if 'version' in sku_data:
+
+        final_total = '{}{}{}'.format(ansi_white,sku_data['total'],ansi_reset)
+        if int(previous_manufactured_total) != int(sku_data['total']):
+            final_total = '{}{}{}'.format(ansi_red,sku_data['total'],ansi_reset)
+        
+        final_version = '{}{}{}'.format(ansi_white,sku_data['version'],ansi_reset)
+        if previous_version != sku_data['version']:
+            final_version = '{}{}{}'.format(ansi_red,sku_data['version'],ansi_reset)
+
+        return (
+            [
+                '{}'.format(sku_name),          # SKU
+                '{}'.format(final_version),     # Version
+                '{}'.format(final_total),       # Total Manufactured
+                'n/a',                          # Total Defects
+                'n/a',                          # Total Costs
+            ],
+            sku_data['version'],
+            int(sku_data['total']),
+        )
+    
+    return (
+        [
+            'n/a',
+            'n/a',
+            'n/a',
+            'n/a',
+            'n/a',
+        ],
+        previous_version,
+        int(previous_manufactured_total)
+    )
 
 
 previous_manufactured_totals = dict()
@@ -57,47 +107,34 @@ while True:
     table = list()
     if len(sku_names) > 0:
         for sku_name in sku_names:
-            sku_data = get_data_from_query(sku_name=sku_name, year=2020)
-
-            final_version = '{}{}{}'.format(
-                ansi_white,
-                sku_data['version'],
-                ansi_reset
-            )
-            final_total = '{}{}{}'.format(
-                ansi_white,
-                sku_data['total'],
-                ansi_reset
-            )
-
-            if sku_name in previous_manufactured_totals:
-                if previous_manufactured_totals[sku_name] != sku_data['total']:
-                    final_total = '{}{}{}'.format(
-                        ansi_red,
-                        sku_data['total'],
-                        ansi_reset
-                    )
-
-            if sku_name in previous_versions:
-                if previous_versions[sku_name] != sku_data['version']:
-                    final_version = '{}{}{}'.format(
-                        ansi_red,
-                        sku_data['version'],
-                        ansi_reset
-                    )
-
-            previous_manufactured_totals[sku_name] = sku_data['total']
-            previous_versions[sku_name] = sku_data['version']
-            table.append(
-                [
-                    sku_name,
-                    final_version,
-                    final_total,
-                ]
-            )
+            sku_data = get_data_from_query(sku_name=sku_name, year=YEAR)
+            if '1' in sku_data['version']:
+                row, updated_version, updated_manufactured_total = add_row_v1(
+                    sku_data=sku_data,
+                    sku_name=sku_name,
+                    previous_manufactured_total=previous_manufactured_totals[sku_name] if sku_name in previous_manufactured_totals else 0,
+                    previous_version=previous_versions[sku_name] if 'sku_name' in previous_versions else 'v1'
+                )
+                table.append(row)
+                previous_manufactured_totals[sku_name] = int(updated_manufactured_total)
+                previous_versions[sku_name] = updated_version
+            else:
+                table.append(
+                    '{}'.format(sku_name),  # SKU
+                    'unknown',              # Version
+                    'n/a',                  # Total Manufactured
+                    'n/a',                  # Total Defects
+                    'n/a',                  # Total Costs
+                )
 
         os.system('cls' if os.name == 'nt' else 'clear')
-        print(tabulate(table, headers=["SKU","API", "2020",]))
+        print(
+            tabulate(
+                table, 
+                headers=["SKU","API Version","Total Manufactured","Total Defects","Total Costs",],
+                # maxcolwidths=[12, 20, 6, 20, 20,]
+            )
+        )
         
     else:
         print('No data yet or error connecting...')

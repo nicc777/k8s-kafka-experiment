@@ -39,6 +39,7 @@
         "knative",
         "leaderelection",
         "levelname",
+        "maxcolwidths",
         "Microk",
         "mutatingwebhook",
         "mutatingwebhookconfigurations",
