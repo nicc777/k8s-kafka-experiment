@@ -1,0 +1,64 @@
+# Documentation links:
+#   https://docs.confluent.io/operator/current/co-manage-schemas.html
+#   https://docs.confluent.io/operator/current/co-api.html#tag/Schema
+#   https://docs.confluent.io/platform/current/schema-registry/fundamentals/serdes-develop/serdes-avro.html
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Schema
+metadata:
+  name: testrawdata
+spec:
+  data:
+    configRef: schema-test-raw-data
+    format: avro
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: schema-test-raw-data
+data:
+  schema: |
+    {
+      "namespace": "tld.example",
+      "type": "record",
+      "name": "testrawdata",
+      "fields": [
+          { "name": "sku", "type": "string" },
+          { "name": "manufactured_qty", "type": "int" },
+          { "name": "defect_qty", "type": "int" },
+          { "name": "year", "type": "int" },
+          { "name": "month", "type": "int" },
+          { "name": "day", "type": "int" },
+          { "name": "hour", "type": "int" }
+      ]
+    }
+---
+apiVersion: platform.confluent.io/v1beta1
+kind: Schema
+metadata:
+  name: testsummarystats
+spec:
+  data:
+    configRef: schema-test-summary-stats
+    format: avro
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: schema-test-summary-stats
+data:
+  schema: |
+    {
+      "namespace": "tld.example",
+      "type": "record",
+      "name": "testsummarystats",
+      "fields": [
+          { "name": "sku", "type": "string" },
+          { "name": "manufactured_qty", "type": "int" },
+          { "name": "defect_qty", "type": "int" },
+          { "name": "year", "type": "int" },
+          { "name": "month", "type": "int" }
+      ]
+    }
+
+

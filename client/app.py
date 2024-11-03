@@ -50,22 +50,28 @@ def get_data_from_query(sku_name: str, year: str)->dict:
         if 'version' in returned_data:
             data['version'] = returned_data['version']
         total_manufactured = 0
+        total_defects = 0
         if 'data' in returned_data:
             for record in returned_data['data']:
                 if 'manufactured_qty' in record:
                     total_manufactured += record['manufactured_qty']
+                if 'defect_qty' in record:
+                    total_defects += record['defect_qty']
             # TODO add logic for v2 and v3 once we know that will look like
         if total_manufactured > 0:
             data['total'] = int(total_manufactured)
+        if total_defects > 0:
+            data['defects'] = int(total_defects)
     except:
         pass
     return data
 
 
-def add_row_v1(
+def add_row(
     sku_data: dict,
     sku_name: str,
     previous_manufactured_total: int,
+    previous_defects_totals: int,
     previous_version: str
 )->list:
     if 'version' in sku_data:
@@ -73,6 +79,10 @@ def add_row_v1(
         final_total = '{}{}{}'.format(ansi_white,sku_data['total'],ansi_reset)
         if int(previous_manufactured_total) != int(sku_data['total']):
             final_total = '{}{}{}'.format(ansi_red,sku_data['total'],ansi_reset)
+
+        final_defects = '{}{}{}'.format(ansi_white,sku_data['defects'],ansi_reset)
+        if int(previous_defects_totals) != int(sku_data['defects']):
+            final_defects = '{}{}{}'.format(ansi_red,sku_data['defects'],ansi_reset)
         
         final_version = '{}{}{}'.format(ansi_white,sku_data['version'],ansi_reset)
         if previous_version != sku_data['version']:
@@ -83,11 +93,12 @@ def add_row_v1(
                 '{}'.format(sku_name),          # SKU
                 '{}'.format(final_version),     # Version
                 '{}'.format(final_total),       # Total Manufactured
-                'n/a',                          # Total Defects
+                '{}'.format(final_defects),     # Total Defects
                 'n/a',                          # Total Costs
             ],
             sku_data['version'],
             int(sku_data['total']),
+            int(sku_data['defects']),
         )
     
     return (
@@ -104,6 +115,7 @@ def add_row_v1(
 
 
 previous_manufactured_totals = dict()
+previous_defects_totals = dict()
 previous_versions = dict()
 ansi_red = '\033[31;1;1m'
 ansi_reset = '\033[0m'
@@ -117,14 +129,16 @@ while True:
         for sku_name in sku_names:
             sku_data = get_data_from_query(sku_name=sku_name, year=YEAR)
             if '1' in sku_data['version']:
-                row, updated_version, updated_manufactured_total = add_row_v1(
+                row, updated_version, updated_manufactured_total, updated_defects_total = add_row(
                     sku_data=sku_data,
                     sku_name=sku_name,
                     previous_manufactured_total=previous_manufactured_totals[sku_name] if sku_name in previous_manufactured_totals else 0,
+                    previous_defects_totals=previous_defects_totals[sku_name] if sku_name in previous_defects_totals else 0,
                     previous_version=previous_versions[sku_name] if 'sku_name' in previous_versions else 'v1'
                 )
                 table.append(row)
                 previous_manufactured_totals[sku_name] = int(updated_manufactured_total)
+                previous_defects_totals[sku_name] = int(updated_defects_total)
                 previous_versions[sku_name] = updated_version
             else:
                 table.append(
