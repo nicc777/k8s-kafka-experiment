@@ -17,7 +17,7 @@ cat << EOF > /tmp/cm_template.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: __CONFIGMAP_NAME__-python-cm
+  name: __CONFIGMAP_NAME__-${APP_VERSION}-python-cm
 data:
   main.py: |
     #!/usr/bin/env python3
@@ -37,6 +37,7 @@ if [ -e "$FILE" ]; then
 else
     echo "$FILE does not exist."
 fi
+rm -vf /tmp/cm_template.yaml
 
 echo "  - back_end"
 FILE="/tmp/k8s-kafka-experiment/backend-service/$APP_VERSION/back_end/main.py"
@@ -50,6 +51,7 @@ if [ -e "$FILE" ]; then
 else
     echo "$FILE does not exist."
 fi
+rm -vf /tmp/cm_template.yaml
 
 echo "  - back_end_aggregator_producer"
 FILE="/tmp/k8s-kafka-experiment/backend-service/$APP_VERSION/back_end_aggregator_producer/main.py"
@@ -63,6 +65,7 @@ if [ -e "$FILE" ]; then
 else
     echo "$FILE does not exist."
 fi
+rm -vf /tmp/cm_template.yaml
 
 echo "  - front_end_aggregator_consumer"
 FILE="/tmp/k8s-kafka-experiment/backend-service/$APP_VERSION/front_end_aggregator_consumer/main.py"
@@ -76,6 +79,7 @@ if [ -e "$FILE" ]; then
 else
     echo "$FILE does not exist."
 fi
+rm -vf /tmp/cm_template.yaml
 
 echo "  - front_end_ui_rest_api"
 FILE="/tmp/k8s-kafka-experiment/backend-service/$APP_VERSION/front_end_ui_rest_api/main.py"
@@ -89,6 +93,7 @@ if [ -e "$FILE" ]; then
 else
     echo "$FILE does not exist."
 fi
+rm -vf /tmp/cm_template.yaml
 
 echo "- Deployment"
 APP_VERSION=$APP_VERSION bash /tmp/k8s-kafka-experiment/backend-service/apply_deployments.sh || true

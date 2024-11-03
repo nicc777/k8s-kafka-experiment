@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: launcher-script-v2-cm
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+data:
+  launcher.sh: |
+    #!/usr/bin/env bash
+    pip3 install confluent-kafka avro-python3 valkey telnet bc
+    echo "STARTING APP..."
+    python3 /tmp/code/main.py

@@ -2,23 +2,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: raw-data-generator-demo-v1
+  name: raw-data-generator-demo-v2
   annotations:
     argocd.argoproj.io/sync-wave: "2"
   labels:
-    app: raw-data-generator-demo-v1
+    app: raw-data-generator-demo-v2
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: raw-data-generator-demo-v1
+      app: raw-data-generator-demo-v2
   template:
     metadata:
       labels:
-        app: raw-data-generator-demo-v1
+        app: raw-data-generator-demo-v2
     spec:
       containers:
-      - name: raw-data-generator-demo-v1
+      - name: raw-data-generator-demo-v2
         image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
         env:
         - name: DEBUG
@@ -34,7 +34,7 @@ spec:
         - name: KAFKA_TOPIC
           value: "raw-data-in"
         - name: SCHEMA_VERSION
-          value: "1"
+          value: "2"
         # SCHEMA_SUBJECT is linked to the kind: Schema.metadata.name deployed before this application starts... 
         - name: SCHEMA_SUBJECT
           value: "testrawdata"
@@ -71,13 +71,13 @@ spec:
       volumes:
       - name: raw-data-generator-code-vol
         configMap:
-          name: raw-data-generator-v1-python-cm
+          name: raw-data-generator-v2-python-cm
           items:
           - key: main.py
             path: main.py
       - name: launcher-script-vol
         configMap:
-          name: launcher-script-v1-cm
+          name: launcher-script-v2-cm
           items:
           - key: launcher.sh
             path: launcher.sh
@@ -85,23 +85,23 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: back-end-demo-v1
+  name: back-end-demo-v2
   annotations:
     argocd.argoproj.io/sync-wave: "2"
   labels:
-    app: back-end-demo-v1
+    app: back-end-demo-v2
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: back-end-demo-v1
+      app: back-end-demo-v2
   template:
     metadata:
       labels:
-        app: back-end-demo-v1
+        app: back-end-demo-v2
     spec:
       containers:
-      - name: back-end-demo-v1
+      - name: back-end-demo-v2
         image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
         env:
         - name: DEBUG
@@ -118,7 +118,7 @@ spec:
           value: "raw-data-in"
         # Specify the group ID in order to have multiple nodes process the incoming data. Default group id is the hostname of the Pod
         - name: GROUP_ID
-          value: "raw-group1"
+          value: "raw-group2"
         - name: SCHEMA_VERSION
           value: "1"
         # SCHEMA_SUBJECT is linked to the kind: Schema.metadata.name deployed before this application starts... 
@@ -158,13 +158,13 @@ spec:
       volumes:
       - name: back-end-code-vol
         configMap:
-          name: back-end-v1-python-cm
+          name: back-end-v2-python-cm
           items:
           - key: main.py
             path: main.py
       - name: launcher-script-vol
         configMap:
-          name: launcher-script-v1-cm
+          name: launcher-script-v2-cm
           items:
           - key: launcher.sh
             path: launcher.sh
@@ -172,23 +172,23 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: back-end-aggregator-producer-v1
+  name: back-end-aggregator-producer-v2
   annotations:
     argocd.argoproj.io/sync-wave: "2"
   labels:
-    app: back-end-aggregator-producer-v1
+    app: back-end-aggregator-producer-v2
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: back-end-aggregator-producer-v1
+      app: back-end-aggregator-producer-v2
   template:
     metadata:
       labels:
-        app: back-end-aggregator-producer-v1
+        app: back-end-aggregator-producer-v2
     spec:
       containers:
-      - name: back-end-aggregator-producer-v1
+      - name: back-end-aggregator-producer-v2
         image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
         env:
         - name: DEBUG
@@ -204,7 +204,7 @@ spec:
         - name: KAFKA_TOPIC
           value: "summary-stats"
         - name: SCHEMA_VERSION
-          value: "1"
+          value: "2"
         # SCHEMA_SUBJECT is linked to the kind: Schema.metadata.name deployed before this application starts... 
         - name: SCHEMA_SUBJECT
           value: "testsummarystats"
@@ -242,13 +242,13 @@ spec:
       volumes:
       - name: back-end-aggregator-producer-code-vol
         configMap:
-          name: back-end-aggregator-producer-v1-python-cm
+          name: back-end-aggregator-producer-v2-python-cm
           items:
           - key: main.py
             path: main.py
       - name: launcher-script-vol
         configMap:
-          name: launcher-script-v1-cm
+          name: launcher-script-v2-cm
           items:
           - key: launcher.sh
             path: launcher.sh
@@ -256,23 +256,23 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: front-end-aggregator-consumer-v1
+  name: front-end-aggregator-consumer-v2
   annotations:
     argocd.argoproj.io/sync-wave: "2"
   labels:
-    app: from-end-aggregator-consumer-v1
+    app: from-end-aggregator-consumer-v2
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: front-end-aggregator-consumer-v1
+      app: front-end-aggregator-consumer-v2
   template:
     metadata:
       labels:
-        app: front-end-aggregator-consumer-v1
+        app: front-end-aggregator-consumer-v2
     spec:
       containers:
-      - name: front-end-aggregator-consumer-v1
+      - name: front-end-aggregator-consumer-v2
         image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
         env:
         - name: DEBUG
@@ -289,9 +289,9 @@ spec:
           value: "summary-stats"
         # Specify the group ID in order to have multiple nodes process the incoming data. Default group id is the hostname of the Pod
         - name: GROUP_ID
-          value: "summary-group1"
+          value: "summary-group2"
         - name: SCHEMA_VERSION
-          value: "1"
+          value: "2"
         # SCHEMA_SUBJECT is linked to the kind: Schema.metadata.name deployed before this application starts... 
         - name: SCHEMA_SUBJECT
           value: "testsummarystats"
@@ -329,13 +329,13 @@ spec:
       volumes:
       - name: front-end-aggregator-consumer-code-vol
         configMap:
-          name: front-end-aggregator-consumer-v1-python-cm
+          name: front-end-aggregator-consumer-v2-python-cm
           items:
           - key: main.py
             path: main.py
       - name: launcher-script-vol
         configMap:
-          name: launcher-script-v1-cm
+          name: launcher-script-v2-cm
           items:
           - key: launcher.sh
             path: launcher.sh
@@ -343,23 +343,23 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: front-end-ui-rest-v1
+  name: front-end-ui-rest-v2
   annotations:
     argocd.argoproj.io/sync-wave: "2"
   labels:
-    app: front-end-ui-rest-v1
+    app: front-end-ui-rest-v2
 spec:
   replicas: 5
   selector:
     matchLabels:
-      app: front-end-ui-rest-v1
+      app: front-end-ui-rest-v2
   template:
     metadata:
       labels:
-        app: front-end-ui-rest-v1
+        app: front-end-ui-rest-v2
     spec:
       containers:
-      - name: front-end-ui-rest-v1
+      - name: front-end-ui-rest-v2
         image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
         env:
         - name: DEBUG
@@ -398,13 +398,13 @@ spec:
       volumes:
       - name: front-end-ui-rest-code-vol
         configMap:
-          name: front-end-ui-rest-api-v1-python-cm
+          name: front-end-ui-rest-api-v2-python-cm
           items:
           - key: main.py
             path: main.py
       - name: launcher-script-vol
         configMap:
-          name: launcher-script-v1-cm
+          name: launcher-script-v2-cm
           items:
           - key: launcher.sh
             path: launcher.sh
@@ -414,10 +414,10 @@ kind: Service
 metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "3"
-  name: rest-api-v1
+  name: rest-api-v2
 spec:
   selector:
-    app: front-end-ui-rest-v1
+    app: front-end-ui-rest-v2
   ports:
     - protocol: TCP
       port: 8080
