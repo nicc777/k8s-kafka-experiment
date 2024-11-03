@@ -74,17 +74,20 @@ def add_row(
     previous_defects_totals: int,
     previous_version: str
 )->list:
+    ansi_red = '\033[31;1;1m'
+    ansi_reset = '\033[0m'
+    ansi_yellow = '\033[33;1;1m'
     if 'version' in sku_data:
 
-        final_total = '{}{}{}'.format(ansi_white,sku_data['total'],ansi_reset)
+        final_total = '{}{}{}'.format(ansi_yellow,sku_data['total'],ansi_reset)
         if int(previous_manufactured_total) != int(sku_data['total']):
             final_total = '{}{}{}'.format(ansi_red,sku_data['total'],ansi_reset)
 
-        final_defects = '{}{}{}'.format(ansi_white,sku_data['defects'],ansi_reset)
+        final_defects = '{}{}{}'.format(ansi_yellow,sku_data['defects'],ansi_reset)
         if int(previous_defects_totals) != int(sku_data['defects']):
             final_defects = '{}{}{}'.format(ansi_red,sku_data['defects'],ansi_reset)
         
-        final_version = '{}{}{}'.format(ansi_white,sku_data['version'],ansi_reset)
+        final_version = '{}{}{}'.format(ansi_yellow,sku_data['version'],ansi_reset)
         if previous_version != sku_data['version']:
             final_version = '{}{}{}'.format(ansi_red,sku_data['version'],ansi_reset)
 
@@ -117,9 +120,6 @@ def add_row(
 previous_manufactured_totals = dict()
 previous_defects_totals = dict()
 previous_versions = dict()
-ansi_red = '\033[31;1;1m'
-ansi_reset = '\033[0m'
-ansi_white = '\033[33;1;1m'
 counter = 0
 while True:
     counter += 1
