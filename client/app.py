@@ -1,3 +1,11 @@
+"""
+Resources:
+
+    ANSI Colors in Output: https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
+    Tabulate: https://github.com/astanin/python-tabulate
+    Requests JSON responses: https://docs.python-requests.org/en/latest/user/quickstart/#json-response-content
+
+"""
 import os
 import time
 import copy
