@@ -21,6 +21,9 @@ spec:
       - name: debug-app
         image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
         volumeMounts:
+        - name: debug-code-vol
+          mountPath: "/tmp/code"
+          readOnly: true
         - name: launcher-script-vol
           mountPath: "/tmp/scripts"
           readOnly: true
@@ -47,6 +50,12 @@ spec:
           items:
           - key: launcher.sh
             path: launcher.sh
+      - name: debug-code-vol
+        configMap:
+          name: debug-python-cm
+          items:
+          - key: main.py
+            path: main.py
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -58,8 +67,5 @@ data:
   launcher.sh: |
     #!/usr/bin/env bash
     pip3 install confluent-kafka avro-python3 valkey telnet bc
-    while true
-    do
-      echo "Loop-the-Loop..."
-      sleep 3
-    done
+    echo "STARTING DEBUG APP..."
+    python3 /tmp/code/main.py

@@ -60,7 +60,7 @@ roleRef:
           name: "cel"
         params:
         - name: "filter"
-          value: "body.command in ['test', 'build_and_deploy_app_version', 'delete_app_version', 'deploy_canary', 'delete_canary']"
+          value: "body.command in ['test', 'build_and_deploy_app_version', 'delete_app_version', 'deploy_canary', 'delete_canary', 'deploy_debug_app', 'delete_debug_app']"
       bindings:
         - ref: app-ctrl-trigger-binding
       template:
@@ -154,6 +154,16 @@ spec:
                 delete_canary)
                     echo "Removing the canary and setting version ${APP_VERSION} as the primary running version"
                     bash /tmp/k8s-kafka-experiment/backend-service/canary_delete.sh || true
+                    ;;
+                deploy_debug_app)
+                    echo "Deploying debug app with script ${APP_VERSION}"
+                    export MODE=DEPLOY
+                    bash /tmp/k8s-kafka-experiment/backend-service/manage_debug_app_deployment.sh || true
+                    ;;
+                delete_debug_app)
+                    echo "Deploying debug app with script ${APP_VERSION}"
+                    export MODE=DELETE
+                    bash /tmp/k8s-kafka-experiment/backend-service/manage_debug_app_deployment.sh || true
                     ;;
                 *)
                     echo "Running default TEST script"
