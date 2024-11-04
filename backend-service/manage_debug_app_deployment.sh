@@ -28,7 +28,6 @@ data:
     #!/usr/bin/env python3
 EOF
 mkdir /tmp/code-configmaps
-cd /tmp/code-configmaps
 TARGET="/tmp/code-cm.yaml"
 cp -vf /tmp/cm_template.yaml $TARGET
 cat $FILE | sed 's/^/    /' >> $TARGET
