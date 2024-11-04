@@ -203,6 +203,9 @@ def produce_raw_data():
     }
     schema_registry_client = SchemaRegistryClient(schema_registry_conf)
 
+    ###
+    ### Selecting a Candidate Version of the Schema matching the Local Schema (RawData class)
+    ###
     schema_versions = schema_registry_client.get_versions(subject_name=SCHEMA_SUBJECT)  # https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#schemaregistryclient
     matched_registered_schema: RegisteredSchema
     matched_registered_schema = None
@@ -242,9 +245,7 @@ def produce_raw_data():
         raise Exception('Failed to retrieve a matching schema from the schema registry')
     logger.info('Schema Version Selected: {}'.format(matched_registered_schema.version))
     logger.info('Schema String: {}'.format(matched_registered_schema.schema.schema_str))
-            
-
-
+    
     ####################################
 
     avro_serializer = AvroSerializer(
