@@ -171,9 +171,9 @@ curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"deploy_deb
 curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete_debug_app", "app_version": "v2"}' http://127.0.0.1:7092
 
 # Deploy with the script "backend-service/debug_code_apps/schema_version_selection_poc.py"
-curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"deploy_debug_app", "app_version": "schema_version_selection_poc.py"}' http://127.0.0.1:7092
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"deploy_debug_app", "app_version": "backend-service/debug_code_apps/schema_version_selection_poc.py"}' http://127.0.0.1:7092
 
 # Delete the deployment:
-curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete_debug_app", "app_version": "schema_version_selection_poc.py"}' http://127.0.0.1:7092
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete_debug_app", "app_version": "backend-service/debug_code_apps/schema_version_selection_poc.py"}' http://127.0.0.1:7092
 ```
 
