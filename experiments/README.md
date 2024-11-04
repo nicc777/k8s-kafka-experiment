@@ -6,6 +6,7 @@
   - [Step 2: Running the experiment](#step-2-running-the-experiment)
   - [Step 3: Post Experiment Cleanup](#step-3-post-experiment-cleanup)
 - [Final Cleanup](#final-cleanup)
+- [Running a Debug Container](#running-a-debug-container)
 
 
 # Experiments Root
@@ -156,5 +157,23 @@ kubectl delete -f cicd_base/applications/02_tekton_pipelines.yaml
 kubectl delete -f cicd_base/applications/01_tekton.yaml
 ```
 
+# Running a Debug Container
 
+There is also an option to run a debug container, potentially with a custom script.
+
+Python scripts are created in `backend-service/debug_code_apps/`, and can be managed with:
+
+```shell
+# Deploy the DEFAULT dummy.py
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"deploy_debug_app", "app_version": "v2"}' http://127.0.0.1:7092
+
+# Delete the deployment:
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete_debug_app", "app_version": "v2"}' http://127.0.0.1:7092
+
+# Deploy with the script "backend-service/debug_code_apps/schema_version_selection_poc.py"
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"deploy_debug_app", "app_version": "schema_version_selection_poc.py"}' http://127.0.0.1:7092
+
+# Delete the deployment:
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete_debug_app", "app_version": "schema_version_selection_poc.py"}' http://127.0.0.1:7092
+```
 
