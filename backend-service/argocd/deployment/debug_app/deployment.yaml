@@ -20,6 +20,10 @@ spec:
       containers:
       - name: debug-app
         image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
+        volumeMounts:
+        - name: launcher-script-vol
+          mountPath: "/tmp/scripts"
+          readOnly: true
         livenessProbe:
           exec:
             command:
