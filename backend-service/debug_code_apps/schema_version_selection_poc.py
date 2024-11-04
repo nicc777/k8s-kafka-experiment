@@ -204,7 +204,7 @@ def produce_raw_data():
         logger.debug('Schema String: {}'.format(registered_schema.schema.schema_str))
         schema_as_dict: dict
         schema_as_dict = json.loads(registered_schema.schema.schema_str)
-        schema_keys = tuple(schema_as_dict.keys())
+        schema_keys = tuple(schema_as_dict['fields'].keys())
         schema_keys_not_matched = list()
         schema_keys_matched = list()
         for schema_key in schema_keys:
