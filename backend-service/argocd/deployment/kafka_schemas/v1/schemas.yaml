@@ -11,6 +11,12 @@ spec:
   data:
     configRef: schema-test-raw-data
     format: avro
+  schemaReferences:
+  - version: 1
+    format: avro
+    subject: testrawdata
+    avro:
+      avro: tld.example.testrawdata
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -40,6 +46,12 @@ spec:
   data:
     configRef: schema-test-summary-stats
     format: avro
+  schemaReferences:
+  - version: 1
+    format: avro
+    subject: testsummarystats
+    avro:
+      avro: tld.example.testsummarystats
 ---
 apiVersion: v1
 kind: ConfigMap

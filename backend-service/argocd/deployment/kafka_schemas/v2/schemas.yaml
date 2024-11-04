@@ -14,7 +14,7 @@ spec:
   schemaReferences:
   - version: 2
     format: avro
-    subject: schema-test-raw-data
+    subject: testrawdata
     avro:
       avro: tld.example.testrawdata
 ---
@@ -50,7 +50,7 @@ spec:
   schemaReferences:
   - version: 2
     format: avro
-    subject: schema-test-summary-stats
+    subject: testsummarystats
     avro:
       avro: tld.example.testsummarystats
 ---
