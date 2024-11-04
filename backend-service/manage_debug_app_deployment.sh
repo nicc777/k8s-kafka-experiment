@@ -9,11 +9,11 @@ cd /tmp/k8s-kafka-experiment
 
 # Seelct a script
 FILE="backend-service/debug_code_apps/dummy.py"
-if [ -e "$VERSION" ]; then
-    echo "  - $VERSION exists."
-    FILE=$VERSION
+if [ -e "$APP_VERSION" ]; then
+    echo "  - $APP_VERSION exists."
+    FILE=$APP_VERSION
 else
-    echo "  - $VERSION does not exist. Using $FILE"
+    echo "  - $APP_VERSION does not exist. Using $FILE"
 fi
 
 # Deploy the script as a configmap
