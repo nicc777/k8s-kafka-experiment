@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # Checkout our projectcd
 cd /tmp/k8s-kafka-experiment/backend-service
 
@@ -8,7 +10,7 @@ echo "- Current directory: ${PWD}"
 # Set version with:
 #   export APP_VERSION=vN 
 # Where N is "v1", "v2" or "v3"
-: ${APP_VERSION:="v1"}
+# : ${APP_VERSION:="v1"}
 
 echo "- Building application version ${APP_VERSION}"
 
