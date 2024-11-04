@@ -12,7 +12,7 @@ spec:
     configRef: schema-test-raw-data
     format: avro
   schemaReferences:
-    version: 2
+  - version: 2
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -44,7 +44,7 @@ spec:
     configRef: schema-test-summary-stats
     format: avro
   schemaReferences:
-    version: 2
+  -version: 2
 ---
 apiVersion: v1
 kind: ConfigMap
