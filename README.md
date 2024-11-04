@@ -271,3 +271,6 @@ kubectl port-forward service/argo-cd-argocd-server -n argocd --address=0.0.0.0 7
 * Tekton related resources:
   * [Home Page](https://tekton.dev/)
   * [Trigger Examples](https://github.com/tektoncd/triggers/tree/main/examples)
+* Python COnfluent References:
+  * [Python Client for Apache Kafka](https://docs.confluent.io/kafka-clients/python/current/overview.html)
+  * [Library API Documentation](https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#)
