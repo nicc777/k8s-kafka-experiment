@@ -226,6 +226,8 @@ def produce_raw_data():
         if len(schema_keys_not_matched) == 0 and len(local_schema_sample_keys_not_matched) == 0:
             matched_schema_found = True
             matched_registered_schema = copy.deepcopy(registered_schema)
+        local_schema_sample_keys_not_matched = list()   # Reset
+        local_schema_sample_keys_matched = list()       # Reset
     if matched_schema_found is False:
         raise Exception('Failed to retrieve a matching schema from the schema registry')
     logger.info('Schema Version Selected: {}'.format(matched_registered_schema.version))
