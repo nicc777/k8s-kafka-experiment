@@ -12,7 +12,7 @@ spec:
   source:
     repoURL: https://github.com/nicc777/k8s-kafka-experiment.git
     targetRevision: HEAD
-    path: backend-service/argocd/deployment/debug_app/deployment.yaml
+    path: backend-service/argocd/deployment/debug_app
   destination:
     server: https://kubernetes.default.svc
     namespace: exp
