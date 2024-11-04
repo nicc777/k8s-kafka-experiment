@@ -1,4 +1,8 @@
 
+- [Experiment 2 - Basic Functional Test, with version 2 of the Application](#experiment-2---basic-functional-test-with-version-2-of-the-application)
+- [Deploy Application Stack v1](#deploy-application-stack-v1)
+- [Connecting to the API End-Point](#connecting-to-the-api-end-point)
+  - [Basic Testing](#basic-testing)
 
 
 # Experiment 2 - Basic Functional Test, with version 2 of the Application
@@ -18,5 +22,22 @@ Run the following:
 curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"build_and_deploy_app_version", "app_version": "v2"}' http://127.0.0.1:7092
 ```
 
+# Connecting to the API End-Point
 
+Once the application is deployed, you should see a number of Pods with `kubectl get pods -n exp`:
+
+The `front-end-ui-rest-*` pods are the ones we need to connect to, therefore you need to ensure at least one Pod is fully `ready`.
+
+Now you get setup port forwarding to the Rest API:
+
+```shell
+kubectl port-forward --address=0.0.0.0 -n exp service/rest-api-v2 7098:8080
+```
+
+## Basic Testing
+
+Before testing, it's best to wait a couple of minutes for the initial data to be generated. Two to three minutes should be more than enough.
+
+> [!NOTE]  
+> Data is generated randomly, and therefore your actual results may be different from that shown below.
 
