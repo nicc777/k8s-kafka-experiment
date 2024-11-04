@@ -35,36 +35,21 @@ HOSTNAME = socket.gethostname()
 SKU = 'SKU_{}'.format(
     str(random.randint(1,999999)).zfill(6)
 )
-DEBUG = bool(int(os.getenv('DEBUG', '0')))
-MAX_COUNTER_VALUE = int(os.getenv('MAX_COUNTER_VALUE', '4'))
-MAX_RATE_PER_SECOND = int(os.getenv('MAX_RATE_PER_SECOND', '2'))
+DEBUG = True
+MAX_COUNTER_VALUE = 4
+MAX_RATE_PER_SECOND = 2
 MAX_INTERVAL_PER_LOOP = 999999999 / MAX_RATE_PER_SECOND
 SLEEP_BUFFER = 10
-REPORT_RATE_INTERVAL_TICKS = int(os.getenv('REPORT_RATE_INTERVAL_TICKS', '60'))
-KAFKA_HOST = ''
-KAFKA_BOOTSTRAP_SERVER_HOST = os.getenv('KAFKA_BOOTSTRAP_SERVER', 'localhost')
-KAFKA_BOOTSTRAP_SERVER_PORT = os.getenv('KAFKA_BOOTSTRAP_PORT', '9092')
-KAFKA_SCHEMA_SERVER_HOST = os.getenv('SCHEMA_SERVER_HOST', 'localhost')
-KAFKA_SCHEMA_SERVER_PORT = os.getenv('SCHEMA_SERVER_PORT', '8081')
-KAFKA_SCHEMA_SERVER_PROTOCOL = os.getenv('SCHEMA_SERVER_PROTOCOL', 'http')
-KAFKA_TOPIC = os.getenv('KAFKA_TOPIC', 'raw-data-in')
-SCHEMA_VERSION = int(os.getenv('SCHEMA_VERSION', '1'))
-SCHEMA_SUBJECT = os.getenv('SCHEMA_SUBJECT', 'TestRawData')
-SCHEMA_NAMESPACE = os.getenv('SCHEMA_NAMESPACE', 'tld.example')
-SCHEMA = {
-    "namespace": "tld.example",
-    "type": "record",
-    "name": "testrawdata",
-    "fields": [
-        { "name": "sku", "type": "string" },
-        { "name": "manufactured_qty", "type": "int" },
-        { "name": "defect_qty", "type": "int" },
-        { "name": "year", "type": "int" },
-        { "name": "month", "type": "int" },
-        { "name": "day", "type": "int" },
-        { "name": "hour", "type": "int" },
-    ]
-}
+REPORT_RATE_INTERVAL_TICKS = 60
+KAFKA_BOOTSTRAP_SERVER_HOST = 'kafka.confluent.svc.cluster.local'
+KAFKA_BOOTSTRAP_SERVER_PORT = '9092'
+KAFKA_SCHEMA_SERVER_HOST = 'schemaregistry.confluent.svc.cluster.local'
+KAFKA_SCHEMA_SERVER_PORT = '8081'
+KAFKA_SCHEMA_SERVER_PROTOCOL = 'http'
+KAFKA_TOPIC = 'raw-data-in'
+SCHEMA_SUBJECT = 'testrawdata'
+SCHEMA_NAMESPACE = 'tld.example'
+
 MONTH_DAYS = [
     00,
     31,     # 1
@@ -105,7 +90,6 @@ logger.debug('{} - KAFKA_SCHEMA_SERVER_PROTOCOL : {}'.format(HOSTNAME, KAFKA_SCH
 logger.debug('{} - KAFKA_SCHEMA_SERVER_HOST     : {}'.format(HOSTNAME, KAFKA_SCHEMA_SERVER_HOST))
 logger.debug('{} - KAFKA_SCHEMA_SERVER_PORT     : {}'.format(HOSTNAME, KAFKA_SCHEMA_SERVER_PORT))
 logger.debug('{} - KAFKA_TOPIC                  : {}'.format(HOSTNAME, KAFKA_TOPIC))
-logger.debug('{} - SCHEMA_VERSION               : {}'.format(HOSTNAME, SCHEMA_VERSION))
 logger.debug('{} - SCHEMA_SUBJECT               : {}'.format(HOSTNAME, SCHEMA_SUBJECT))
 logger.debug('{} - SCHEMA_NAMESPACE             : {}'.format(HOSTNAME, SCHEMA_NAMESPACE))
 
@@ -197,7 +181,6 @@ def calc_final_defect_qty(qty_widgets_manufactured: int)->int:
 
 
 def produce_raw_data():
-    schema_str = json.dumps(SCHEMA)
     schema_registry_conf = {
         'url': '{}://{}:{}'.format(KAFKA_SCHEMA_SERVER_PROTOCOL, KAFKA_SCHEMA_SERVER_HOST, KAFKA_SCHEMA_SERVER_PORT)
     }
