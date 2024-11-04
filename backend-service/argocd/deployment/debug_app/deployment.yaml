@@ -1,0 +1,61 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: debug-app
+  annotations:
+    argocd.argoproj.io/sync-wave: "2"
+  labels:
+    app: debug-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: debug-app
+  template:
+    metadata:
+      labels:
+        app: debug-app
+    spec:
+      containers:
+      - name: debug-app
+        image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
+        livenessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/scripts/launcher.sh
+          initialDelaySeconds: 1
+          periodSeconds: 1
+        readinessProbe:
+          exec:
+            command:
+            - cat
+            - /tmp/scripts/launcher.sh
+          initialDelaySeconds: 1
+          periodSeconds: 1
+        command: ["/bin/bash"]
+        args: ["/tmp/scripts/launcher.sh"]
+      volumes:
+      - name: launcher-script-vol
+        configMap:
+          name: debug-app-cm
+          items:
+          - key: launcher.sh
+            path: launcher.sh
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: debug-app-cm
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+data:
+  launcher.sh: |
+    #!/usr/bin/env bash
+    pip3 install confluent-kafka avro-python3 valkey telnet bc
+    while true
+    do
+      echo "Loop-the-Loop..."
+      sleep 3
+    done
