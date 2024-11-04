@@ -48,7 +48,7 @@ spec:
   schemaReferences:
   - version: 2
     format: avro
-    subject: schema-test-raw-data
+    subject: schema-test-summary-stats
 ---
 apiVersion: v1
 kind: ConfigMap
