@@ -19,7 +19,7 @@ Ensure you have followed the initial preparations as described [here](../README.
 Run the following:
 
 ```shell
-curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"build_and_deploy_app_version", "app-version": "v1", "canary_config": "v1:90,v2:10"}' http://127.0.0.1:7092
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"build_and_deploy_app_version", "app_version": "v1", "canary_config": "v1:90,v2:10"}' http://127.0.0.1:7092
 ```
 
 # Connecting to the API End-Point

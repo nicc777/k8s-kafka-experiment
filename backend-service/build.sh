@@ -39,7 +39,7 @@ if [ -e "$FILE" ]; then
 else
     echo "$FILE does not exist."
 fi
-rm -vf /tmp/cm_template.yaml
+rm -vf $TARGET
 
 echo "  - back_end"
 FILE="/tmp/k8s-kafka-experiment/backend-service/$APP_VERSION/back_end/main.py"
@@ -53,7 +53,7 @@ if [ -e "$FILE" ]; then
 else
     echo "$FILE does not exist."
 fi
-rm -vf /tmp/cm_template.yaml
+rm -vf $TARGET
 
 echo "  - back_end_aggregator_producer"
 FILE="/tmp/k8s-kafka-experiment/backend-service/$APP_VERSION/back_end_aggregator_producer/main.py"
@@ -67,7 +67,7 @@ if [ -e "$FILE" ]; then
 else
     echo "$FILE does not exist."
 fi
-rm -vf /tmp/cm_template.yaml
+rm -vf $TARGET
 
 echo "  - front_end_aggregator_consumer"
 FILE="/tmp/k8s-kafka-experiment/backend-service/$APP_VERSION/front_end_aggregator_consumer/main.py"
@@ -81,7 +81,7 @@ if [ -e "$FILE" ]; then
 else
     echo "$FILE does not exist."
 fi
-rm -vf /tmp/cm_template.yaml
+rm -vf $TARGET
 
 echo "  - front_end_ui_rest_api"
 FILE="/tmp/k8s-kafka-experiment/backend-service/$APP_VERSION/front_end_ui_rest_api/main.py"
@@ -95,7 +95,7 @@ if [ -e "$FILE" ]; then
 else
     echo "$FILE does not exist."
 fi
-rm -vf /tmp/cm_template.yaml
+rm -vf $TARGET
 
 echo "- Deployment"
 APP_VERSION=$APP_VERSION bash /tmp/k8s-kafka-experiment/backend-service/apply_deployments.sh || true
