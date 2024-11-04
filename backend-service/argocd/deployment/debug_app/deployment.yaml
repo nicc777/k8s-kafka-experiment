@@ -68,4 +68,6 @@ data:
     #!/usr/bin/env bash
     pip3 install confluent-kafka avro-python3 valkey telnet bc
     echo "STARTING DEBUG APP..."
+    ls -la /tmp/code/main.py
+    md5sum /tmp/code/main.py
     python3 /tmp/code/main.py
