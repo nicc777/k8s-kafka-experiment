@@ -12,7 +12,7 @@ spec:
     configRef: schema-test-raw-data
     format: avro
   schemaReferences:
-  - version: 1
+  - version: 0
     format: avro
     subject: testrawdata
     avro:
@@ -47,7 +47,7 @@ spec:
     configRef: schema-test-summary-stats
     format: avro
   schemaReferences:
-  - version: 1
+  - version: 0
     format: avro
     subject: testsummarystats
     avro:
