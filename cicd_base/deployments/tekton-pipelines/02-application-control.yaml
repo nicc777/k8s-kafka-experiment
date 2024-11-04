@@ -106,7 +106,7 @@ spec:
   - name: app_version
     default: "v1"
   - name: canary_config
-    default: ""
+    default: "not-set"
   - name: pause_time_post_schema_deployment
     default: "10"
   resourcetemplates:
