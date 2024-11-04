@@ -11,12 +11,6 @@ spec:
   data:
     configRef: schema-test-raw-data
     format: avro
-  # schemaReferences:
-  # - version: 2
-  #   format: avro
-  #   subject: testrawdata
-  #   avro:
-  #     avro: tld.example.testrawdata
 ---
 apiVersion: v1
 kind: ConfigMap
@@ -38,6 +32,10 @@ data:
           { "name": "hour", "type": "int" }
       ]
     }
+# NOTE: The default value "value" MUST match the type. If the type is "int", the
+#       default value can not be "null" A strategy could be to set the default
+#       value to an unrealistic value and in the code logic ignore data with
+#       this value, as if it was a NULL value.
 ---
 apiVersion: platform.confluent.io/v1beta1
 kind: Schema
@@ -47,12 +45,6 @@ spec:
   data:
     configRef: schema-test-summary-stats
     format: avro
-  # schemaReferences:
-  # - version: 2
-  #   format: avro
-  #   subject: testsummarystats
-  #   avro:
-  #     avro: tld.example.testsummarystats
 ---
 apiVersion: v1
 kind: ConfigMap
