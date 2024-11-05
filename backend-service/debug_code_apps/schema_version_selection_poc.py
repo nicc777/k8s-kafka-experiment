@@ -360,6 +360,7 @@ def consume_summary_data():
 
 
 produce_raw_data()
+consume_summary_data()
 
 
 while True:
