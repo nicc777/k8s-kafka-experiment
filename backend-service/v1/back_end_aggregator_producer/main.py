@@ -208,7 +208,7 @@ def retrieve_supported_registered_schema(schema_registry_client: SchemaRegistryC
 
     schema_versions = schema_registry_client.get_versions(subject_name=SCHEMA_SUBJECT)  # https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#schemaregistryclient
     matched_schema_found = False
-    local_schema_sample = SummaryData(sku='', manufactured_qty=0, defect_qty=0, year=0, month=0, day=0, hour=0)
+    local_schema_sample = SummaryData(sku='', manufactured_qty=0, year=0, month=0)
     local_schema_sample_as_dict = summary_data_to_dict(raw_data=local_schema_sample, ctx=None)
     local_schema_sample_keys = tuple(local_schema_sample_as_dict.keys())
     local_schema_sample_keys_not_matched = list()
