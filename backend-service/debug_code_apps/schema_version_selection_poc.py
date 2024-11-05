@@ -25,9 +25,10 @@ import traceback
 import copy
 from uuid import uuid4
 from confluent_kafka import Producer
+from confluent_kafka import Consumer
 from confluent_kafka.serialization import StringSerializer, SerializationContext, MessageField
 from confluent_kafka.schema_registry import SchemaRegistryClient, RegisteredSchema, Schema
-from confluent_kafka.schema_registry.avro import AvroSerializer
+from confluent_kafka.schema_registry.avro import AvroSerializer, AvroDeserializer
 
 # EXAMPLE taken from https://github.com/confluentinc/confluent-kafka-python/blob/master/examples/avro_producer.py
 
@@ -49,6 +50,7 @@ KAFKA_SCHEMA_SERVER_PROTOCOL = 'http'
 KAFKA_TOPIC = 'raw-data-in'
 SCHEMA_SUBJECT = 'testrawdata'
 SCHEMA_NAMESPACE = 'tld.example'
+GROUP_ID = 'debug_consumer_01'
 
 MONTH_DAYS = [
     00,
@@ -123,6 +125,20 @@ def raw_data_to_dict(raw_data: RawData, ctx):
         month=raw_data.month,
         day=raw_data.day,
         hour=raw_data.hour
+    )
+
+
+def dict_to_raw_data(obj, ctx)->RawData:
+    if obj is None:
+        return None
+    return RawData(
+        sku=obj['sku'],
+        manufactured_qty=int(obj['manufactured_qty']),
+        defect_qty=int(obj['defect_qty']),
+        year=int(obj['year']),
+        month=int(obj['month']),
+        day=int(obj['day']),
+        hour=int(obj['hour'])
     )
 
 
@@ -291,7 +307,57 @@ def produce_raw_data():
                 produce_more_data = False
                 logger.warning('{} - Reached MAX_COUNTER_VALUE of {} - stopping...'.format(HOSTNAME, MAX_COUNTER_VALUE))
                 producer.flush()
-    
+
+
+def consume_summary_data():
+    schema_registry_conf = {
+        'url': '{}://{}:{}'.format(KAFKA_SCHEMA_SERVER_PROTOCOL, KAFKA_SCHEMA_SERVER_HOST, KAFKA_SCHEMA_SERVER_PORT)
+    }
+    schema_registry_client = SchemaRegistryClient(schema_registry_conf)
+    matched_registered_schema = retrieve_supported_registered_schema(schema_registry_client=schema_registry_client)
+
+
+    avro_deserializer = AvroDeserializer(
+        schema_registry_client,
+        matched_registered_schema.schema.schema_str,
+        dict_to_raw_data
+    )
+    consumer_conf = {
+        'bootstrap.servers': '{}:{}'.format(KAFKA_BOOTSTRAP_SERVER_HOST, KAFKA_BOOTSTRAP_SERVER_PORT),
+        'group.id': GROUP_ID,
+        'auto.offset.reset': "earliest"
+    }
+    consumer = Consumer(consumer_conf)
+    consumer.subscribe([KAFKA_TOPIC])
+
+    while True:
+        try:
+            # SIGINT can't be handled when polling, limit timeout to 1 second.
+            msg = consumer.poll(1.0)
+            if msg is None:
+                continue
+
+            raw_data_in: RawData
+            raw_data_in = avro_deserializer(msg.value(), SerializationContext(msg.topic(), MessageField.VALUE))
+            if raw_data_in is not None:
+                logger.debug(
+                    '{} - SKU: {} {}-{} TOTAL: {} and {} defects'.format(
+                        HOSTNAME,
+                        raw_data_in.sku,
+                        raw_data_in.year,
+                        str(raw_data_in.month,).zfill(2),
+                        raw_data_in.manufactured_qty,
+                        raw_data_in.defect_qty
+                    )
+                )
+        except:
+            logger.error(
+                '{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc())
+            )
+            break
+
+    consumer.close()
+
 
 produce_raw_data()
 
