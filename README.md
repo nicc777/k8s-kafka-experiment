@@ -279,4 +279,9 @@ kubectl port-forward service/argo-cd-argocd-server -n argocd --address=0.0.0.0 7
   * [SIG Documentation](https://gateway-api.sigs.k8s.io/)
   * [Kubernetes Documentation](https://kubernetes.io/docs/concepts/services-networking/gateway/)
   * [Implementations](https://gateway-api.sigs.k8s.io/implementations/)
+  * Nginx Gateway Fabric:
+    * [Overview](https://docs.nginx.com/nginx-gateway-fabric/overview/)
+    * [Installing With Helm (NodePort Target)](https://docs.nginx.com/nginx-gateway-fabric/installation/installing-ngf/helm/)
+    * [Basic Traffic Routing to Applications](https://docs.nginx.com/nginx-gateway-fabric/how-to/traffic-management/routing-traffic-to-your-app/)
+    * [More complex routing, including weighted routing (canary)](https://blog.nginx.org/blog/how-nginx-gateway-fabric-implements-complex-routing-rules)
 
