@@ -29,9 +29,10 @@ import time
 import json
 import sys
 import traceback
+import copy
 from confluent_kafka import Consumer
 from confluent_kafka.serialization import SerializationContext, MessageField
-from confluent_kafka.schema_registry import SchemaRegistryClient
+from confluent_kafka.schema_registry import SchemaRegistryClient, RegisteredSchema, Schema
 from confluent_kafka.schema_registry.avro import AvroDeserializer
 import valkey
 
@@ -138,6 +139,18 @@ def dict_to_raw_data(obj, ctx)->RawData:
     )
 
 
+def raw_data_to_dict(raw_data: RawData, ctx):
+    return dict(
+        sku=raw_data.sku,
+        manufactured_qty=raw_data.manufactured_qty,
+        defect_qty=raw_data.defect_qty,
+        year=raw_data.year,
+        month=raw_data.month,
+        day=raw_data.day,
+        hour=raw_data.hour
+    )
+
+
 def delivery_report(err, msg):
     if err is not None:
         logger.error('{} - Delivery failed for User record {}: {}'.format(HOSTNAME, msg.key(), err))
@@ -179,15 +192,64 @@ def store_data_in_valkey(raw_data: RawData, retries: int=0)->bool:
     return True
 
 
+def retrieve_supported_registered_schema(schema_registry_client: SchemaRegistryClient)->RegisteredSchema:
+    matched_registered_schema: RegisteredSchema
+    matched_registered_schema = None
+
+    schema_versions = schema_registry_client.get_versions(subject_name=SCHEMA_SUBJECT)  # https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#schemaregistryclient
+    matched_schema_found = False
+    local_schema_sample = RawData(sku='', manufactured_qty=0, defect_qty=0, year=0, month=0, day=0, hour=0)
+    local_schema_sample_as_dict = raw_data_to_dict(raw_data=local_schema_sample, ctx=None)
+    local_schema_sample_keys = tuple(local_schema_sample_as_dict.keys())
+    local_schema_sample_keys_not_matched = list()
+    local_schema_sample_keys_matched = list()
+    for schema_version in schema_versions:
+        registered_schema: RegisteredSchema # https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#confluent_kafka.schema_registry.RegisteredSchema
+        registered_schema = schema_registry_client.get_version(subject_name=SCHEMA_SUBJECT, version=schema_version)
+        logger.debug('Schema String: {}'.format(registered_schema.schema.schema_str))
+        schema_as_dict: dict
+        schema_as_dict = json.loads(registered_schema.schema.schema_str)
+        schema_keys = list()
+        for field in schema_as_dict['fields']:
+            schema_keys.append(field['name'])
+        schema_keys_not_matched = list()
+        schema_keys_matched = list()
+        for schema_key in schema_keys:
+            if schema_key in local_schema_sample_keys:
+                schema_keys_matched.append(schema_key)
+            else:
+                schema_keys_not_matched.append(schema_key)
+        for local_schema_key in local_schema_sample_keys:
+            if local_schema_key in schema_keys:
+                local_schema_sample_keys_matched.append(local_schema_key)
+            else:
+                local_schema_sample_keys_not_matched.append(local_schema_key)
+        if len(schema_keys_not_matched) > 0:
+            logger.warning('Rejecting version {} because the following fields are NOT in the local schema: {}'.format(schema_version, schema_keys_not_matched))
+        if len(local_schema_sample_keys_not_matched) > 0:
+            logger.warning('Rejecting version {} because the following fields are NOT in the retrieved schema: {}'.format(schema_version, local_schema_sample_keys_not_matched))
+        if len(schema_keys_not_matched) == 0 and len(local_schema_sample_keys_not_matched) == 0:
+            matched_schema_found = True
+            matched_registered_schema = copy.deepcopy(registered_schema)
+        local_schema_sample_keys_not_matched = list()   # Reset
+        local_schema_sample_keys_matched = list()       # Reset
+    if matched_schema_found is False:
+        raise Exception('Failed to retrieve a matching schema from the schema registry')
+    logger.info('Schema Version Selected: {}'.format(matched_registered_schema.version))
+    logger.info('Schema String: {}'.format(matched_registered_schema.schema.schema_str))
+
+    return matched_registered_schema
+
 def consume_raw_data():
-    schema_str = json.dumps(SCHEMA)
     schema_registry_conf = {
         'url': '{}://{}:{}'.format(KAFKA_SCHEMA_SERVER_PROTOCOL, KAFKA_SCHEMA_SERVER_HOST, KAFKA_SCHEMA_SERVER_PORT)
     }
     schema_registry_client = SchemaRegistryClient(schema_registry_conf)
+    matched_registered_schema = retrieve_supported_registered_schema(schema_registry_client=schema_registry_client)
+
     avro_deserializer = AvroDeserializer(
         schema_registry_client,
-        schema_str,
+        matched_registered_schema.schema.schema_str,
         dict_to_raw_data
     )
     consumer_conf = {
