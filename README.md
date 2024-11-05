@@ -275,3 +275,7 @@ kubectl port-forward service/argo-cd-argocd-server -n argocd --address=0.0.0.0 7
 * Python COnfluent References:
   * [Python Client for Apache Kafka](https://docs.confluent.io/kafka-clients/python/current/overview.html)
   * [Library API Documentation](https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#)
+* Kubernetes Gateway API Resources:
+  * [SIG Documentation](https://gateway-api.sigs.k8s.io/)
+  * [Kubernetes Documentation](https://kubernetes.io/docs/concepts/services-networking/gateway/)
+
