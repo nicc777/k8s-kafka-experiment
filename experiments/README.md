@@ -26,6 +26,21 @@ In order to run the experiment, access to several component API's or web user in
 
 For running the experiments, you may need as many as 6 open terminal sessions.
 
+## Nginx Gateway API Fabric
+
+In order to expose the application, and to test blue/green with canary deployment strategies, we need a Gateway API solution.
+
+NGinx provides a fairly straight forward solution to expose the Gateway using Node Ports:
+
+```shell
+kubectl kustomize "https://github.com/nginxinc/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v1.4.0" | kubectl apply -f -
+
+# Wait until the previous components are all deployed...
+helm install ngf oci://ghcr.io/nginxinc/charts/nginx-gateway-fabric --create-namespace -n nginx-gateway --set service.type=NodePort
+```
+
+## ArgoCD
+
 For this purpose, it is important to create a number of port-forwarding connections:
 
 ```shell
@@ -44,6 +59,9 @@ The ArgoCD Web UI is now available on https://127.0.0.1:7090/
 
 > [!NOTE]
 > You may have to accept the certificate exception in your web browser
+
+
+## Tekton
 
 Next, setup Tekton:
 
