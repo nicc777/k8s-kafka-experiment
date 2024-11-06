@@ -1,6 +1,9 @@
 
 - [Experiments Root](#experiments-root)
 - [Initial Preparations (once off)](#initial-preparations-once-off)
+  - [Nginx Gateway API Fabric](#nginx-gateway-api-fabric)
+  - [ArgoCD](#argocd)
+  - [Tekton](#tekton)
 - [Running a experiment](#running-a-experiment)
   - [Step 1: Preparing Kafka and Kafka UI](#step-1-preparing-kafka-and-kafka-ui)
   - [Step 2: Running the experiment](#step-2-running-the-experiment)
