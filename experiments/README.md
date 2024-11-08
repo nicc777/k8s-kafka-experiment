@@ -42,6 +42,9 @@ kubectl kustomize "https://github.com/nginxinc/nginx-gateway-fabric/config/crd/g
 helm install ngf oci://ghcr.io/nginxinc/charts/nginx-gateway-fabric --create-namespace -n nginx-gateway --set service.type=NodePort
 ```
 
+> [!NOTE]
+> When you see the following error in the Nginx logs On Ubuntu Server, ensure IPv6 is enabled: "_socket() :80 failed (97: Address family not supported by protocol)_" 
+
 ## ArgoCD
 
 For this purpose, it is important to create a number of port-forwarding connections:
