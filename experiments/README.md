@@ -36,21 +36,58 @@ In order to expose the application, and to test blue/green with canary deploymen
 NGinx provides a fairly straight forward solution to expose the Gateway using Node Ports:
 
 ```shell
-kubectl kustomize "https://github.com/nginxinc/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v1.4.0" | kubectl apply -f -
+# The experimental features are required for TLSRoute (as on 2024-11-09)
+kubectl kustomize "https://github.com/nginxinc/nginx-gateway-fabric/config/crd/gateway-api/experimental?ref=v1.4.0" | kubectl apply -f -
 
 # Wait until the previous components are all deployed...
-helm install ngf oci://ghcr.io/nginxinc/charts/nginx-gateway-fabric --create-namespace -n nginx-gateway --set service.type=NodePort
+helm install ngf oci://ghcr.io/nginxinc/charts/nginx-gateway-fabric --create-namespace -n nginx-gateway --set nginxGateway.gwAPIExperimentalFeatures.enable=true --set service.type=NodePort
 ```
 
 > [!NOTE]
 > When you see the following error in the Nginx logs On Ubuntu Server, ensure IPv6 is enabled: "_socket() :80 failed (97: Address family not supported by protocol)_" 
+
+Next, get the HTTP and HTTPS NodePort values for the gateway:
+
+```shell
+kubectl get services -n nginx-gateway
+```
+
+Expect the outpit to look something like this:
+
+```text
+NAME                       TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+ngf-nginx-gateway-fabric   NodePort   10.152.183.68   <none>        80:30657/TCP,443:31090/TCP   21m
+```
+
+For convenience, you can use `socat` to forward traffic to your cluster NodePort services of the Gateway API:
+
+```shell
+# In Terminal 1, Forward TSL traffic. Use the NodPort value from the previous command (for example 31090)
+export CLUSTER_ADDRESS=...
+export GW_TLS_PORT=...
+sudo socat TCP-LISTEN:443,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$GW_TLS_PORT
+
+# In terminal 2, forward HTTP traffic:
+export CLUSTER_ADDRESS=...
+export GW_HTTP_PORT=...
+sudo socat TCP-LISTEN:80,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$GW_HTTP_PORT
+```
+
+And add these domains to your hosts file for `127.0.0.1`:
+
+* argocd.example.tld - For using ArgoCD in a Web Browser
+* kafka-ui.example.tld - For using the Kafka web UI
+* tekton-ui.example.tld - For using the Tekton Web UI
+* tekton-iac.example-tld - Will route calls to the Tekton pipeline for provisioning Infrastructure
+* tekton-app.example.tld - Will route calls to the Tekton pipeline for application management
+
 
 ## ArgoCD
 
 For this purpose, it is important to create a number of port-forwarding connections:
 
 ```shell
-# ArgoCD in Terminal 1
+# ArgoCD in Terminal 1 (alternative of using the Gateway API, as describe in the section "Nginx Gateway API Fabric")
 kubectl port-forward service/argo-cd-argocd-server 7090:80 -n argocd
 ```
 
@@ -61,7 +98,7 @@ In order to get the ArgoCD admin password, run:
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ```
 
-The ArgoCD Web UI is now available on https://127.0.0.1:7090/
+The ArgoCD Web UI is now available on https://127.0.0.1:7090/ or https://argocd.example.tld/
 
 > [!NOTE]
 > You may have to accept the certificate exception in your web browser
