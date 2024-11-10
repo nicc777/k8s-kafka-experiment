@@ -62,18 +62,19 @@ ngf-nginx-gateway-fabric   NodePort   10.152.183.68   <none>        80:30657/TCP
 For convenience, you can use `socat` to forward traffic to your cluster NodePort services of the Gateway API:
 
 ```shell
-# In Terminal 1, Forward TSL traffic. Use the NodPort value from the previous command (for example 31090)
+# In all your terminal windows, set the IP address of the server hosting the cluster:
 export CLUSTER_ADDRESS=...
+
+# In Terminal 1, Forward TSL traffic. Use the NodPort value from the previous command (for example 31090)
 export GW_TLS_PORT=...
 sudo socat TCP-LISTEN:443,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$GW_TLS_PORT
 
 # In terminal 2, forward HTTP traffic:
-export CLUSTER_ADDRESS=...
 export GW_HTTP_PORT=...
 sudo socat TCP-LISTEN:80,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$GW_HTTP_PORT
 ```
 
-And add these domains to your hosts file for `127.0.0.1`:
+And add these domains to your hosts file for `127.0.0.1` or whatever your lab system IP address is (`CLUSTER_ADDRESS`):
 
 * argocd.example.tld - For using ArgoCD in a Web Browser
 * kafka-ui.example.tld - For using the Kafka web UI
@@ -81,6 +82,7 @@ And add these domains to your hosts file for `127.0.0.1`:
 * tekton-iac.example-tld - Will route calls to the Tekton pipeline for provisioning Infrastructure
 * tekton-app.example.tld - Will route calls to the Tekton pipeline for application management
 
+Finally, ensure any additional firewall rules that may need to be open is also opened.
 
 ## ArgoCD
 
