@@ -1,9 +1,9 @@
 
 - [Experiments Root](#experiments-root)
 - [Initial Preparations (once off)](#initial-preparations-once-off)
-  - [Nginx Gateway API Fabric](#nginx-gateway-api-fabric)
   - [ArgoCD](#argocd)
   - [Tekton](#tekton)
+  - [Alternative Port Forwarding](#alternative-port-forwarding)
 - [Running a experiment](#running-a-experiment)
   - [Step 1: Preparing Kafka and Kafka UI](#step-1-preparing-kafka-and-kafka-ui)
   - [Step 2: Running the experiment](#step-2-running-the-experiment)
@@ -28,61 +28,6 @@ All applications will be installed in the namespace `exp`.
 In order to run the experiment, access to several component API's or web user interfaces may be required.
 
 For running the experiments, you may need as many as 6 open terminal sessions.
-
-## Nginx Gateway API Fabric
-
-In order to expose the application, and to test blue/green with canary deployment strategies, we need a Gateway API solution.
-
-NGinx provides a fairly straight forward solution to expose the Gateway using Node Ports:
-
-```shell
-# The experimental features are required for TLSRoute (as on 2024-11-09)
-kubectl kustomize "https://github.com/nginxinc/nginx-gateway-fabric/config/crd/gateway-api/experimental?ref=v1.4.0" | kubectl apply -f -
-
-# Wait until the previous components are all deployed...
-helm install ngf oci://ghcr.io/nginxinc/charts/nginx-gateway-fabric --create-namespace -n nginx-gateway --set nginxGateway.gwAPIExperimentalFeatures.enable=true --set service.type=NodePort
-```
-
-> [!NOTE]
-> When you see the following error in the Nginx logs On Ubuntu Server, ensure IPv6 is enabled: "_socket() :80 failed (97: Address family not supported by protocol)_" 
-
-Next, get the HTTP and HTTPS NodePort values for the gateway:
-
-```shell
-kubectl get services -n nginx-gateway
-```
-
-Expect the outpit to look something like this:
-
-```text
-NAME                       TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
-ngf-nginx-gateway-fabric   NodePort   10.152.183.68   <none>        80:30657/TCP,443:31090/TCP   21m
-```
-
-For convenience, you can use `socat` to forward traffic to your cluster NodePort services of the Gateway API:
-
-```shell
-# In all your terminal windows, set the IP address of the server hosting the cluster:
-export CLUSTER_ADDRESS=...
-
-# In Terminal 1, Forward TSL traffic. Use the NodPort value from the previous command (for example 31090)
-export GW_TLS_PORT=...
-sudo socat TCP-LISTEN:443,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$GW_TLS_PORT
-
-# In terminal 2, forward HTTP traffic:
-export GW_HTTP_PORT=...
-sudo socat TCP-LISTEN:80,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$GW_HTTP_PORT
-```
-
-And add these domains to your hosts file for `127.0.0.1` or whatever your lab system IP address is (`CLUSTER_ADDRESS`):
-
-* argocd.example.tld - For using ArgoCD in a Web Browser
-* kafka-ui.example.tld - For using the Kafka web UI
-* tekton-ui.example.tld - For using the Tekton Web UI
-* tekton-iac.example-tld - Will route calls to the Tekton pipeline for provisioning Infrastructure
-* tekton-app.example.tld - Will route calls to the Tekton pipeline for application management
-
-Finally, ensure any additional firewall rules that may need to be open is also opened.
 
 ## ArgoCD
 
@@ -130,6 +75,42 @@ Finally, setup a port-forwarder to the Tekton pipelines webhook:
 kubectl port-forward service/el-helm-pipelines-event-listener 7091:8080 -n default
 ```
 
+## Alternative Port Forwarding
+
+If services are exposed as `NodePort`, we can use `socat` to forward the traffic directly to the services, instead of using `kubectl port-forward`. Run the following after ArgoCD and Tekton is installed:
+
+```shell
+kubectl apply -f cicd_base/argocd-nodeport.yaml
+
+kubectl apply -f cicd_base/tekton-nodeport.yaml
+
+# In all terminals, run the following commands
+export CLUSTER_ADDRESS=...
+
+export ARGOCD_NODE_PORT=`kubectl get service/argo-cd-argocd-server-np-svc -n argocd -o json | jq '.spec.ports' | jq '.[] | select(.name=="http")' | jq '.nodePort'`
+
+export TEKTON_NODE_PORT=`kubectl get service/tekton-np-svc -n tekton-pipelines -o json | jq '.spec.ports' | jq '.[] | select(.name=="http")' | jq '.nodePort'`
+
+export TEKTON_WEBHOOK_HELM_PIPELINES_NODE_PORT=`kubectl get service/tekton-np-webhook-helm-pipelines-svc -n default -o json | jq '.spec.ports' | jq '.[] | select(.name=="http")' | jq '.nodePort'`
+
+export TEKTON_WEBHOOK_APP_CTRL_PIPELINES_NODE_PORT=`kubectl get service/tekton-np-webhook-app-ctrl-pipelines-svc -n default -o json | jq '.spec.ports' | jq '.[] | select(.name=="http")' | jq '.nodePort'`
+
+# Terminal/Pane 1:
+socat TCP-LISTEN:7090,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$ARGOCD_NODE_PORT
+
+# Terminal/Pane 2:
+socat TCP-LISTEN:9097,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$TEKTON_NODE_PORT
+
+# Terminal/Pane 3:
+socat TCP-LISTEN:7091,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$TEKTON_WEBHOOK_HELM_PIPELINES_NODE_PORT
+
+# Terminal/Pane 4:
+socat TCP-LISTEN:7092,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$TEKTON_WEBHOOK_APP_CTRL_PIPELINES_NODE_PORT
+```
+
+> [!TIP]
+> If you use `tmux`, you can run all the commands in one terminal in split-panes. To setup initial commands in all panes, you can set `tmux` to echo the commands to all panes with `CTRL+B :` and then type `setw synchronize-panes on`. Afterwards you can then just disable it again by using the `off` option.
+
 # Running a experiment
 
 There are several steps to start each experiment
@@ -171,7 +152,7 @@ curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"test", "ap
 Other `command` options include:
 
 | Command                        | Use Case                                                                                 |
-|--------------------------------|------------------------------------------------------------------------------------------|
+| ------------------------------ | ---------------------------------------------------------------------------------------- |
 | `test`                         | Required for testing. The values for `app-version` and `canary_config` is not important. |
 | `build_and_deploy_app_version` | Deploys a specific version, as dictated by the experiment to be run.                     |
 | `delete_app_version`           | Deletes a specific application version, as dictated by the experiment                    |
@@ -183,7 +164,7 @@ Change into the relevant experiment sub-directory and follow the instructions in
 List of experiment:
 
 | Experiment                   | Experimental Objectives                                                  |
-|------------------------------|--------------------------------------------------------------------------|
+| ---------------------------- | ------------------------------------------------------------------------ |
 | [exp-01](./exp-01/README.md) | Basic deployment of workload V1                                          |
 | exp-02                       | Basic deployment of workload V2                                          |
 | exp-03                       | Basic deployment of workload V3                                          |

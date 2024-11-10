@@ -1,0 +1,53 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tekton-np-svc
+  namespace: tekton-pipelines
+spec:
+  ports:
+  - name: http
+    port: 9097
+    protocol: TCP
+    targetPort: 9097
+  selector:
+    app.kubernetes.io/component: dashboard
+    app.kubernetes.io/instance: default
+    app.kubernetes.io/name: dashboard
+    app.kubernetes.io/part-of: tekton-dashboard
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tekton-np-webhook-helm-pipelines-svc
+  namespace: default
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/managed-by: EventListener
+    app.kubernetes.io/part-of: Triggers
+    eventlistener: helm-pipelines-event-listener
+  type: NodePort
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tekton-np-webhook-app-ctrl-pipelines-svc
+  namespace: default
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/managed-by: EventListener
+    app.kubernetes.io/part-of: Triggers
+    eventlistener: app-ctrl-event-listener
+  type: NodePort
+
