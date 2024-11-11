@@ -275,6 +275,10 @@ kubectl port-forward service/argo-cd-argocd-server -n argocd --address=0.0.0.0 7
 * Python COnfluent References:
   * [Python Client for Apache Kafka](https://docs.confluent.io/kafka-clients/python/current/overview.html)
   * [Library API Documentation](https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#)
+
+> [!NOTE]
+> The following references are included as I tried using the newer Gateway API implementation as a replacement for Ingress, but for services like ArgoCD that required `TLSRoute` configurations, I had to enable experimental features. I spent a lot of time on Nginx but failed to get it working properly. Mostly, if I got one thing to work, something else would break - basically I could have either a working `HTTPRoute` or a working `TLSRoute` - but never both. I also tried Traefik but quickly run into very similar issues and that decided to abandon this effort (at least for now). Instead I will rely on a more traditional Ingress approach, using Traefik, since I just know the product a little better. I prefer using a `TraefikService` kind for load balancing between services over a very different approach in Nginx Ingress (see [this Nginx example](https://www.elvinefendi.com/2018/11/25/canary-deployment-with-ingress-nginx.html)).
+
 * Kubernetes Gateway API Resources:
   * [SIG Documentation](https://gateway-api.sigs.k8s.io/)
   * [Kubernetes Documentation](https://kubernetes.io/docs/concepts/services-networking/gateway/)
