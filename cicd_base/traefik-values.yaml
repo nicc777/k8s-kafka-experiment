@@ -1,5 +1,6 @@
 # Enable the dashboard via a port forwarder.
 # Access: kubectl port-forward $(kubectl get pods --selector "app.kubernetes.io/name=traefik" --output=name) 8080:8080
+# Then go the the following URL in your Browser: http://localhost:7080/dashboard/#/
 ingressRoute:
   dashboard:
     enabled: true

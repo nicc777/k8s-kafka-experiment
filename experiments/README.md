@@ -45,7 +45,7 @@ In order to get the ArgoCD admin password, run:
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ```
 
-The ArgoCD Web UI is now available on https://127.0.0.1:7090/ or https://argocd.example.tld/
+The ArgoCD Web UI is now available on https://127.0.0.1:7090/
 
 > [!NOTE]
 > You may have to accept the certificate exception in your web browser

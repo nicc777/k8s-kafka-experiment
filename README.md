@@ -7,7 +7,8 @@
     - [Version 1: Basic Data](#version-1-basic-data)
     - [Version 2: Adding Widget Defects](#version-2-adding-widget-defects)
     - [Version 3: Adding Total Manufacturing Cost](#version-3-adding-total-manufacturing-cost)
-- [Kubernetes Platform](#kubernetes-platform)
+- [Kubernetes Platform for the Lab](#kubernetes-platform-for-the-lab)
+  - [Ingress](#ingress)
 - [References and resources](#references-and-resources)
 
 
@@ -227,7 +228,7 @@ The summary data REST data structure is expected to look like this:
 Note: The `total_manufacturing_cost` must be the sum total of every SKU's `production_cost`
 
 
-# Kubernetes Platform
+# Kubernetes Platform for the Lab
 
 The experiment is based on a `microk8s` version 1.30 with the following key addons enabled:
 
@@ -252,6 +253,34 @@ To start a port forwarder to ArgoCD UI:
 ```shell
 kubectl port-forward service/argo-cd-argocd-server -n argocd --address=0.0.0.0 7070:443
 ```
+
+## Ingress
+
+Run the following to install Traefik:
+
+```shell
+helm install -f cicd_base/traefik-values.yaml traefik traefik/traefik
+```
+
+> [!NOTE]
+> Due to some specific customizations, rather use this way to enable Traefik as apposed to the microk8s Traefik community addon.
+
+To permanently forward common HTTP and HTTPS ports to, run the following (you need two terminals or tmux panels):
+
+```shell
+# Make sure you export this in all terminals/panels:
+export CLUSTER_ADDRESS=...
+
+# Terminal 1 / Panel 1
+export TRAEFIK_INGRESS_NP_HTTP=`kubectl get service/traefik -n default -o json | jq '.spec.ports' | jq '.[] | select(.name=="web")' | jq '.nodePort'`
+sudo socat TCP-LISTEN:80,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$TRAEFIK_INGRESS_NP_HTTP
+
+# Terminal 2 / Panel 2
+export TRAEFIK_INGRESS_NP_HTTPS=`k get service/traefik -n default -o json | jq '.spec.ports' | jq '.[] | select(.name=="websecure")' | jq '.nodePort'`
+sudo socat TCP-LISTEN:443,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$TRAEFIK_INGRESS_NP_HTTPS
+```
+
+You can the `demo.example.tld` to your `/etc/hosts` file for the host IP 127.0.0.1 - the demo API endpoint will available at this address.
 
 # References and resources
 
