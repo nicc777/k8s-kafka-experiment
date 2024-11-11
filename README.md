@@ -280,7 +280,9 @@ export TRAEFIK_INGRESS_NP_HTTPS=`k get service/traefik -n default -o json | jq '
 sudo socat TCP-LISTEN:443,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$TRAEFIK_INGRESS_NP_HTTPS
 ```
 
-You can the `demo.example.tld` to your `/etc/hosts` file for the host IP 127.0.0.1 - the demo API endpoint will available at this address.
+You can the string `demo.example.tld traefik-dashboard.example.tld` to your `/etc/hosts` file for the host IP 127.0.0.1 - the demo API endpoint will available at this address.
+
+The Traefik dashboard is available at http://traefik-dashboard.example.tld/dashboard/#/
 
 # References and resources
 
