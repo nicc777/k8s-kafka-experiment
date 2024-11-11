@@ -284,6 +284,16 @@ You can the string `demo.example.tld traefik-dashboard.example.tld` to your `/et
 
 The Traefik dashboard is available at http://traefik-dashboard.example.tld/dashboard/#/
 
+For a complete list of host names for this lab that you can add to your `/ect/hosts` file under the `127.0.0.1`, use the following:
+
+* argocd.example.tld
+* kafka-ui.example.tld
+* tekton-ui.example.tld
+* tekton-iac.example-tld
+* tekton-app.example.tld
+* demo.example.tld
+* traefik-dashboard.example.tld
+
 # References and resources
 
 * [Confluent example using basic platform deployment with a Schema registry](https://github.com/confluentinc/confluent-kubernetes-examples/tree/master/schemas) (based on commit `master` branch with the last commit being [cdd460dd](https://github.com/confluentinc/confluent-kubernetes-examples/tree/cdd460dd90fbf3abfb348ed43acf97e3167399bd))

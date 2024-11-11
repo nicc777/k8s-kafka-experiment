@@ -3,7 +3,7 @@
 - [Initial Preparations (once off)](#initial-preparations-once-off)
   - [ArgoCD](#argocd)
   - [Tekton](#tekton)
-  - [Alternative Port Forwarding](#alternative-port-forwarding)
+  - [Ingress](#ingress)
 - [Running a experiment](#running-a-experiment)
   - [Step 1: Preparing Kafka and Kafka UI](#step-1-preparing-kafka-and-kafka-ui)
   - [Step 2: Running the experiment](#step-2-running-the-experiment)
@@ -75,7 +75,7 @@ Finally, setup a port-forwarder to the Tekton pipelines webhook:
 kubectl port-forward service/el-helm-pipelines-event-listener 7091:8080 -n default
 ```
 
-## Alternative Port Forwarding
+## Ingress
 
 If services are exposed as `NodePort`, we can use `socat` to forward the traffic directly to the services, instead of using `kubectl port-forward`. Run the following after ArgoCD and Tekton is installed:
 
@@ -83,33 +83,21 @@ If services are exposed as `NodePort`, we can use `socat` to forward the traffic
 kubectl apply -f cicd_base/argocd-nodeport.yaml
 
 kubectl apply -f cicd_base/tekton-nodeport.yaml
-
-# In all terminals, run the following commands
-export CLUSTER_ADDRESS=...
-
-export ARGOCD_NODE_PORT=`kubectl get service/argo-cd-argocd-server-np-svc -n argocd -o json | jq '.spec.ports' | jq '.[] | select(.name=="http")' | jq '.nodePort'`
-
-export TEKTON_NODE_PORT=`kubectl get service/tekton-np-svc -n tekton-pipelines -o json | jq '.spec.ports' | jq '.[] | select(.name=="http")' | jq '.nodePort'`
-
-export TEKTON_WEBHOOK_HELM_PIPELINES_NODE_PORT=`kubectl get service/tekton-np-webhook-helm-pipelines-svc -n default -o json | jq '.spec.ports' | jq '.[] | select(.name=="http")' | jq '.nodePort'`
-
-export TEKTON_WEBHOOK_APP_CTRL_PIPELINES_NODE_PORT=`kubectl get service/tekton-np-webhook-app-ctrl-pipelines-svc -n default -o json | jq '.spec.ports' | jq '.[] | select(.name=="http")' | jq '.nodePort'`
-
-# Terminal/Pane 1:
-socat TCP-LISTEN:7090,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$ARGOCD_NODE_PORT
-
-# Terminal/Pane 2:
-socat TCP-LISTEN:9097,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$TEKTON_NODE_PORT
-
-# Terminal/Pane 3:
-socat TCP-LISTEN:7091,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$TEKTON_WEBHOOK_HELM_PIPELINES_NODE_PORT
-
-# Terminal/Pane 4:
-socat TCP-LISTEN:7092,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$TEKTON_WEBHOOK_APP_CTRL_PIPELINES_NODE_PORT
 ```
 
-> [!TIP]
-> If you use `tmux`, you can run all the commands in one terminal in split-panes. To setup initial commands in all panes, you can set `tmux` to echo the commands to all panes with `CTRL+B :` and then type `setw synchronize-panes on`. Afterwards you can then just disable it again by using the `off` option.
+Add the following host names to your `/ect/hosts` file under the `127.0.0.1` host:
+
+* argocd.example.tld
+* kafka-ui.example.tld
+* tekton-ui.example.tld
+* tekton-iac.example-tld
+* tekton-app.example.tld
+* demo.example.tld
+* traefik-dashboard.example.tld
+
+ArgoCD UI: https://argocd.example.tld/applications
+
+Tekton UI: http://tekton-ui.example.tld/#/taskruns
 
 # Running a experiment
 
