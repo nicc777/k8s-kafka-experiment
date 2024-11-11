@@ -1,0 +1,18 @@
+# Enable the dashboard via a port forwarder.
+# Access: kubectl port-forward $(kubectl get pods --selector "app.kubernetes.io/name=traefik" --output=name) 8080:8080
+ingressRoute:
+  dashboard:
+    enabled: true
+
+# Enable the Ingress class
+ingressClass:
+  name: traefik
+providers:
+  kubernetesCRD:
+    ingressClass: traefik
+  kubernetesIngress:
+    ingressClass: traefik
+
+# Use NodePort instead of LoadBalancer
+service:
+  type: NodePort
