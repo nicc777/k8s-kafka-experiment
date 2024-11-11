@@ -4,6 +4,8 @@ kind: Service
 metadata:
   name: argo-cd-argocd-server-np-svc
   namespace: argocd
+  annotations:
+    traefik.ingress.kubernetes.io/service.serversscheme: "https"
 spec:
   ports:
   - name: http
@@ -18,4 +20,25 @@ spec:
     app.kubernetes.io/instance: argo-cd
     app.kubernetes.io/name: argocd-server
   type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: argocd-ingress
+  namespace: argocd
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+    traefik.ingress.kubernetes.io/router.tls: "true"
+spec:
+  rules:
+  - host: argocd.example.tld
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: argo-cd-argocd-server-np-svc
+            port:
+              name: https
 

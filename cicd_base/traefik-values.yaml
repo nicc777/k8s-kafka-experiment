@@ -1,3 +1,13 @@
+# IMPORTANT !!!
+#
+#   This configuration is for lab purposes and must be considered insecure
+#
+#   DO NOT USE ON PRODUCTION OR INTERNET FACING SYSTEMS
+#
+# DOCS:
+#   https://github.com/traefik/traefik-helm-chart/blob/master/EXAMPLES.md
+#   https://github.com/traefik/traefik-helm-chart/blob/master/traefik/VALUES.md
+
 # Enable the dashboard via a port forwarder.
 # Add traefik-dashboard.example.tld to your hosts file and ensure you forward traffic to the NodePort (using socat, for example)
 # Then go the the following URL in your Browser: http://traefik-dashboard.example.tld/dashboard/#/
@@ -19,3 +29,20 @@ providers:
 # Use NodePort instead of LoadBalancer
 service:
   type: NodePort
+
+# Enable access logs
+logs:
+  access:
+    enabled: true
+
+# Do not check certificates
+ports:
+  web:
+    proxyProtocol:
+      insecure: true
+
+# The following allows us to skip TLS/HTTPS certificate verification. It's similar to "curl -k"
+# It's ok for a LAB environment, but definitely DO NOT USE THIS IN PRODUCTION OR INTERNET EXPOSED SYSTEMS
+additionalArguments:
+- --serverstransport.insecureskipverify=true
+- --providers.http.tls.insecureskipverify=true

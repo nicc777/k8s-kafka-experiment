@@ -61,6 +61,7 @@
         "reuseaddr",
         "schemaregistry",
         "securitycontextconstraints",
+        "serversscheme",
         "serviceaccounts",
         "socat",
         "statefulsets",
@@ -84,6 +85,7 @@
         "valkey",
         "verificationpolicies",
         "verificationpolicy",
+        "websecure",
         "workdir",
         "zfill"
     ]
