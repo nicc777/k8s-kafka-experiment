@@ -110,6 +110,9 @@ spec:
         - name: kafka-ui-values-volume
           configMap:
             name: helm-pipelines-kafka-ui-values-cm
+        - name: kafka-ui-ingress-volume
+          configMap:
+            name: helm-pipelines-kafka-ui-ingress-cm
         steps:
         - image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
           name: manage-base-resources
@@ -132,6 +135,8 @@ spec:
             mountPath: /data/custom-helm-values/valkey-frontend
           - name: kafka-ui-values-volume
             mountPath: /data/custom-helm-values/kafka-ui
+          - name: kafka-ui-ingress-volume
+            mountPath: /data/kafka-ui
 
 ---
 # FIXME
@@ -202,6 +207,9 @@ data:
             helm upgrade --install -n exp \
               -f /data/custom-helm-values/kafka-ui/values.yaml \
               kafka-ui kafka-ui/kafka-ui
+            export KAFKA_UI_POD_NAME=$(kubectl get pods -n exp --no-headers -o custom-columns=":metadata.name" | grep "kafka-ui")
+            kubectl wait --for=condition=ready pod/$KAFKA_UI_POD_NAME -n exp --timeout=300s
+            kubectl apply -f /data/kafka-ui/kafka-ui-ingress.yaml
           else
               echo "Timed out waiting for Kafka Services"
               exit 1
@@ -284,6 +292,35 @@ data:
         health:
           ldap:
             enabled: false
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: helm-pipelines-kafka-ui-ingress-cm
+data:
+  values.yaml: |
+    kafka-ui-ingress.yaml:
+      ---
+      apiVersion: networking.k8s.io/v1
+      kind: Ingress
+      metadata:
+        name: kafka-ui-ingress
+        namespace: exp
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "web"
+          traefik.ingress.kubernetes.io/router.tls: "false"
+      spec:
+        rules:
+        - host: kafka-ui.example.tld
+          http:
+            paths:
+            - path: /
+              pathType: Prefix
+              backend:
+                service:
+                  name: kafka-ui
+                  port:
+                    name: http
 
 
 
