@@ -235,6 +235,7 @@ data:
     helm repo add confluentinc https://packages.confluent.io/helm
     helm repo add kafka-ui https://provectus.github.io/kafka-ui-charts
     helm repo update 
+    kubectl delete -f /data/kafka-ui/kafka-ui-ingress.yaml || true
     helm delete -n exp kafka-ui
     helm delete -n exp valkey
     helm delete -n confluent confluent-operator
