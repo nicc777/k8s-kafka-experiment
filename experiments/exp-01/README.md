@@ -19,7 +19,8 @@ Ensure you have followed the initial preparations as described [here](../README.
 Run the following:
 
 ```shell
-curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"build_and_deploy_app_version", "app_version": "v1", "canary_config": "v1:90,v2:10"}' http://127.0.0.1:7092
+# The following shows the example of pushing the commend via Ingress
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"build_and_deploy_app_version", "app_version": "v1", "canary_config": "v1:90,v2:10"}' http://tekton-app.example.tld
 ```
 
 # Connecting to the API End-Point
@@ -189,6 +190,6 @@ After waiting some more minutes, you may run the exact same request to see an up
 Run the following to remove the application:
 
 ```shell
-curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete_app_version", "app-version": "v1", "canary_config": "v1:90,v2:10"}' http://127.0.0.1:7092
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete_app_version", "app-version": "v1", "canary_config": "v1:90,v2:10"}' http://tekton-app.example.tld
 ```
 

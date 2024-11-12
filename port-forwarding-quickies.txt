@@ -6,4 +6,4 @@ nohup kubectl port-forward --address=0.0.0.0 -n exp service/kafka-ui 8090:80 &
 
 SSH
 
-ssh -i .\.ssh\YOUR_KEY.pem -L 7090:127.0.0.1:7090 -L 9097:127.0.0.1:9097 -L 8090:127.0.0.1:8090 -L 7091:127.0.0.1:7092 -L 7091:127.0.0.1:7092 -L 7098:127.0.0.1:7098 ubuntu@CLOUD_HOST
+ssh -i .\.ssh\YOUR_KEY.pem -L 7090:127.0.0.1:7090 -L 9097:127.0.0.1:9097 -L 8090:127.0.0.1:8090 -L 7091:tekton-app.example.tld -L 7091:tekton-app.example.tld -L 7098:127.0.0.1:7098 ubuntu@CLOUD_HOST
