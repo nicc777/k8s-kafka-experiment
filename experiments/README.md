@@ -62,16 +62,14 @@ kubectl apply -f cicd_base/applications/01_tekton.yaml
 # Install pipelines required for setting up the experiments
 kubectl apply -f cicd_base/applications/02_tekton_pipelines.yaml
 
-# Finally, in Terminal 2, setup a port-forwarder to the Tekton Dashboard
+# (OPTIONAL - use Ingress if possible) Finally, in Terminal 2, setup a port-forwarder to the Tekton Dashboard
 kubectl port-forward service/tekton-dashboard 9097:9097 -n tekton-pipelines
 ```
 
-The Tekton dashboard is available at http://127.0.0.1:9097/#/taskruns (`TaskRun` instances is what we are most interested in)
-
-Finally, setup a port-forwarder to the Tekton pipelines webhook:
+One final, but optional, step: setup a port-forwarder to the Tekton pipelines webhook:
 
 ```shell
-# The following runs in Terminal 3
+# (OPTIONAL - use Ingress if possible) The following runs in Terminal 3
 kubectl port-forward service/el-helm-pipelines-event-listener 7091:8080 -n default
 ```
 
@@ -90,14 +88,14 @@ Add the following host names to your `/ect/hosts` file under the `127.0.0.1` hos
 * argocd.example.tld
 * kafka-ui.example.tld
 * tekton-ui.example.tld
-* tekton-iac.example-tld
+* tekton-iac.example.tld
 * tekton-app.example.tld
 * demo.example.tld
 * traefik-dashboard.example.tld
 
 ArgoCD UI: https://argocd.example.tld/applications
 
-Tekton UI: http://tekton-ui.example.tld/#/taskruns
+Tekton UI: The Tekton dashboard is available at http://tekton-ui.example.tld/#/taskruns (`TaskRun` instances is what we are most interested in)
 
 # Running a experiment
 
@@ -109,7 +107,7 @@ Ensure the values for the Kafka UI still matches your desired configuration
 
 ```shell
 # In terminal 4, run the following command to install the base requirements: Valkey and Kafka
-curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"apply"}' http://127.0.0.1:7091
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"apply"}' http://tekton-iac.example-tld
 
 # You can verify the installation worked by looking at the TaskRun results:
 kubectl get TaskRuns -n default                                                       
@@ -170,7 +168,7 @@ Before each new experiment starts, ensure the previous experiment was completely
 
 # Follow these steps after you followed the specific experiment cleanup instructions
 # Cleanup the Memory caches and kafka operator
-curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete"}' http://127.0.0.1:7091
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete"}' http://tekton-iac.example-tld
 ```
 
 # Final Cleanup
