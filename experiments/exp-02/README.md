@@ -3,6 +3,7 @@
 - [Deploy Application Stack v1](#deploy-application-stack-v1)
 - [Connecting to the API End-Point](#connecting-to-the-api-end-point)
   - [Basic Testing](#basic-testing)
+- [Cleanup](#cleanup)
 
 
 # Experiment 2 - Basic Functional Test, with version 2 of the Application
@@ -41,3 +42,22 @@ Before testing, it's best to wait a couple of minutes for the initial data to be
 > [!NOTE]  
 > Data is generated randomly, and therefore your actual results may be different from that shown below.
 
+To use the supplied Python CLI client, ensure the following is installed:
+
+```shell
+pip3 install tabulate requests
+```
+
+Now, use the supplied client:
+
+```shell
+python3 python3 client/app.py
+```
+
+# Cleanup
+
+Run the following to remove the application:
+
+```shell
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete_app_version", "app-version": "v2"}' http://tekton-app.example.tld
+```
