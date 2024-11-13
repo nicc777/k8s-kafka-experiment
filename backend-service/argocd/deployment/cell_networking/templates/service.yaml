@@ -1,0 +1,67 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-app-service-blue
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  namespace: {{ .Values.namespace }}
+spec:
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: front-end-ui-rest-v1
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: demo-app-service-green
+  annotations:
+    argocd.argoproj.io/sync-wave: "3"
+  namespace: {{ .Values.namespace }}
+spec:
+  type: NodePort
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
+  selector:
+    app: front-end-ui-rest-v1
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: TraefikService
+metadata:
+  name: demo-app-blue-green-service
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+  namespace: {{ .Values.namespace }}
+spec:
+  weighted:
+    services:
+    - name: demo-app-service-blue
+      port: 8080
+      weight: {{ .Values.weights.blue }}
+    - name: demo-app-service-green
+      port: 8080
+      weight: {{ .Values.weights.green }}
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: ingress-route-demo
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+  namespace: {{ .Values.namespace }}
+spec:
+  entryPoints:
+  - web
+  routes:
+  - match: Host(`demo.{{ .Values.baseDomain }}`)
+    kind: Rule
+    services:
+    - name: demo-app-blue-green-service
+      namespace: {{ .Values.namespace }}
+      kind: TraefikService

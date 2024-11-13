@@ -408,18 +408,18 @@ spec:
           items:
           - key: launcher.sh
             path: launcher.sh
----
-apiVersion: v1
-kind: Service
-metadata:
-  annotations:
-    argocd.argoproj.io/sync-wave: "3"
-  name: rest-api-v1
-spec:
-  selector:
-    app: front-end-ui-rest-v1
-  ports:
-    - protocol: TCP
-      port: 8080
-      targetPort: 8080
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   annotations:
+#     argocd.argoproj.io/sync-wave: "3"
+#   name: rest-api-v1
+# spec:
+#   selector:
+#     app: front-end-ui-rest-v1
+#   ports:
+#     - protocol: TCP
+#       port: 8080
+#       targetPort: 8080
   

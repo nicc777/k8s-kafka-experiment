@@ -1,0 +1,16 @@
+# Default values for demo-app.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+image:
+  repository: "ghcr.io/nicc777/container-python4aws"
+  pullPolicy: IfNotPresent
+  tag: "v3.12.3-3"
+
+namespace: exp
+
+baseDomain: example.tld
+
+weights:
+  blue: 50
+  green: 50
