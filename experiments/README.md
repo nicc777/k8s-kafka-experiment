@@ -115,24 +115,17 @@ kubectl get TaskRuns -n default
 # Note the latest task run name, for example "helm-pipelines-run-ppqrb" - replace this in TASKRUN-NAME below: 
 # Now get the logs:
 kubectl logs TASKRUN-NAME-pod -c step-manage-base-resources -n default
-
-# Start the Port Forwarder to the Kafka UI
-# Use the "--address=0.0.0.0" parameter if you are running the experiment on another computer in order to expose the UI to your lab
-kubectl port-forward --address=0.0.0.0 -n exp service/kafka-ui 8090:80
 ```
 
-Open the Kafka UI in the browser: http://127.0.0.1:8090/
+Open the Kafka UI in the browser: http://kafka-ui.example.tld/
 
 ## Step 2: Running the experiment
 
 The experiments can be controlled by the command-and-control pipeline, for which another terminal is required for port forwarding:
 
 ```shell
-# Create port forwarding session:
-kubectl port-forward service/el-app-ctrl-event-listener 7092:8080 -n default
-
 # TEST:
-curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"test", "app-version": "v1", "canary_config": "v1:90,v2:10"}' http://tekton-app.example.tld
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"test", "app-version": "v1"}' http://tekton-app.example.tld
 ```
 
 Other `command` options include:
