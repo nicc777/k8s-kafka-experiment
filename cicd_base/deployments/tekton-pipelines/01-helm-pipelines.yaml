@@ -299,29 +299,28 @@ kind: ConfigMap
 metadata:
   name: helm-pipelines-kafka-ui-ingress-cm
 data:
-  values.yaml: |
-    kafka-ui-ingress.yaml:
-      ---
-      apiVersion: networking.k8s.io/v1
-      kind: Ingress
-      metadata:
-        name: kafka-ui-ingress
-        namespace: exp
-        annotations:
-          traefik.ingress.kubernetes.io/router.entrypoints: "web"
-          traefik.ingress.kubernetes.io/router.tls: "false"
-      spec:
-        rules:
-        - host: kafka-ui.example.tld
-          http:
-            paths:
-            - path: /
-              pathType: Prefix
-              backend:
-                service:
-                  name: kafka-ui
-                  port:
-                    name: http
+  kafka-ui-ingress.yaml: |
+    ---
+    apiVersion: networking.k8s.io/v1
+    kind: Ingress
+    metadata:
+      name: kafka-ui-ingress
+      namespace: exp
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: "web"
+        traefik.ingress.kubernetes.io/router.tls: "false"
+    spec:
+      rules:
+      - host: kafka-ui.example.tld
+        http:
+          paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: kafka-ui
+                port:
+                  name: http
 
 
 
