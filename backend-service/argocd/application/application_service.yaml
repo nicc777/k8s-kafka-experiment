@@ -12,7 +12,7 @@ spec:
   source:
     repoURL: https://github.com/nicc777/k8s-kafka-experiment.git
     targetRevision: HEAD
-    path: backend-service/argocd/deployment/cell_application/v1
+    path: backend-service/argocd/deployment/cell_networking
     helm:
       values: |
         baseDomain: __DOMAIN__
