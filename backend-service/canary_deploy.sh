@@ -3,6 +3,8 @@
 # "canary_config": "v1:90,v2:10",
 # CANARY_CONFIG=v1:90,v2:10
 
+cd /tmp/k8s-kafka-experiment
+
 TARGET_1_VERSION=$(echo $CANARY_CONFIG | awk -F, '{print $1}' | awk -F: '{print $1}')
 TARGET_1_RATIO=$(echo $CANARY_CONFIG | awk -F, '{print $1}' | awk -F: '{print $2}')
 TARGET_2_VERSION=$(echo $CANARY_CONFIG | awk -F, '{print $2}' | awk -F: '{print $1}')
