@@ -20,7 +20,7 @@ Run the following:
 
 ```shell
 # The following shows the example of pushing the commend via Ingress
-curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"build_and_deploy_app_version", "app_version": "v1", "canary_config": "v1:90,v2:10"}' http://tekton-app.example.tld
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"build_and_deploy_app_version", "app_version": "v1"}' http://tekton-app.example.tld
 ```
 
 # Setup Ingress
