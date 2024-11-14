@@ -10,6 +10,10 @@ echo "- Current directory: ${PWD}"
 # Where N is "v1", "v2" or "v3"
 # : ${APP_VERSION:="v1"}
 
+
+echo "- Deleteing application Networking"
+bash ./canary_delete.sh || true
+
 echo "- Deleting application version ${APP_VERSION}"
 
 cd /tmp/k8s-kafka-experiment

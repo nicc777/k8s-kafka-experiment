@@ -44,7 +44,8 @@ roleRef:
 #   "command": "string",
 #   "app_version": "v1|v2|v3",
 #   "canary_config": "v1:90,v2:10",
-#   "pause_time_post_schema_deployment": 10
+#   "pause_time_post_schema_deployment": 10,
+#   "domain": "example.tld"
 # }
 ---
   apiVersion: triggers.tekton.dev/v1beta1
@@ -106,9 +107,11 @@ spec:
   - name: app_version
     default: "v1"
   - name: canary_config
-    default: "not-set"
+    default: "v1:50,v1:50"
   - name: pause_time_post_schema_deployment
     default: "10"
+  - name: domain
+    default: "example.tld"
   resourcetemplates:
   - apiVersion: tekton.dev/v1beta1
     kind: TaskRun
@@ -116,16 +119,6 @@ spec:
       generateName: app-ctrl-run-
     spec:
       taskSpec:
-        # volumes:
-        # - name: apply-volume
-        #   configMap:
-        #     name: app-ctrl-apply-script-cm
-        # - name: delete-volume
-        #   configMap:
-        #     name: app-ctrl-delete-script-cm
-        # - name: valkey-values-volume
-        #   configMap:
-        #     name: app-ctrl-valkey-values-cm
         steps:
         - image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
           name: manage-base-resources
@@ -138,6 +131,7 @@ spec:
             export APP_VERSION=$(tt.params.app_version)
             export CANARY_CONFIG=$(tt.params.canary_config)
             export PAUSE_TIME_POST_SCHEMA_DEPLOYMENT=$(tt.params.pause_time_post_schema_deployment)
+            export DOMAIN=$(tt.params.domain)
             case $COMMAND in
                 build_and_deploy_app_version)
                     echo "Building and deploying version ${APP_VERSION} of the application"
@@ -170,28 +164,5 @@ spec:
                     bash /tmp/k8s-kafka-experiment/backend-service/test.sh || true
                     ;;
             esac
-          # volumeMounts:
-          # - name: apply-volume
-          #   mountPath: /scripts/apply
-          # - name: delete-volume
-          #   mountPath: /scripts/delete
-          # - name: valkey-values-volume
-          #   mountPath: /data/custom-helm-values/valkey
-
-# ---
-# apiVersion: v1
-# kind: ConfigMap
-# metadata:
-#   name: app-ctrl-valkey-values-cm
-# data:
-#   values.yaml: |
-#     auth:
-#       enabled: false
-#       sentinel: false
-#     replica:
-#       replicaCount: 1
-#     metrics:
-#       enabled: true
-
 
 

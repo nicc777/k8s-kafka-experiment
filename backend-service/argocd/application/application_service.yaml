@@ -16,7 +16,7 @@ spec:
     chart: application-networking
     helm:
       values: |
-        baseDomain: __DOMAI__
+        baseDomain: __DOMAIN__
         weights:
           target1: __WEIGHT_TARGET_1__
           target2: __WEIGHT_TARGET_2__
