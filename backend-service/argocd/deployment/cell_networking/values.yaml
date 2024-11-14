@@ -12,5 +12,9 @@ namespace: exp
 baseDomain: example.tld
 
 weights:
-  blue: 50
-  green: 50
+  target1: 50
+  target2: 50
+
+applicationNames:
+  target1: front-end-ui-rest-v1
+  target2: front-end-ui-rest-v1

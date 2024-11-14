@@ -1,0 +1,48 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: application-networking
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+  labels:
+    name: application-networking
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/nicc777/k8s-kafka-experiment.git
+    targetRevision: HEAD
+    path: backend-service/argocd/deployment/cell_application/v1
+    chart: application-networking
+    helm:
+      values: |
+        baseDomain: __DOMAI__
+        weights:
+          target1: __WEIGHT_TARGET_1__
+          target2: __WEIGHT_TARGET_2__
+        applicationNames:
+          target1: front-end-ui-rest-__VERSION_1__
+          target2: front-end-ui-rest-__VERSION_2__
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: exp
+  info:
+    - name: 'README'
+      value: 'https://github.com/nicc777/k8s-kafka-experiment/blob/main/README.md'
+  syncPolicy:
+    automated: 
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+    - CreateNamespace=true
+    - PrunePropagationPolicy=foreground
+    - PruneLast=true
+    - RespectIgnoreDifferences=true
+    - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m

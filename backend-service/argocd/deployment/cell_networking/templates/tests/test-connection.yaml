@@ -6,8 +6,12 @@ metadata:
     "helm.sh/hook": test
 spec:
   containers:
-    - name: wget
-      image: "{{ .Values.image.repository }}:{{ .Values.image.tag  }}"
-      command: ['wget']
-      args: ['demo-app-round-robbin-service:8080']
+  - name: wget
+    image: "{{ .Values.image.repository }}:{{ .Values.image.tag  }}"
+    command: ['wget']
+    args: ['demo-app-service-target1:8080']
+  - name: wget
+    image: "{{ .Values.image.repository }}:{{ .Values.image.tag  }}"
+    command: ['wget']
+    args: ['demo-app-service-target2:8080']
   restartPolicy: Never

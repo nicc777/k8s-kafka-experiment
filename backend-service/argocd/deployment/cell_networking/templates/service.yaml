@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: demo-app-service-blue
+  name: demo-app-service-target1
   annotations:
     argocd.argoproj.io/sync-wave: "3"
   namespace: {{ .Values.namespace }}
@@ -13,12 +13,12 @@ spec:
     port: 8080
     targetPort: 8080
   selector:
-    app: front-end-ui-rest-v1
+    app: {{ .Values.applicationNames.target1 }}
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: demo-app-service-green
+  name: demo-app-service-target2
   annotations:
     argocd.argoproj.io/sync-wave: "3"
   namespace: {{ .Values.namespace }}
@@ -29,24 +29,24 @@ spec:
     port: 8080
     targetPort: 8080
   selector:
-    app: front-end-ui-rest-v1
+    app: {{ .Values.applicationNames.target2 }}
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: TraefikService
 metadata:
-  name: demo-app-blue-green-service
+  name: demo-app-ingress-service
   annotations:
     argocd.argoproj.io/sync-wave: "4"
   namespace: {{ .Values.namespace }}
 spec:
   weighted:
     services:
-    - name: demo-app-service-blue
+    - name: demo-app-service-target1
       port: 8080
-      weight: {{ .Values.weights.blue }}
-    - name: demo-app-service-green
+      weight: {{ .Values.weights.target1 }}
+    - name: demo-app-service-target2
       port: 8080
-      weight: {{ .Values.weights.green }}
+      weight: {{ .Values.weights.target2 }}
 ---
 apiVersion: traefik.containo.us/v1alpha1
 kind: IngressRoute
@@ -62,6 +62,6 @@ spec:
   - match: Host(`demo.{{ .Values.baseDomain }}`)
     kind: Rule
     services:
-    - name: demo-app-blue-green-service
+    - name: demo-app-ingress-service
       namespace: {{ .Values.namespace }}
       kind: TraefikService
