@@ -16,7 +16,7 @@ from tabulate import tabulate
 
 # THe below base URL should be sufficient if the standard instructions are
 # followed. Override with an environment variable as required.
-END_POINT_BASE_URL = os.getenv('END_POINT_BASE_URL', 'http://127.0.0.1:7098')
+END_POINT_BASE_URL = os.getenv('END_POINT_BASE_URL', 'http://demo.example.tld')
 
 # Default year is 2020. To choose any other year between 2000 and 2024, set the
 # YEAR environment variable.
