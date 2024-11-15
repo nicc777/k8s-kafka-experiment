@@ -72,3 +72,5 @@ spec:
     - name: demo-app-ingress-service
       namespace: {{ .Values.namespace }}
       kind: TraefikService
+      nodePortLB: true
+      
