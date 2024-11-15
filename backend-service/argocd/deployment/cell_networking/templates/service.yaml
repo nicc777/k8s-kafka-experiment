@@ -31,7 +31,7 @@ spec:
   selector:
     app: {{ .Values.applicationNames.target2 }}
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: TraefikService
 metadata:
   name: demo-app-ingress-service
@@ -48,7 +48,7 @@ spec:
       port: 8080
       weight: {{ .Values.weights.target2 }}
 ---
-apiVersion: traefik.containo.us/v1alpha1
+apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
 metadata:
   name: ingress-route-demo
