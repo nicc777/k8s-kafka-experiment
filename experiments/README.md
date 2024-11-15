@@ -107,7 +107,7 @@ Ensure the values for the Kafka UI still matches your desired configuration
 
 ```shell
 # In terminal 4, run the following command to install the base requirements: Valkey and Kafka
-curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"apply"}' http://tekton-iac.example-tld
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"apply"}' http://tekton-iac.example.tld
 
 # You can verify the installation worked by looking at the TaskRun results:
 kubectl get TaskRuns -n default                                                       
