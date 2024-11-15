@@ -259,7 +259,7 @@ kubectl port-forward service/argo-cd-argocd-server -n argocd --address=0.0.0.0 7
 Run the following to install Traefik:
 
 ```shell
-helm install -f cicd_base/traefik-values.yaml traefik traefik/traefik
+helm upgrade --install -f cicd_base/traefik-values.yaml traefik traefik/traefik
 ```
 
 > [!NOTE]
