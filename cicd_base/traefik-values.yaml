@@ -30,7 +30,7 @@ providers:
 service:
   type: NodePort
 
-# Enable access logs
+# Enable access logs and debug logging
 logs:
   access:
     enabled: true
