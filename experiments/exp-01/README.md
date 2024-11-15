@@ -164,6 +164,10 @@ After waiting some more minutes, you may run the exact same request to see an up
 Run the following to remove the application:
 
 ```shell
+# Remove the canaries
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete_canary"}' http://tekton-app.example.tld
+
+# Delete the app
 curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete_app_version", "app-version": "v1"}' http://tekton-app.example.tld
 ```
 
