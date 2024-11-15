@@ -41,12 +41,18 @@ metadata:
 spec:
   weighted:
     services:
-    - name: demo-app-service-target1
+    - kind: Service
+      name: demo-app-service-target1
+      namespace: {{ .Values.namespace }}
       port: 8080
       weight: {{ .Values.weights.target1 }}
-    - name: demo-app-service-target2
+      nodePortLB: true
+    - kind: Service
+      name: demo-app-service-target2
+      namespace: {{ .Values.namespace }}
       port: 8080
       weight: {{ .Values.weights.target2 }}
+      nodePortLB: true
 ---
 apiVersion: traefik.io/v1alpha1
 kind: IngressRoute
