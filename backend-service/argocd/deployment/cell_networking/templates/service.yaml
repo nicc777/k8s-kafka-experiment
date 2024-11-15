@@ -58,6 +58,7 @@ metadata:
 spec:
   entryPoints:
   - web
+  - websecure
   routes:
   - match: Host(`demo.{{ .Values.baseDomain }}`)
     kind: Rule
