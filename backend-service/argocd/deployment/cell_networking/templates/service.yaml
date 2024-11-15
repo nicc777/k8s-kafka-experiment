@@ -60,7 +60,7 @@ metadata:
   name: ingress-route-demo
   annotations:
     argocd.argoproj.io/sync-wave: "5"
-  namespace: {{ .Values.namespace }}
+  namespace: default
 spec:
   entryPoints:
   - web
