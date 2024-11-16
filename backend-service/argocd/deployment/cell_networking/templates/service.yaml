@@ -37,7 +37,7 @@ metadata:
   name: demo-app-ingress-service
   annotations:
     argocd.argoproj.io/sync-wave: "4"
-  namespace: {{ .Values.namespace }}
+  namespace: default
 spec:
   weighted:
     services:
