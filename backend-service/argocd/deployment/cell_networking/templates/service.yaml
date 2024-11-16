@@ -37,7 +37,7 @@ metadata:
   name: demo-app-ingress-service
   annotations:
     argocd.argoproj.io/sync-wave: "4"
-  namespace: default
+  namespace: {{ .Values.namespace }}
 spec:
   weighted:
     services:
@@ -61,7 +61,7 @@ metadata:
   annotations:
     argocd.argoproj.io/sync-wave: "5"
     kubernetes.io/ingress.class: traefik
-  namespace: default
+  namespace: {{ .Values.namespace }}
 spec:
   entryPoints:
   - web
