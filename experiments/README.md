@@ -1,9 +1,9 @@
 
 - [Experiments Root](#experiments-root)
 - [Initial Preparations (once off)](#initial-preparations-once-off)
+  - [Ingress](#ingress)
   - [ArgoCD](#argocd)
   - [Tekton](#tekton)
-  - [Ingress](#ingress)
 - [Running a experiment](#running-a-experiment)
   - [Step 1: Preparing Kafka and Kafka UI](#step-1-preparing-kafka-and-kafka-ui)
   - [Step 2: Running the experiment](#step-2-running-the-experiment)
@@ -29,13 +29,27 @@ In order to run the experiment, access to several component API's or web user in
 
 For running the experiments, you may need as many as 6 open terminal sessions.
 
+## Ingress
+
+If services are exposed as `NodePort`, we can use `socat` to forward the traffic directly to the services, instead of using `kubectl port-forward`. 
+
+Add the following host names to your `/ect/hosts` file under the `127.0.0.1` host:
+
+* argocd.example.tld
+* kafka-ui.example.tld
+* tekton-ui.example.tld
+* tekton-iac.example.tld
+* tekton-app.example.tld
+* demo.example.tld
+* traefik-dashboard.example.tld
+
 ## ArgoCD
 
 For this purpose, it is important to create a number of port-forwarding connections:
 
 ```shell
-# ArgoCD in Terminal 1 (alternative of using the Gateway API, as describe in the section "Nginx Gateway API Fabric")
-kubectl port-forward service/argo-cd-argocd-server 7090:80 -n argocd
+# Enable the Ingress for ArgoCD
+kubectl apply -f cicd_base/argocd-nodeport.yaml
 ```
 
 In order to get the ArgoCD admin password, run:
@@ -45,7 +59,7 @@ In order to get the ArgoCD admin password, run:
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ```
 
-The ArgoCD Web UI is now available on https://127.0.0.1:7090/
+The ArgoCD Web UI is now available on https://argocd.example.tld/
 
 > [!NOTE]
 > You may have to accept the certificate exception in your web browser
@@ -62,38 +76,9 @@ kubectl apply -f cicd_base/applications/01_tekton.yaml
 # Install pipelines required for setting up the experiments
 kubectl apply -f cicd_base/applications/02_tekton_pipelines.yaml
 
-# (OPTIONAL - use Ingress if possible) Finally, in Terminal 2, setup a port-forwarder to the Tekton Dashboard
-kubectl port-forward service/tekton-dashboard 9097:9097 -n tekton-pipelines
-```
-
-One final, but optional, step: setup a port-forwarder to the Tekton pipelines webhook:
-
-```shell
-# (OPTIONAL - use Ingress if possible) The following runs in Terminal 3
-kubectl port-forward service/el-helm-pipelines-event-listener 7091:8080 -n default
-```
-
-## Ingress
-
-If services are exposed as `NodePort`, we can use `socat` to forward the traffic directly to the services, instead of using `kubectl port-forward`. Run the following after ArgoCD and Tekton is installed:
-
-```shell
-kubectl apply -f cicd_base/argocd-nodeport.yaml
-
+# Setup Ingress
 kubectl apply -f cicd_base/tekton-nodeport.yaml
 ```
-
-Add the following host names to your `/ect/hosts` file under the `127.0.0.1` host:
-
-* argocd.example.tld
-* kafka-ui.example.tld
-* tekton-ui.example.tld
-* tekton-iac.example.tld
-* tekton-app.example.tld
-* demo.example.tld
-* traefik-dashboard.example.tld
-
-ArgoCD UI: https://argocd.example.tld/applications
 
 Tekton UI: The Tekton dashboard is available at http://tekton-ui.example.tld/#/taskruns (`TaskRun` instances is what we are most interested in)
 
