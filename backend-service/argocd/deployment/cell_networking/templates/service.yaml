@@ -60,6 +60,7 @@ metadata:
   name: ingress-route-demo
   annotations:
     argocd.argoproj.io/sync-wave: "5"
+    kubernetes.io/ingress.class: traefik
   namespace: default
 spec:
   entryPoints:
