@@ -230,7 +230,7 @@ Note: The `total_manufacturing_cost` must be the sum total of every SKU's `produ
 
 # Kubernetes Platform for the Lab
 
-The experiment is based on a `microk8s` version 1.30 with the following key addons enabled:
+The experiment is based on a `microk8s` version 1.31 with the following key addons enabled:
 
 * Required:
   * argocd
@@ -242,16 +242,25 @@ The experiment is based on a `microk8s` version 1.30 with the following key addo
   * metrics-server
   * registry
 
+Commands on Ubuntu:
+
+```shell
+# Install the system
+sudo snap install microk8s --classic --channel=1.31
+
+# Export the config for kubectl
+microk8s config > ~/kube_conf_microk8s_local.yaml
+
+# Add the required addons
+microk8s enable community metrics-server storage argocd
+```
+
+On you local machine, get the config from the server.
+
 To get the ArgoCD admin password, run:
 
 ```shell
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
-```
-
-To start a port forwarder to ArgoCD UI:
-
-```shell
-kubectl port-forward service/argo-cd-argocd-server -n argocd --address=0.0.0.0 7070:443
 ```
 
 ## Ingress
