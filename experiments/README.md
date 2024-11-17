@@ -146,7 +146,7 @@ Before each new experiment starts, ensure the previous experiment was completely
 
 # Follow these steps after you followed the specific experiment cleanup instructions
 # Cleanup the Memory caches and kafka operator
-curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete"}' http://tekton-iac.example-tld
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete"}' http://tekton-iac.example.tld
 ```
 
 # Final Cleanup
