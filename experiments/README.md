@@ -110,14 +110,14 @@ The experiments can be controlled by the command-and-control pipeline, for which
 
 ```shell
 # TEST:
-curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"test", "app-version": "v1"}' http://tekton-app.example.tld
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"test", "app_version": "v1"}' http://tekton-app.example.tld
 ```
 
 Other `command` options include:
 
 | Command                        | Use Case                                                                                 |
 | ------------------------------ | ---------------------------------------------------------------------------------------- |
-| `test`                         | Required for testing. The values for `app-version` and `canary_config` is not important. |
+| `test`                         | Required for testing. The values for `app_version` and `canary_config` is not important. |
 | `build_and_deploy_app_version` | Deploys a specific version, as dictated by the experiment to be run.                     |
 | `delete_app_version`           | Deletes a specific application version, as dictated by the experiment                    |
 | `deploy_canary`                | Used to set the load balancing options between two versions of an application.           |

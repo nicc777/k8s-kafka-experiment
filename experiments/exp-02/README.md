@@ -59,5 +59,5 @@ python3 python3 client/app.py
 Run the following to remove the application:
 
 ```shell
-curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete_app_version", "app-version": "v2"}' http://tekton-app.example.tld
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"delete_app_version", "app_version": "v2"}' http://tekton-app.example.tld
 ```
