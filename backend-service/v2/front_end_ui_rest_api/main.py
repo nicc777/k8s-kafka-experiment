@@ -113,8 +113,16 @@ def get_summary_data(client)->Results:
             for key in read_keys(client=client, year=year):
                 key2 = copy.deepcopy(key)
                 key2 = key2.replace('manufactured', 'defects')
-                manufactured_qty = int(client.get(key))
-                defect_qty = int(client.get(key2))
+                manufactured_qty = 0
+                defect_qty = 0
+                try:
+                    manufactured_qty = int(client.get(key))
+                except:
+                    logger.warning('{} - FAILED to get Manufactured QTY - Assuming 0'.format(HOSTNAME))
+                try:
+                    defect_qty = int(client.get(key2))
+                except:
+                    logger.warning('{} - FAILED to get Defect QTY - Assuming 0'.format(HOSTNAME))
                 decoded_key = key.decode('utf-8')
                 logger.debug('{} - decoded_key={}'.format(HOSTNAME, decoded_key))
                 key_elements = decoded_key.split(':')
@@ -169,8 +177,16 @@ def get_annual_data_for_sku(client, sku: str, year: int)->Results:
             key2_as_str = key2_as_str.replace('manufactured', 'defects')
             key = key_as_str.encode('utf-8')
             key2 = key2_as_str.encode('utf-8')
-            manufactured_qty = int(client.get(key))
-            defect_qty = int(client.get(key2))
+            manufactured_qty = 0
+            defect_qty = 0
+            try:
+                manufactured_qty = int(client.get(key))
+            except:
+                logger.warning('{} - FAILED to get Manufactured QTY - Assuming 0'.format(HOSTNAME))
+            try:
+                defect_qty = int(client.get(key2))
+            except:
+                logger.warning('{} - FAILED to get Defect QTY - Assuming 0'.format(HOSTNAME))
             record = ResultData(
                 sku=sku,
                 year=year,

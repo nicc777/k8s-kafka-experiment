@@ -109,7 +109,11 @@ def get_summary_data(client)->Results:
             logger.info('{} - Getting data for year {}'.format(HOSTNAME, year))
             key: bytes
             for key in read_keys(client=client, year=year):
-                qty = int(client.get(key))
+                qty = 0
+                try:
+                    qty = int(client.get(key))
+                except:
+                    logger.warning('{} - FAILED to get QTY - Assuming 0'.format(HOSTNAME))
                 decoded_key = key.decode('utf-8')
                 logger.debug('{} - decoded_key={}'.format(HOSTNAME, decoded_key))
                 key_elements = decoded_key.split(':')
@@ -160,7 +164,11 @@ def get_annual_data_for_sku(client, sku: str, year: int)->Results:
         for month in range(1,13):
             key_as_str = 'manufactured:{}:{}:{}'.format(sku, year, month)
             key = key_as_str.encode('utf-8')
-            qty = int(client.get(key))
+            qty = 0
+            try:
+                qty = int(client.get(key))
+            except:
+                logger.warning('{} - FAILED to get QTY - Assuming 0'.format(HOSTNAME))
             record = ResultData(
                 sku=sku,
                 year=year,
