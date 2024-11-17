@@ -59,7 +59,7 @@ data:
       "fields": [
           { "name": "sku", "type": "string" },
           { "name": "manufactured_qty", "type": "int" },
-          { "name": "defect_qty", "type": "int", "default": null },
+          { "name": "defect_qty", "type": "int", "default": -1 },
           { "name": "year", "type": "int" },
           { "name": "month", "type": "int" }
       ]

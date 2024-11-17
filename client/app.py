@@ -142,11 +142,13 @@ while True:
                 previous_versions[sku_name] = updated_version
             else:
                 table.append(
-                    '{}'.format(sku_name),  # SKU
-                    'unknown',              # Version
-                    'n/a',                  # Total Manufactured
-                    'n/a',                  # Total Defects
-                    'n/a',                  # Total Costs
+                    [
+                        '{}'.format(sku_name),  # SKU
+                        'unknown',              # Version
+                        'n/a',                  # Total Manufactured
+                        'n/a',                  # Total Defects
+                        'n/a',                  # Total Costs
+                    ]
                 )
 
         os.system('cls' if os.name == 'nt' else 'clear')
