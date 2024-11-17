@@ -199,6 +199,17 @@ async def query(sku, year)->Results:
     return get_annual_data_for_sku(client=valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0), sku=sku, year=year)
 
 
+@app.get("/reset-db")
+async def reset_db():
+    try:
+        client = valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0)
+        client.flushall(asynchronous=True)
+        logger.info('{} - Database Flushed')
+    except:
+        logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
+    return {"message": "ok", "version": VERSION}
+
+
 @app.get("/")
 async def root():
     return {"message": "ok", "version": VERSION}
