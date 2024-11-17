@@ -63,6 +63,7 @@ metadata:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: "web"
     traefik.ingress.kubernetes.io/router.tls: "false"
+    kubernetes.io/ingress.class: traefik
 spec:
   rules:
   - host: tekton-iac.example.tld
@@ -101,6 +102,7 @@ metadata:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: "web"
     traefik.ingress.kubernetes.io/router.tls: "false"
+    kubernetes.io/ingress.class: traefik
 spec:
   rules:
   - host: tekton-app.example.tld
