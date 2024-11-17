@@ -239,6 +239,7 @@ def retrieve_supported_registered_schema(schema_registry_client: SchemaRegistryC
 
     return matched_registered_schema
 
+
 def consume_raw_data():
     schema_registry_conf = {
         'url': '{}://{}:{}'.format(KAFKA_SCHEMA_SERVER_PROTOCOL, KAFKA_SCHEMA_SERVER_HOST, KAFKA_SCHEMA_SERVER_PORT)
