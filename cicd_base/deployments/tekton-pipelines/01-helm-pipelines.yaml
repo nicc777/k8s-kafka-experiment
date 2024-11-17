@@ -245,6 +245,7 @@ data:
     kubectl delete namespace confluent
     echo "All commands executed"
 ---
+# Values: https://github.com/bitnami/charts/blob/main/bitnami/valkey/values.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -259,7 +260,11 @@ data:
       replicaCount: 1
     metrics:
       enabled: true
+    # Allow FLUSHDB and FLUSHALL commands which is disabled by default
+    primary:
+      disableCommands: []
 ---
+# Values: https://github.com/bitnami/charts/blob/main/bitnami/valkey/values.yaml
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -274,6 +279,9 @@ data:
       replicaCount: 1
     metrics:
       enabled: true
+    # Allow FLUSHDB and FLUSHALL commands which is disabled by default
+    primary:
+      disableCommands: []
 ---
 apiVersion: v1
 kind: ConfigMap
