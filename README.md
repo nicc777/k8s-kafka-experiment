@@ -36,7 +36,7 @@ Not Started       :hourglass:
 | Major Feature               | Description                                               | Status             | Status Notes                                                                                 |
 |-----------------------------|-----------------------------------------------------------|--------------------|----------------------------------------------------------------------------------------------|
 | Infrastructure Preparations | Manifests and documentation to setup the experimental Lab | :white_check_mark: | Considering this done. Might be some improvements to come over time.                         |
-| Application v1              | Application with basic data flow via Kafka                | :construction:     | Started working on some code, but still a far way to go.                                     |
+| Application v1              | Application with basic data flow via Kafka                | :white_check_mark: | Seems to work now consistently.                                                              |
 | Application Upgrade Process | Add pipelines to automate blue/green & canary deployments | :construction:     | Busy with implementation                                                                     |
 | Application v2              | Add feature to count widget defects                       | :construction:     | Final stages of testing                                                                      |
 | Application v3              | Add total manufacturing cost data                         | :hourglass:        | Not started                                                                                  |
