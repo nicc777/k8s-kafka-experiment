@@ -11,7 +11,9 @@ import time
 import copy
 import requests
 import json
+import logging
 from tabulate import tabulate
+import traceback
 
 
 # THe below base URL should be sufficient if the standard instructions are
@@ -21,6 +23,22 @@ END_POINT_BASE_URL = os.getenv('END_POINT_BASE_URL', 'http://demo.example.tld')
 # Default year is 2020. To choose any other year between 2000 and 2024, set the
 # YEAR environment variable.
 YEAR = os.getenv('YEAR', '2020')
+
+
+DEBUG = False
+
+
+logger = logging.getLogger('client')
+logger.setLevel(logging.INFO)
+if DEBUG is True:
+    logger.setLevel(logging.DEBUG)
+ch = logging.FileHandler('/tmp/app.log')
+ch.setLevel(logging.INFO)
+if DEBUG is True:
+    ch.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+ch.setFormatter(formatter)
+logger.addHandler(ch)
 
 
 def get_sku_names()->list:
@@ -47,6 +65,7 @@ def get_data_from_query(sku_name: str, year: str)->dict:
         url = '{}/query/{}/{}'.format(END_POINT_BASE_URL, sku_name, year)
         r = requests.get(url)
         returned_data = r.json()
+        logger.info('DATA: {}'.format(json.dumps(returned_data, default=str)))
         if 'version' in returned_data:
             data['version'] = returned_data['version']
         total_manufactured = 0
@@ -63,7 +82,7 @@ def get_data_from_query(sku_name: str, year: str)->dict:
         if total_defects > 0:
             data['defects'] = int(total_defects)
     except:
-        pass
+        logger.error('EXCEPTION: {}'.format(traceback.format_exc()))
     return data
 
 
@@ -128,7 +147,7 @@ while True:
     if len(sku_names) > 0:
         for sku_name in sku_names:
             sku_data = get_data_from_query(sku_name=sku_name, year=YEAR)
-            if '1' in sku_data['version']:
+            if sku_data['version'] in ('v1', 'v2', 'v3'):
                 row, updated_version, updated_manufactured_total, updated_defects_total = add_row(
                     sku_data=sku_data,
                     sku_name=sku_name,
