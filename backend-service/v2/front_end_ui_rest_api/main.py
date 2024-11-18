@@ -42,7 +42,7 @@ import uvicorn
 #                                                                             #
 ###############################################################################
 
-VERSION = "v1"
+VERSION = "v2"
 HOSTNAME = socket.gethostname()
 DEBUG = bool(int(os.getenv('DEBUG', '0')))
 VALKEY_SERVER_HOST = os.getenv('VALKEY_SERVER_HOST', 'valkey-primary')
@@ -76,7 +76,7 @@ class ResultData(BaseModel):
 
 
 class Results(BaseModel):
-    version: str = 'v2'
+    version: str = VERSION
     data: list[ResultData]
 
 

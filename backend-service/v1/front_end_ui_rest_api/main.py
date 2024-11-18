@@ -74,7 +74,7 @@ class ResultData(BaseModel):
 
 
 class Results(BaseModel):
-    version: str = 'v1'
+    version: str = VERSION
     data: list[ResultData]
 
 
