@@ -195,19 +195,32 @@ def read_keys(client, year: int)->list:
 
 def summarize_data_from_db(client, key: bytes, current_records: Records):
     try:
-        qty = int(client.get(key))
+        manufactured_qty = 0
+        defect_qty = 0
         """
             0       1    2    3    4    5
-        'manufactured:sku:year:month:day:hour'
+        '__TYPE__:sku:year:month:day:hour'
         """
         decoded_key = key.decode('utf-8')
+        key2_str = decoded_key.replace('manufactured', 'defects')
+        key2 = key2_str.encode('utf-8')
+        try:
+            manufactured_qty = int(client.get(key))
+        except:
+            logger.warning('{} - FAILED to get Manufactured QTY - Assuming 0'.format(HOSTNAME))
+        try:
+            defect_qty = int(client.get(key2))
+        except:
+            logger.warning('{} - FAILED to get Defect QTY - Assuming 0'.format(HOSTNAME))
+
         logger.debug('{} - decoded_key={}'.format(HOSTNAME, decoded_key))
         key_elements = decoded_key.split(':')
         current_records.add_record(
             sku=key_elements[1],
             year=int(key_elements[2]),
             month=int(key_elements[3]),
-            manufactured_qty=qty
+            manufactured_qty=manufactured_qty,
+            defect_qty=defect_qty
         )
     except:
         logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
