@@ -144,6 +144,9 @@ while True:
     counter += 1
     sku_names = get_sku_names()
     table = list()
+
+    logger.info('previous_versions: {}'.format(json.dumps(previous_versions, default=str)))
+
     if len(sku_names) > 0:
         for sku_name in sku_names:
             sku_data = get_data_from_query(sku_name=sku_name, year=YEAR)
@@ -153,12 +156,12 @@ while True:
                     sku_name=sku_name,
                     previous_manufactured_total=previous_manufactured_totals[sku_name] if sku_name in previous_manufactured_totals else 0,
                     previous_defects_totals=previous_defects_totals[sku_name] if sku_name in previous_defects_totals else 0,
-                    previous_version=previous_versions[sku_name] if 'sku_name' in previous_versions else 'v1'
+                    previous_version=previous_versions[sku_name] if sku_name in previous_versions else 'v1'
                 )
                 table.append(row)
                 previous_manufactured_totals[sku_name] = int(updated_manufactured_total)
                 previous_defects_totals[sku_name] = int(updated_defects_total)
-                previous_versions[sku_name] = updated_version
+                previous_versions[sku_name] = sku_data['version']
             else:
                 table.append(
                     [
