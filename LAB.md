@@ -11,7 +11,7 @@ The experiment was tested on an Ubuntu Server platform (22.04).
 
 On the workstation this repository was cloned on, the following additional software was used:
 
-* BASH (ZSH should be fine as well, but scripts were tested on NASH).
+* BASH (ZSH should be fine as well, but scripts were tested on BASH).
 * `jq` (see [homepage](https://jqlang.github.io/jq/))
 * Recent version of CLI tools:
   * `kubectl`
