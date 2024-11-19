@@ -31,23 +31,7 @@ For running the experiments, you may need as many as 6 open terminal sessions.
 
 ## Ingress
 
-Run the following, if you have not done so yet:
-
-```shell
-helm upgrade --install -f cicd_base/traefik-values.yaml traefik traefik/traefik
-```
-
-If services are exposed as `NodePort`, we can use `socat` to forward the traffic directly to the services, instead of using `kubectl port-forward`. 
-
-Add the following host names to your `/ect/hosts` file under the `127.0.0.1` host:
-
-* argocd.example.tld
-* kafka-ui.example.tld
-* tekton-ui.example.tld
-* tekton-iac.example.tld
-* tekton-app.example.tld
-* demo.example.tld
-* traefik-dashboard.example.tld
+Ensure you follow the setup as documented in the [LAB.md](../LAB.md) document.
 
 ## ArgoCD
 
