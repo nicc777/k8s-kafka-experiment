@@ -1,6 +1,26 @@
 
+- [System Requirements](#system-requirements)
 - [Kubernetes Platform for the Lab](#kubernetes-platform-for-the-lab)
   - [Ingress](#ingress)
+
+# System Requirements
+
+All experiments were tested on systems with at least 8x CPU cores and 32 GiB of RAM. Persistent storage is not used, but ensure sufficient disk space is available on your system (20 GiB should be more then enough).
+
+The experiment was tested on an Ubuntu Server platform (22.04).
+
+On the workstation this repository was cloned on, the following additional software was used:
+
+* BASH (ZSH should be fine as well, but scripts were tested on NASH).
+* `jq` (see [homepage](https://jqlang.github.io/jq/))
+* Recent version of CLI tools:
+  * `kubectl`
+  * `helm`
+* A fairly recent version of Python 3 (3.10 or later recommended)
+* Additional tools that may be helpful:
+  * `k9s` ([Homepage](https://k9scli.io/))
+
+It is possible to run everything on a single workstation, provided enough resources is available. 
 
 # Kubernetes Platform for the Lab
 
