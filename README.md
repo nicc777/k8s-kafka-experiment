@@ -61,11 +61,12 @@ Refer to the document [LAB.md](./LAB.md) for setting up a lab environment.
 * Valkey Resources:
   * [Valkey Home Page](https://valkey.io/)
   * Bitnami Managed [Helm Chart](https://github.com/bitnami/charts/blob/main/bitnami/valkey/README.md)
+  * [Python Client Documentation](https://valkey-py.readthedocs.io/en/latest/index.html)
 * This project use a [generic Python container](https://github.com/nicc777/container-python4aws) with all the require libraries, packages and other tools pre-installed for easy Python script deployment and testing in Kubernetes
 * Tekton related resources:
   * [Home Page](https://tekton.dev/)
   * [Trigger Examples](https://github.com/tektoncd/triggers/tree/main/examples)
-* Python COnfluent References:
+* Python Confluent References:
   * [Python Client for Apache Kafka](https://docs.confluent.io/kafka-clients/python/current/overview.html)
   * [Library API Documentation](https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#)
 
