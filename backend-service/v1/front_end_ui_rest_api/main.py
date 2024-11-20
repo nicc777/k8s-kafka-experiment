@@ -201,7 +201,7 @@ async def reset_db():
     try:
         client = valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0)
         client.flushall(asynchronous=True)
-        logger.info('{} - Database Flushed')
+        logger.info('{} - Database Flushed'.format(HOSTNAME))
     except:
         logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
     return {"message": "ok", "version": VERSION}
