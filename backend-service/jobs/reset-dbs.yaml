@@ -32,7 +32,7 @@ spec:
       volumes:
       - name: reset-dbs-code-vol
         configMap:
-          name: reset-dbs-v1-python-cm
+          name: reset-dbs-job-python-cm
           items:
           - key: main.py
             path: main.py
