@@ -1,0 +1,130 @@
+
+# PERMISSIONS
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: job-ctrl-sa
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: job-ctrl-eventlistener-binding
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+subjects:
+- kind: ServiceAccount
+  name: job-ctrl-sa
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-eventlistener-roles
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: job-ctrl-eventlistener-clusterbinding
+  annotations:
+    argocd.argoproj.io/sync-wave: "1"
+subjects:
+- kind: ServiceAccount
+  name: job-ctrl-sa
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: tekton-triggers-eventlistener-clusterroles
+
+# WEBHOOK....
+
+# Expected body JSON template:
+#
+# {
+#   "command": "run_job|..."
+#   "name": "string"
+# }
+---
+  apiVersion: triggers.tekton.dev/v1beta1
+  kind: EventListener
+  metadata:
+    name: job-ctrl-event-listener
+  spec:
+    triggers:
+    - name: job-ctrl-event-listener
+      interceptors: 
+      - name: "Command"
+        ref:
+          name: "cel"
+        params:
+        - name: "filter"
+          value: "body.command in ['run_job']"
+      bindings:
+        - ref: job-ctrl-trigger-binding
+      template:
+        ref: job-ctrl-trigger-template
+    resources:
+      kubernetesResource:
+        spec:
+          template:
+            spec:
+              serviceAccountName: job-ctrl-sa
+              containers:
+              - resources:
+                  requests:
+                    memory: "64Mi"
+                    cpu: "250m"
+                  limits:
+                    memory: "128Mi"
+                    cpu: "500m"
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerBinding
+metadata:
+  name: job-ctrl-trigger-binding
+spec:
+  params: 
+  - name: command
+    value: $(body.command)
+  - name: name
+    value: $(body.name)
+---
+apiVersion: triggers.tekton.dev/v1beta1
+kind: TriggerTemplate
+metadata:
+  name: job-ctrl-trigger-template
+spec:
+  params:
+  - name: command
+    default: "test"
+  - name: name
+    default: "test"
+  resourcetemplates:
+  - apiVersion: tekton.dev/v1beta1
+    kind: TaskRun
+    metadata:
+      generateName: job-ctrl-run-
+    spec:
+      taskSpec:
+        steps:
+        - image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
+          name: manage-base-resources
+          script: |
+            #!/usr/bin/env bash
+            apt install -y bc
+            cd /tmp
+            git clone https://github.com/nicc777/k8s-kafka-experiment.git
+            export COMMAND=$(tt.params.command)
+            export JOB_NAME=$(tt.params.name)
+            case $COMMAND in
+                run_job)
+                    echo "Running job named ${JOB_NAME}"
+                    bash /tmp/k8s-kafka-experiment/backend-service/run_job.sh || true
+                    ;;
+                *)
+                    echo "Running default TEST script"
+                    bash /tmp/k8s-kafka-experiment/backend-service/test.sh || true
+                    ;;
+            esac
+
+
