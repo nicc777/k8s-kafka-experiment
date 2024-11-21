@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd /tmp/k8s-kafka-experiment/backend-service
+cd /tmp/k8s-kafka-experiment
 
 echo "- Current directory: ${PWD}"
 
