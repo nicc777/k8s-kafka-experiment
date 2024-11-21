@@ -97,6 +97,7 @@ For a complete list of host names for this lab that you can add to your `/ect/ho
 * tekton-ui.example.tld
 * tekton-iac.example.tld
 * tekton-app.example.tld
+* tekton-job.example.tld
 * demo.example.tld
 * traefik-dashboard.example.tld
 

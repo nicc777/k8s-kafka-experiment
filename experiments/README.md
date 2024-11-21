@@ -127,6 +127,12 @@ List of experiment:
 > [!NOTE]
 > At this stage, future experiments will depend on the learnings from experiment 4.
 
+At any stage during the experiment, if you need to reset the data in Valkey Run the following job:
+
+```shell
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"run_job", "name": "reset-dbs"}' http://tekton-job.example.tld
+```
+
 ## Step 3: Post Experiment Cleanup
 
 Before each new experiment starts, ensure the previous experiment was completely removed:
