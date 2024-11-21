@@ -115,4 +115,42 @@ spec:
             name: tekton-np-webhook-app-ctrl-pipelines-svc
             port:
               name: http
-
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tekton-np-webhook-job-ctrl-pipelines-svc
+  namespace: default
+spec:
+  ports:
+  - name: http
+    port: 8080
+    protocol: TCP
+    targetPort: 8080
+  selector:
+    app.kubernetes.io/managed-by: EventListener
+    app.kubernetes.io/part-of: Triggers
+    eventlistener: job-ctrl-event-listener
+  type: NodePort
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: tekton-job-ingress
+  namespace: default
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: "web"
+    traefik.ingress.kubernetes.io/router.tls: "false"
+    kubernetes.io/ingress.class: traefik
+spec:
+  rules:
+  - host: tekton-job.example.tld
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: tekton-np-webhook-job-ctrl-pipelines-svc
+            port:
+              name: http
