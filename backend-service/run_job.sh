@@ -28,13 +28,13 @@ if [ -e "$FILE" ]; then
     sed -i "s/__CONFIGMAP_NAME__/$JOB_NAME/g" $TARGET
     cat $FILE | sed 's/^/    /' >> $TARGET
     kubectl apply -f $TARGET -n exp
-    kubectl apply -f backend-service/jobs/$JOB_NAME.yaml -n exp
+    kubectl apply -f /tmp/k8s-kafka-experiment/backend-service/jobs/$JOB_NAME.yaml -n exp
     kubectl wait --for=condition=complete job/$JOB_NAME-job -n exp --timeout 120s >/dev/null
     echo "________________________________________"
     kubectl logs job/$JOB_NAME-job -n exp
     echo "________________________________________"
     echo "  - job cleanup"
-    kubectl delete -f backend-service/jobs/$JOB_NAME.yaml -n exp
+    kubectl delete -f /tmp/k8s-kafka-experiment/backend-service/jobs/$JOB_NAME.yaml -n exp
     kubectl delete -f $TARGET -n exp
 else
     echo "$FILE does not exist."
