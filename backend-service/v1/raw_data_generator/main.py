@@ -1,7 +1,7 @@
 """
 This script produces random data in places it on a message queue
 
-INPUT       : Random data records, with SKU target selected from (1)
+INPUT       : Random data records, with SKU target selected from DB         (1)
 PROCESSING  : Build up raw data objects to be pushed onto a message queue
 OUTPUT      : Places raw data objects onto the message queue                (2)
 
@@ -36,13 +36,11 @@ from confluent_kafka import Producer
 from confluent_kafka.serialization import StringSerializer, SerializationContext, MessageField
 from confluent_kafka.schema_registry import SchemaRegistryClient, RegisteredSchema, Schema
 from confluent_kafka.schema_registry.avro import AvroSerializer
+import valkey
 
 # EXAMPLE taken from https://github.com/confluentinc/confluent-kafka-python/blob/master/examples/avro_producer.py
 
 HOSTNAME = socket.gethostname()
-SKU = 'SKU_{}'.format(
-    str(random.randint(1,999999)).zfill(6)
-)
 DEBUG = bool(int(os.getenv('DEBUG', '0')))
 MAX_COUNTER_VALUE = int(os.getenv('MAX_COUNTER_VALUE', '-1'))
 MAX_RATE_PER_SECOND = int(os.getenv('MAX_RATE_PER_SECOND', '2'))
@@ -87,6 +85,8 @@ MONTH_DAYS = [
     30,     # 11
     31,     # 12
 ]
+VALKEY_SERVER_HOST = os.getenv('VALKEY_SERVER_HOST', 'valkey-primary')
+VALKEY_SERVER_PORT = int(os.getenv('VALKEY_SERVER_PORT', '6379'))
 
 
 logger = logging.getLogger('raw-data-generator')
@@ -100,7 +100,6 @@ if DEBUG is True:
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 ch.setFormatter(formatter)
 logger.addHandler(ch)
-logger.info('{} - SKU                          : {}'.format(HOSTNAME, SKU))
 logger.debug('{} - MAX_RATE_PER_SECOND          : {}'.format(HOSTNAME, MAX_RATE_PER_SECOND))
 logger.debug('{} - MAX_INTERVAL_PER_LOOP        : {}'.format(HOSTNAME, MAX_INTERVAL_PER_LOOP))
 logger.debug('{} - SLEEP_BUFFER                 : {}'.format(HOSTNAME, SLEEP_BUFFER))
@@ -113,6 +112,8 @@ logger.debug('{} - KAFKA_TOPIC                  : {}'.format(HOSTNAME, KAFKA_TOP
 logger.debug('{} - SCHEMA_VERSION               : {}'.format(HOSTNAME, SCHEMA_VERSION))
 logger.debug('{} - SCHEMA_SUBJECT               : {}'.format(HOSTNAME, SCHEMA_SUBJECT))
 logger.debug('{} - SCHEMA_NAMESPACE             : {}'.format(HOSTNAME, SCHEMA_NAMESPACE))
+logger.debug('{} - VALKEY_SERVER_HOST           : {}'.format(HOSTNAME, VALKEY_SERVER_HOST))
+logger.debug('{} - VALKEY_SERVER_PORT           : {}'.format(HOSTNAME, VALKEY_SERVER_PORT))
 
 
 class RawData:
@@ -232,6 +233,41 @@ def retrieve_supported_registered_schema(schema_registry_client: SchemaRegistryC
     return matched_registered_schema
 
 
+def select_sku()->str:
+    try:
+        client = valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0)
+        sku_list_as_str = client.get('sku_names')
+        logger.debug('{} - sku_list_as_str: {}'.format(HOSTNAME, sku_list_as_str))
+        sku_list = json.loads(sku_list_as_str)
+        return random.choice(sku_list)
+    except:
+        logger.error('EXCEPTION: {}'.format(traceback.format_exc()))
+    raise Exception('Failed to get SKU list from DB')
+
+
+def create_data(month: int)->RawData:
+    try:
+        return RawData(
+            sku=select_sku(),
+            manufactured_qty=random.randint(50, 100),
+            year=random.randint(2000, 2024),
+            month=month,
+            day=random.randint(1, MONTH_DAYS[month]),
+            hour=random.randint(8, 20)
+        )
+    except:
+        logger.error('EXCEPTION: {}'.format(traceback.format_exc()))
+    return None
+
+
+def is_data_valid(data: RawData)->bool:
+    if data is None:
+        return False
+    if isinstance(data, RawData):
+        return True
+    return False
+
+
 def produce_raw_data():
     schema_registry_conf = {
         'url': '{}://{}:{}'.format(KAFKA_SCHEMA_SERVER_PROTOCOL, KAFKA_SCHEMA_SERVER_HOST, KAFKA_SCHEMA_SERVER_PORT)
@@ -257,30 +293,34 @@ def produce_raw_data():
     while produce_more_data:
         counter += 1
         producer.poll(0.0)
+
         try:
             month = random.randint(1, 12)
-            simulated_raw_data = RawData(
-                sku=SKU,
-                manufactured_qty=random.randint(50, 100),
-                year=random.randint(2000, 2024),
-                month=month,
-                day=random.randint(1, MONTH_DAYS[month]),
-                hour=random.randint(8, 20)
-            )
-            logger.debug(
-                '{} - RAW DATA Generated: {}'.format(
-                    HOSTNAME,
-                    json.dumps(raw_data_to_dict(raw_data=simulated_raw_data, ctx=None), sort_keys=True)
+            simulated_raw_data = create_data(month=month)
+            if is_data_valid(data=simulated_raw_data) is True:
+                logger.info(
+                    '{} - SKU {} data generated for {}.{}.{}'.format(
+                        HOSTNAME,
+                        simulated_raw_data.sku,
+                        simulated_raw_data.day,
+                        simulated_raw_data.month,
+                        simulated_raw_data.year
+                    )
                 )
-            )
-            producer.produce(
-                topic=KAFKA_TOPIC,
-                key=string_serializer(str(uuid4())),
-                value=avro_serializer(simulated_raw_data, SerializationContext(KAFKA_TOPIC, MessageField.VALUE)),
-                on_delivery=delivery_report
-            )
-            logger.info('{} - Produce {} messages'.format(HOSTNAME, counter))
-            producer.flush(30)
+                logger.debug(
+                    '{} - RAW DATA Generated: {}'.format(
+                        HOSTNAME,
+                        json.dumps(raw_data_to_dict(raw_data=simulated_raw_data, ctx=None), sort_keys=True)
+                    )
+                )
+                producer.produce(
+                    topic=KAFKA_TOPIC,
+                    key=string_serializer(str(uuid4())),
+                    value=avro_serializer(simulated_raw_data, SerializationContext(KAFKA_TOPIC, MessageField.VALUE)),
+                    on_delivery=delivery_report
+                )
+                logger.info('{} - Produce {} messages'.format(HOSTNAME, counter))
+                producer.flush(30)
         except:
             logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
             continue
