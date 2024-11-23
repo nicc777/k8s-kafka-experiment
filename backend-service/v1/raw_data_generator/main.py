@@ -1,9 +1,9 @@
 """
 This script produces random data in places it on a message queue
 
-INPUT       : Random data records
+INPUT       : Random data records, with SKU target selected from (1)
 PROCESSING  : Build up raw data objects to be pushed onto a message queue
-OUTPUT      : Places raw data objects onto the message queue                (1)
+OUTPUT      : Places raw data objects onto the message queue                (2)
 
                                            
 +-------------------------------+        +-----+        +-------------------------------+      
@@ -15,11 +15,11 @@ OUTPUT      : Places raw data objects onto the message queue                (1)
             +-----+                      |  A  |        +-------------------------------+        +-----+
             | DB  |                      |     |        | back_end                      |        | DB  |
             +-----+                      |     |        +-------------------------------+        +-----+
-                                         |     |
-                                         |     |  
-                                         |     |        
-+-------------------------------+        |     |   (1)  #################################
-| front_end_ui_rest_api         |        |     |<-------# raw_data_generator            #
+                                         |     |                                                   ^
+                                         |     |                                                   |
+                                         |     |                                                   |
++-------------------------------+        |     |   (2)  #################################   (1)    |
+| front_end_ui_rest_api         |        |     |<-------# raw_data_generator            #----------+
 +-------------------------------+        +-----+        #################################
 """
 import os
