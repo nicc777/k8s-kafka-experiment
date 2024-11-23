@@ -43,6 +43,10 @@ spec:
         # If MAX_COUNTER_VALUE is -1 (default), the data production will continue indefinitely. 
         - name: MAX_COUNTER_VALUE
           value: "10000"
+        - name: VALKEY_SERVER_HOST
+          value: "valkey-backend-primary"
+        - name: VALKEY_SERVER_PORT
+          value: "6379"
         volumeMounts:
         - name: raw-data-generator-code-vol
           mountPath: "/tmp/code"
