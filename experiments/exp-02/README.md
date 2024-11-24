@@ -56,6 +56,8 @@ Now, use the supplied client:
 python3 python3 client/app.py
 ```
 
+In the client you should see various updates comming in from different API versions. Version 2 API's will include data related to the number of defects, where version 1 API's do not.
+
 # Cleanup
 
 Run the following to remove the application:
