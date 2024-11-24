@@ -5,7 +5,7 @@
   - [ArgoCD](#argocd)
   - [Tekton](#tekton)
 - [Running a experiment](#running-a-experiment)
-  - [Step 1: Preparing Kafka and Kafka UI](#step-1-preparing-kafka-and-kafka-ui)
+  - [Step 1: Preparing the Lab Environment](#step-1-preparing-the-lab-environment)
   - [Step 2: Running the experiment](#step-2-running-the-experiment)
   - [Step 3: Post Experiment Cleanup](#step-3-post-experiment-cleanup)
 - [Final Cleanup](#final-cleanup)
@@ -72,11 +72,18 @@ kubectl apply -f cicd_base/tekton-nodeport.yaml
 
 Tekton UI: The Tekton dashboard is available at http://tekton-ui.example.tld/#/taskruns (`TaskRun` instances is what we are most interested in)
 
+A simple test to ensure the pipelines are working:
+
+```shell
+# TEST:
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"test", "app_version": "v1"}' http://tekton-app.example.tld
+```
+
 # Running a experiment
 
 There are several steps to start each experiment
 
-## Step 1: Preparing Kafka and Kafka UI
+## Step 1: Preparing the Lab Environment
 
 Ensure the values for the Kafka UI still matches your desired configuration
 
@@ -94,14 +101,13 @@ kubectl logs TASKRUN-NAME-pod -c step-manage-base-resources -n default
 
 Open the Kafka UI in the browser: http://kafka-ui.example.tld/
 
-## Step 2: Running the experiment
-
-The experiments can be controlled by the command-and-control pipeline, for which another terminal is required for port forwarding:
+Prepare the SKU names and other preparations work:
 
 ```shell
-# TEST:
-curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"test", "app_version": "v1"}' http://tekton-app.example.tld
+curl -vvv -X POST -H 'Content-Type: application/json' -d '{"command":"run_job", "name": "reset-dbs"}' http://tekton-job.example.tld
 ```
+
+## Step 2: Running the experiment
 
 Other `command` options include:
 
