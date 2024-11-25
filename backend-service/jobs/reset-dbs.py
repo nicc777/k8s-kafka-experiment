@@ -27,6 +27,14 @@ ch.setFormatter(formatter)
 logger.addHandler(ch)
 
 
+def annual_inflation()->dict:
+    inflation = dict()
+    for year in range(2000, 2025):
+        key = '{}'.format(year)
+        inflation[key] = random.randint(5, 10)
+    return inflation
+
+
 def get_db_servers()->list:
     dbs = json.loads(VALKEY_DBS_JSON)
     for db_record in dbs:
@@ -68,6 +76,7 @@ backend_record = get_backend_master()
 if 'host' in backend_record and 'port' in backend_record:
     client = valkey.Valkey(host=backend_record['host'], port=int(backend_record['port']), db=0)
     client.set('sku_names', json.dumps(create_sku_names(), default=str))
+    client.set('inflation', json.dumps(annual_inflation(), default=str))
 else:
     raise Exception('Failed to create SKU names')
 

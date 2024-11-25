@@ -154,7 +154,7 @@ The cost is based on the year and is calculated as a base cost, plus a cost per 
   * Annual increase: An integer value ranging in a random percentage between 5% and 10% (minimum 1)
   * The base cost can be aggregated for the month, based on the total work hours in that month
 * Widget cost (per SKU): Random integer value between 100 and 200
-  * Annual increase a random integer value of minimum 1 or maximum 10% of of widget cost
+  * Annual increase a random integer value of minimum 5% or maximum 10% of of widget cost
 
 Example of the raw data in JSON format:
 
