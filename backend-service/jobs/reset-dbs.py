@@ -75,8 +75,13 @@ for db_record in get_db_servers():
 backend_record = get_backend_master()
 if 'host' in backend_record and 'port' in backend_record:
     client = valkey.Valkey(host=backend_record['host'], port=int(backend_record['port']), db=0)
-    client.set('sku_names', json.dumps(create_sku_names(), default=str))
+    sku_collection = create_sku_names()
+    client.set('sku_names', json.dumps(sku_collection, default=str))
     client.set('inflation', json.dumps(annual_inflation(), default=str))
+    sku_start_manufacturing_costs = dict()
+    for sku in sku_collection:
+        sku_start_manufacturing_costs[sku] = random.randint(100, 200)
+    client.set('sku_start_manufacturing_costs', json.dumps(sku_start_manufacturing_costs, default=str))
 else:
     raise Exception('Failed to create SKU names')
 

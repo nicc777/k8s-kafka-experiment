@@ -150,9 +150,6 @@ In version 3, we add the manufacturing costs fo the widgets.
 
 The cost is based on the year and is calculated as a base cost, plus a cost per widget
 
-* Starting base cost: 280 units per hour
-  * Annual increase: An integer value ranging in a random percentage between 5% and 10% (minimum 1)
-  * The base cost can be aggregated for the month, based on the total work hours in that month
 * Widget cost (per SKU): Random integer value between 100 and 200
   * Annual increase a random integer value of minimum 5% or maximum 10% of of widget cost
 

@@ -120,6 +120,20 @@ logger.debug('{} - VALKEY_SERVER_HOST           : {}'.format(HOSTNAME, VALKEY_SE
 logger.debug('{} - VALKEY_SERVER_PORT           : {}'.format(HOSTNAME, VALKEY_SERVER_PORT))
 
 
+def calc_cost_with_inflation(base_price: int, target_year: int)->int:
+    if target_year == 2000:
+        return base_price
+    i = 2000
+    while i < target_year:
+        i += 1
+        inflation_number = inflation.get_inflation_for_year(year=i)
+        inflation_value_on_base = int(base_price * ( inflation_number/100.0 ))
+        if inflation_value_on_base < 1:
+            inflation_value_on_base = 1
+        base_price += inflation_value_on_base
+    return base_price
+
+
 class AnnualInflation:
 
     def __init__(self):
@@ -141,9 +155,45 @@ class AnnualInflation:
             return int(self.inflation[key])
         logger.warning('{} - No inflation data for year {} available - returning default of 5%'.format(HOSTNAME, year))
         return 5
+    
+
+class SkuManufacturingUnitCosts:
+
+    def __init__(self):
+        self.sku_start_manufacturing_costs = dict()
+        self.annual_sku_manufacturing_costs = dict()
+        self._load_sku_start_manufacturing_costs_from_db()
+
+    def _load_sku_start_manufacturing_costs_from_db(self):
+        try:
+            client = valkey.Valkey(host=VALKEY_SERVER_HOST, port=VALKEY_SERVER_PORT, db=0)
+            sku_start_manufacturing_costs_as_str = client.get('sku_start_manufacturing_costs')
+            logger.debug('{} - sku_start_manufacturing_costs_as_str: {}'.format(HOSTNAME, sku_start_manufacturing_costs_as_str))
+            self.sku_start_manufacturing_costs = json.loads(sku_start_manufacturing_costs_as_str)
+        except:
+            logger.error('EXCEPTION: {}'.format(traceback.format_exc()))
+
+    def _calc_annual_sku_manufacturing_costs(self):
+        for sku, sku_start_price in self.sku_start_manufacturing_costs.items():
+            self.annual_sku_manufacturing_costs[sku] = dict()
+            self.annual_sku_manufacturing_costs[sku]['2000'] = sku_start_price
+            i = 2000
+            while i < 2024:
+                i += 1
+                year_key = '{}'.format(i)
+                self.annual_sku_manufacturing_costs[sku][year_key] = calc_cost_with_inflation(base_price=sku_start_price, target_year=i)
+            logger.info('{} - Annual manufacturing costs per SKU: {}'.format(HOSTNAME, json.dumps(self.annual_sku_manufacturing_costs, default=str, indent=4)))
+
+    def get_sku_manufacturing_cost(self, sku: str, year: int)->int:
+        year_key = '{}'.format(year)
+        if sku in self.annual_sku_manufacturing_costs:
+            if year_key in self.annual_sku_manufacturing_costs[sku]:
+                return self.annual_sku_manufacturing_costs[sku][year_key]
+        return 0
 
 
 inflation = AnnualInflation()
+sku_manufacturing_unit_costs = SkuManufacturingUnitCosts()
 
 
 class RawData:
@@ -296,36 +346,18 @@ def select_sku()->str:
     raise Exception('Failed to get SKU list from DB')
 
 
-def calc_cost_with_inflation(base_price: int, target_year: int)->int:
-    if target_year == 2000:
-        return base_price
-    i = 2000
-    while i < target_year:
-        i += 1
-        inflation_number = inflation.get_inflation_for_year(year=i)
-        inflation_value_on_base = int(base_price * ( inflation_number/100.0 ))
-        if inflation_value_on_base < 1:
-            inflation_value_on_base = 1
-        base_price += inflation_value_on_base
-    return base_price
-
-
-def calculate_total_cost(year: int, manufactured_qty: int)->int:
-    total_cost = 200 * 12
-
-    return total_cost
-
-
-def create_data(month: int, manufactured_qty: int, year: int)->RawData:
+def create_data(month: int, manufactured_qty: int, year: int, hour: int)->RawData:
     try:
+        sku = select_sku()
         return RawData(
-            sku=select_sku(),
+            sku=sku,
             manufactured_qty=manufactured_qty,
+            sku_manufacturing_cost=sku_manufacturing_unit_costs.get_sku_manufacturing_cost(sku=sku, year=year) * manufactured_qty,
             defect_qty=calc_final_defect_qty(qty_widgets_manufactured=manufactured_qty),
             year=year,
             month=month,
             day=random.randint(1, MONTH_DAYS[month]),
-            hour=random.randint(8, 20)
+            hour=hour
         )
     except:
         logger.error('EXCEPTION: {}'.format(traceback.format_exc()))
@@ -369,7 +401,8 @@ def produce_raw_data():
             month = random.randint(1, 12)
             manufactured_qty=random.randint(50, 100)
             year = random.randint(2000, 2024)
-            simulated_raw_data = create_data(month=month, manufactured_qty=manufactured_qty, year=year)
+            hour = random.randint(8, 20)
+            simulated_raw_data = create_data(month=month, manufactured_qty=manufactured_qty, year=year, hour=hour)
             if is_data_valid(data=simulated_raw_data) is True:
                 logger.info(
                     '{} - SKU {} data generated for {}.{}.{}'.format(
