@@ -70,6 +70,7 @@ SCHEMA = {
         { "name": "sku", "type": "string" },
         { "name": "manufactured_qty", "type": "int" },
         { "name": "defect_qty", "type": "int" },
+        { "name": "sku_manufacturing_cost", "type": "int" },
         { "name": "year", "type": "int" },
         { "name": "month", "type": "int" }
     ]
@@ -112,12 +113,14 @@ class SummaryData:
         sku: str,
         manufactured_qty: int,
         defect_qty: int,
+        sku_manufacturing_cost: int,
         year: int,
         month: int
     ):
         self.sku = sku
         self.manufactured_qty = manufactured_qty
         self.defect_qty = defect_qty
+        self.sku_manufacturing_cost = sku_manufacturing_cost
         self.year = year
         self.month = month
 
@@ -126,7 +129,8 @@ class Records:
     def __init__(self):
         self.manufactured = dict()
         self.defects = dict()
-    def add_record(self, sku: str, year: int, month: int, manufactured_qty: int, defect_qty: int):
+        self.sku_manufacturing_cost = dict()
+    def add_record(self, sku: str, year: int, month: int, manufactured_qty: int, defect_qty: int, sku_manufacturing_cost: int):
         index = '{}:{}:{}'.format(sku, year, month)
         if index not in self.manufactured:
             self.manufactured[index] = manufactured_qty
@@ -136,6 +140,10 @@ class Records:
             self.defects[index] = defect_qty
         else:
             self.defects[index] = self.defects[index] + defect_qty
+        if index not in self.sku_manufacturing_cost:
+            self.sku_manufacturing_cost[index] = sku_manufacturing_cost
+        else:
+            self.sku_manufacturing_cost[index] = self.sku_manufacturing_cost[index] + sku_manufacturing_cost
     def keys(self)->tuple:
         return tuple(self.manufactured.keys())
     def pop(self)->SummaryData:
@@ -145,13 +153,15 @@ class Records:
         index = random.choice(keys)
         manufactured_qty = self.manufactured.pop(index)
         defect_qty = self.defects.pop(index)
+        sku_manufacturing_cost = self.sku_manufacturing_cost.pop(index)
         key_items = index.split(':')
         return SummaryData(
             sku=key_items[0],
             year=int(key_items[1]),
             month=int(key_items[2]),
             manufactured_qty=manufactured_qty,
-            defect_qty=defect_qty
+            defect_qty=defect_qty,
+            sku_manufacturing_cost=sku_manufacturing_cost
         )
 
 
@@ -160,6 +170,7 @@ def summary_data_to_dict(raw_data: SummaryData, ctx):
         sku=raw_data.sku,
         manufactured_qty=raw_data.manufactured_qty,
         defect_qty=raw_data.defect_qty,
+        sku_manufacturing_cost=raw_data.sku_manufacturing_cost,
         year=raw_data.year,
         month=raw_data.month
     )
@@ -197,6 +208,7 @@ def summarize_data_from_db(client, key: bytes, current_records: Records):
     try:
         manufactured_qty = 0
         defect_qty = 0
+        sku_manufacturing_cost = 0
         """
             0       1    2    3    4    5
         '__TYPE__:sku:year:month:day:hour'
@@ -204,6 +216,8 @@ def summarize_data_from_db(client, key: bytes, current_records: Records):
         decoded_key = key.decode('utf-8')
         key2_str = decoded_key.replace('manufactured', 'defects')
         key2 = key2_str.encode('utf-8')
+        key3_str = decoded_key.replace('manufactured', 'cost')
+        key3 = key3_str.encode('utf-8')
         try:
             manufactured_qty = int(client.get(key))
         except:
@@ -212,7 +226,10 @@ def summarize_data_from_db(client, key: bytes, current_records: Records):
             defect_qty = int(client.get(key2))
         except:
             logger.warning('{} - FAILED to get Defect QTY - Assuming 0'.format(HOSTNAME))
-
+        try:
+            sku_manufacturing_cost = int(client.get(key3))
+        except:
+            logger.warning('{} - FAILED to get Defect QTY - Assuming 0'.format(HOSTNAME))
         logger.debug('{} - decoded_key={}'.format(HOSTNAME, decoded_key))
         key_elements = decoded_key.split(':')
         current_records.add_record(
@@ -220,7 +237,8 @@ def summarize_data_from_db(client, key: bytes, current_records: Records):
             year=int(key_elements[2]),
             month=int(key_elements[3]),
             manufactured_qty=manufactured_qty,
-            defect_qty=defect_qty
+            defect_qty=defect_qty,
+            sku_manufacturing_cost=sku_manufacturing_cost
         )
     except:
         logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
@@ -232,7 +250,7 @@ def retrieve_supported_registered_schema(schema_registry_client: SchemaRegistryC
 
     schema_versions = schema_registry_client.get_versions(subject_name=SCHEMA_SUBJECT)  # https://docs.confluent.io/platform/current/clients/confluent-kafka-python/html/index.html#schemaregistryclient
     matched_schema_found = False
-    local_schema_sample = SummaryData(sku='', defect_qty=0, manufactured_qty=0, year=0, month=0)
+    local_schema_sample = SummaryData(sku='', defect_qty=0, sku_manufacturing_cost=0, manufactured_qty=0, year=0, month=0)
     local_schema_sample_as_dict = summary_data_to_dict(raw_data=local_schema_sample, ctx=None)
     local_schema_sample_keys = tuple(local_schema_sample_as_dict.keys())
     local_schema_sample_keys_not_matched = list()
