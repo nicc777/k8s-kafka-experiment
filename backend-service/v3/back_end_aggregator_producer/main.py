@@ -8,7 +8,7 @@ OUTPUT      : Place summary stats on message queue      (2)
 
                                            
 +-------------------------------+        +-----+   (2)  #################################      (1)
-| front_end_aggregator_consumer |........|     |<-------# Back_end_aggregator_producer  #------------+
+| front_end_aggregator_consumer |        |     |<-------# Back_end_aggregator_producer  #------------+
 +-------------------------------+        |  K  |        #################################            |
                                          |  A  |                                                     |
                                          |  F  |                                                     |
