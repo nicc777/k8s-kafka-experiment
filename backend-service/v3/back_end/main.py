@@ -68,6 +68,7 @@ SCHEMA = {
         { "name": "sku", "type": "string" },
         { "name": "manufactured_qty", "type": "int" },
         { "name": "defect_qty", "type": "int" },
+        { "name": "sku_manufacturing_cost", "type": "int" },
         { "name": "year", "type": "int" },
         { "name": "month", "type": "int" },
         { "name": "day", "type": "int" },
@@ -115,6 +116,7 @@ class RawData:
         sku: str,
         manufactured_qty: int,
         defect_qty: int,
+        sku_manufacturing_cost: int,
         year: int,
         month: int,
         day: int,
@@ -123,6 +125,7 @@ class RawData:
         self.sku = sku
         self.manufactured_qty = manufactured_qty
         self.defect_qty = defect_qty
+        self.sku_manufacturing_cost = sku_manufacturing_cost
         self.year = year
         self.month = month
         self.day = day
@@ -136,6 +139,7 @@ def dict_to_raw_data(obj, ctx)->RawData:
         sku=obj['sku'],
         manufactured_qty=int(obj['manufactured_qty']),
         defect_qty=int(obj['defect_qty']),
+        sku_manufacturing_cost=int(obj['sku_manufacturing_cost']),
         year=int(obj['year']),
         month=int(obj['month']),
         day=int(obj['day']),
@@ -148,6 +152,7 @@ def raw_data_to_dict(raw_data: RawData, ctx):
         sku=raw_data.sku,
         manufactured_qty=raw_data.manufactured_qty,
         defect_qty=raw_data.defect_qty,
+        sku_manufacturing_cost=raw_data.sku_manufacturing_cost,
         year=raw_data.year,
         month=raw_data.month,
         day=raw_data.day,
@@ -189,6 +194,14 @@ def store_data_in_valkey(raw_data: RawData, retries: int=0)->bool:
             raw_data.hour
         )
         VALKEY_WRITE_CLIENT.incrby(name=key2, amount=raw_data.defect_qty)
+        key3 = 'cost:{}:{}:{}:{}:{}'.format(
+            raw_data.sku,
+            raw_data.year,
+            raw_data.month,
+            raw_data.day,
+            raw_data.hour
+        )
+        VALKEY_WRITE_CLIENT.incrby(name=key3, amount=raw_data.sku_manufacturing_cost)
     except:
         logger.error('{} - EXCEPTION: {}'.format(HOSTNAME, traceback.format_exc()))
         if retries > 3:
@@ -284,14 +297,15 @@ def consume_raw_data():
             raw_data_in = avro_deserializer(msg.value(), SerializationContext(msg.topic(), MessageField.VALUE))
             if raw_data_in is not None:
                 logger.debug(
-                    '{} - SKU: {} {}-{}-{} Hour {} TOTAL: {}'.format(
+                    '{} - SKU: {} {}-{}-{} Hour {} TOTAL: {}   Total COST: {}'.format(
                         HOSTNAME,
                         raw_data_in.sku,
                         str(raw_data_in.day).zfill(2),
                         str(raw_data_in.month,).zfill(2),
                         raw_data_in.year,
                         str(raw_data_in.hour,).zfill(2),
-                        raw_data_in.manufactured_qty
+                        raw_data_in.manufactured_qty,
+                        raw_data_in.sku_manufacturing_cost
                     )
                 )
                 if store_data_in_valkey(raw_data=raw_data_in) is False:
