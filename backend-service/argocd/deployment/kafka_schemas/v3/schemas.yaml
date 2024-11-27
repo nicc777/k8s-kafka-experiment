@@ -25,14 +25,18 @@ data:
       "fields": [
           { "name": "sku", "type": "string" },
           { "name": "manufactured_qty", "type": "int" },
-          { "name": "defect_qty", "type": "int" },
-          { "name": "manufacturing_cost", "type": "int" },
+          { "name": "defect_qty", "type": "int", "default": -1 },
+          { "name": "sku_manufacturing_cost", "type": "int", "default": -1 },
           { "name": "year", "type": "int" },
           { "name": "month", "type": "int" },
           { "name": "day", "type": "int" },
           { "name": "hour", "type": "int" }
       ]
     }
+# NOTE: The default value "value" MUST match the type. If the type is "int", the
+#       default value can not be "null" A strategy could be to set the default
+#       value to an unrealistic value and in the code logic ignore data with
+#       this value, as if it was a NULL value.
 ---
 apiVersion: platform.confluent.io/v1beta1
 kind: Schema
@@ -56,8 +60,8 @@ data:
       "fields": [
           { "name": "sku", "type": "string" },
           { "name": "manufactured_qty", "type": "int" },
-          { "name": "defect_qty", "type": "int" },
-          { "name": "manufacturing_cost", "type": "int" },
+          { "name": "sku_manufacturing_cost", "type": "int", "default": -1 },
+          { "name": "defect_qty", "type": "int", "default": -1 },
           { "name": "year", "type": "int" },
           { "name": "month", "type": "int" }
       ]
