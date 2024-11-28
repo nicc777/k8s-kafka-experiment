@@ -42,7 +42,7 @@ import uvicorn
 #                                                                             #
 ###############################################################################
 
-VERSION = "v2"
+VERSION = "v3"
 HOSTNAME = socket.gethostname()
 DEBUG = bool(int(os.getenv('DEBUG', '0')))
 VALKEY_SERVER_HOST = os.getenv('VALKEY_SERVER_HOST', 'valkey-primary')
@@ -72,6 +72,7 @@ class ResultData(BaseModel):
     year: int
     month: int
     manufactured_qty: int
+    sku_manufacturing_cost: int
     defect_qty: int
 
 
@@ -113,8 +114,11 @@ def get_summary_data(client)->Results:
             for key in read_keys(client=client, year=year):
                 key2 = copy.deepcopy(key)
                 key2 = key2.replace('manufactured', 'defects')
+                key3 = copy.deepcopy(key)
+                key3 = key3.replace('manufactured', 'cost')
                 manufactured_qty = 0
                 defect_qty = 0
+                sku_manufacturing_cost = 0
                 try:
                     manufactured_qty = int(client.get(key))
                 except:
@@ -123,6 +127,10 @@ def get_summary_data(client)->Results:
                     defect_qty = int(client.get(key2))
                 except:
                     logger.warning('{} - FAILED to get Defect QTY - Assuming 0'.format(HOSTNAME))
+                try:
+                    sku_manufacturing_cost = int(client.get(key3))
+                except:
+                    logger.warning('{} - FAILED to get COst - Assuming 0'.format(HOSTNAME))
                 decoded_key = key.decode('utf-8')
                 logger.debug('{} - decoded_key={}'.format(HOSTNAME, decoded_key))
                 key_elements = decoded_key.split(':')
@@ -131,7 +139,8 @@ def get_summary_data(client)->Results:
                     year=int(key_elements[2]),
                     month=int(key_elements[3]),
                     manufactured_qty=manufactured_qty,
-                    defect_qty=defect_qty
+                    defect_qty=defect_qty,
+                    sku_manufacturing_cost=sku_manufacturing_cost
                 )
                 results.data.append(record)
     except:
@@ -175,10 +184,14 @@ def get_annual_data_for_sku(client, sku: str, year: int)->Results:
             key_as_str = 'manufactured:{}:{}:{}'.format(sku, year, month)
             key2_as_str = copy.deepcopy(key_as_str)
             key2_as_str = key2_as_str.replace('manufactured', 'defects')
+            key3_as_str = copy.deepcopy(key_as_str)
+            key3_as_str = key3_as_str.replace('manufactured', 'cost')
             key = key_as_str.encode('utf-8')
             key2 = key2_as_str.encode('utf-8')
+            key3 = key3_as_str.encode('utf-8')
             manufactured_qty = 0
             defect_qty = 0
+            sku_manufacturing_cost = 0
             try:
                 manufactured_qty = int(client.get(key))
             except:
@@ -187,12 +200,17 @@ def get_annual_data_for_sku(client, sku: str, year: int)->Results:
                 defect_qty = int(client.get(key2))
             except:
                 logger.warning('{} - FAILED to get Defect QTY - Assuming 0'.format(HOSTNAME))
+            try:
+                sku_manufacturing_cost = int(client.get(key3))
+            except:
+                logger.warning('{} - FAILED to get Cost - Assuming 0'.format(HOSTNAME))
             record = ResultData(
                 sku=sku,
                 year=year,
                 month=month,
                 manufactured_qty=manufactured_qty,
-                defect_qty=defect_qty
+                defect_qty=defect_qty,
+                sku_manufacturing_cost=sku_manufacturing_cost
             )
             results.data.append(record)
     except:
