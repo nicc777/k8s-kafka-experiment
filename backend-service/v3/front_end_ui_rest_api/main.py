@@ -72,8 +72,8 @@ class ResultData(BaseModel):
     year: int
     month: int
     manufactured_qty: int
-    sku_manufacturing_cost: int
     defect_qty: int
+    sku_manufacturing_cost: int
 
 
 class Results(BaseModel):
