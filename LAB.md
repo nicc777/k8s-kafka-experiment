@@ -1,13 +1,15 @@
 
 - [System Requirements](#system-requirements)
 - [Kubernetes Platform for the Lab](#kubernetes-platform-for-the-lab)
-  - [Ingress](#ingress)
+  - [k3s](#k3s)
+  - [microk8s (old)](#microk8s-old)
+- [Ingress](#ingress)
 
 # System Requirements
 
-All experiments were tested on systems with at least 8x CPU cores and 32 GiB of RAM. Persistent storage is not used, but ensure sufficient disk space is available on your system (20 GiB should be more then enough).
+The lab is running on a Intel Xeon E5-2699 v3 based system with 18 cores and 128 GiB RAM.
 
-The experiment was tested on an Ubuntu Server platform (22.04).
+The base OS is Debian 12.
 
 On the workstation this repository was cloned on, the following additional software was used:
 
@@ -23,6 +25,43 @@ On the workstation this repository was cloned on, the following additional softw
 It is possible to run everything on a single workstation, provided enough resources is available. 
 
 # Kubernetes Platform for the Lab
+
+## k3s
+
+From 2024-11-30 this lab environment switched to [k3s](https://k3s.io/) in order to move away from Ubuntu snaps.
+
+The Kubernetes version has therefore gone slightly backwards from 1.31 to 1.30.
+
+The installation of `k3s` was done using the basic command (as ROOT):
+
+```shell
+# Install k3s without Traefik
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --disable=traefik
+
+# Use the kubernetes config (you may have to adjust permissions):
+export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+
+# You may also want to copy the above file to your workstation
+# NOTE: You may need to edit the server address to point to your Lab system IP address or hostname
+```
+
+Install Traefik as per the "Ingress" section.
+
+You can check `k3s` and `Traefik` is running:
+
+```shell
+kubectl get service/traefik -n default
+```
+
+Thankfully `k3s` support Helm out of the box, so we can add ArgoCD with the following command:
+
+```shell
+kubectl apply -f cicd_base/argocd-k3s.yaml
+```
+
+More information can be obtained from the [`k3s` documentation](https://docs.k3s.io/helm).
+
+## microk8s (old)
 
 The experiment is based on a `microk8s` version 1.31 with the following key addons enabled:
 
@@ -60,7 +99,7 @@ To get the ArgoCD admin password, run:
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d
 ```
 
-## Ingress
+# Ingress
 
 Run the following to install Traefik:
 

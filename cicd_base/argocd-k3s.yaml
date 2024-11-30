@@ -1,0 +1,42 @@
+# This manifest is to install ArgoCD on k3s - it is not required for mikrok8s as a addon is available
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd
+---
+apiVersion: helm.cattle.io/v1
+kind: HelmChart
+metadata:
+  name: argo
+  namespace: kube-system
+spec:
+  repo: https://argoproj.github.io/argo-helm
+  chart: argo-cd
+  targetNamespace: argocd
+  valuesContent: |-
+    global:
+      domain: argocd.example.tld
+    configs:
+      params:
+        server.insecure: true
+    redis-ha:
+      enabled: false
+    controller:
+      replicas: 1
+    server:
+      replicas: 1
+      service:
+        type: NodePort
+      ingress:
+        enabled: true
+        ingressClassName: traefik
+        annotations:
+          traefik.ingress.kubernetes.io/router.entrypoints: "websecure"
+          traefik.ingress.kubernetes.io/router.tls: "true"
+    repoServer:
+      replicas: 1
+    applicationSet:
+      replicas: 1
+
+      
