@@ -33,7 +33,7 @@ Not Started       :hourglass:
 | Application v1              | Application with basic data flow via Kafka                | :white_check_mark: | Done                                                                                         |
 | Application Upgrade Process | Add pipelines to automate blue/green & canary deployments | :white_check_mark: | Done                                                                                         |
 | Application v2              | Add feature to count widget defects                       | :white_check_mark: | Done                                                                                         |
-| Application v3              | Add total manufacturing cost data                         | :construction:     | Not started                                                                                  |
+| Application v3              | Add total manufacturing cost data                         | :construction:     | Busy with implementation                                                                     |
 | Reliability Experiment      | Chaos testing                                             | :hourglass:        | Not started                                                                                  |
 
 The idea is to use blue/gree with canary deployments between application upgrades.
