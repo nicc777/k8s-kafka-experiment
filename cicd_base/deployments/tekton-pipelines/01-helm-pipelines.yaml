@@ -94,6 +94,7 @@ spec:
     metadata:
       generateName: helm-pipelines-run-
     spec:
+      ServiceAccount: tmp-admin-sa
       taskSpec:
         volumes:
         - name: apply-volume
