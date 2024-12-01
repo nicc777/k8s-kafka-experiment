@@ -7,6 +7,7 @@ metadata:
 spec:
   template:
     spec:
+      serviceAccountName: tmp-admin-sa
       containers:
       - name: reset-dbs
         image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
