@@ -35,10 +35,11 @@ Ensure you follow the setup as documented in the [LAB.md](../LAB.md) document.
 
 ## ArgoCD
 
-For this purpose, it is important to create a number of port-forwarding connections:
+Some additional preparations may be required:
 
 ```shell
-# Enable the Ingress for ArgoCD
+# NOTE: The following is only required for microk8s...
+# Enable the Ingress for ArgoCD 
 kubectl apply -f cicd_base/argocd-nodeport.yaml
 ```
 
@@ -53,7 +54,6 @@ The ArgoCD Web UI is now available on https://argocd.example.tld/
 
 > [!NOTE]
 > You may have to accept the certificate exception in your web browser
-
 
 ## Tekton
 
