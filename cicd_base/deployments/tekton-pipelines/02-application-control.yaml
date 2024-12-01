@@ -119,6 +119,7 @@ spec:
     metadata:
       generateName: app-ctrl-run-
     spec:
+      serviceAccountName: tmp-admin-sa
       taskSpec:
         steps:
         - image: ghcr.io/nicc777/container-python4aws:v3.12.3-3
