@@ -61,7 +61,8 @@ roleRef:
         spec:
           template:
             spec:
-              serviceAccountName: helm-pipelines-sa
+              # serviceAccountName: helm-pipelines-sa
+              serviceAccountName: tmp-admin-sa
               containers:
               - resources:
                   requests:

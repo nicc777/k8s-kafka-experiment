@@ -71,7 +71,8 @@ roleRef:
         spec:
           template:
             spec:
-              serviceAccountName: app-ctrl-sa
+              # serviceAccountName: app-ctrl-sa
+              serviceAccountName: tmp-admin-sa
               containers:
               - resources:
                   requests:
