@@ -1,4 +1,24 @@
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tmp-admin-sa
+  namespace: exp
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: admin-sa-binding-for-jobs
+  namespace: exp
+subjects:
+- kind: ServiceAccount
+  name: tmp-admin-sa
+  namespace: default
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
