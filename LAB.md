@@ -36,7 +36,7 @@ The installation of `k3s` was done using the basic command (as ROOT):
 
 ```shell
 # Install k3s without Traefik
-curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --disable=traefik
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --disable=traefik --kubelet-arg="node-ip=0.0.0.0" --cluster-cidr=10.42.0.0/16 --service-cidr=10.43.0.0/16
 
 # Use the kubernetes config (you may have to adjust permissions):
 export KUBECONFIG=/etc/rancher/k3s/k3s.yaml

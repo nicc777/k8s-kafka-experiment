@@ -60,6 +60,7 @@
         "incrby",
         "knative",
         "KUBECONFIG",
+        "kubelet",
         "leaderelection",
         "levelname",
         "loglevel",
