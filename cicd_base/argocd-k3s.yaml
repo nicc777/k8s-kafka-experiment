@@ -1,4 +1,4 @@
-# This manifest is to install ArgoCD on k3s - it is not required for mikrok8s as a addon is available
+# This manifest is to install ArgoCD on k3s - it is not required for microk8s as a addon is available
 ---
 apiVersion: v1
 kind: Namespace

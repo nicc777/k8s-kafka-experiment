@@ -61,32 +61,44 @@ def get_data_from_query(sku_name: str, year: str)->dict:
     data['total'] = 0
     data['defects'] = 0
     data['cost'] = 0
-    try:
-        url = '{}/query/{}/{}'.format(END_POINT_BASE_URL, sku_name, year)
-        r = requests.get(url)
-        returned_data = r.json()
-        logger.info('DATA: {}'.format(json.dumps(returned_data, default=str)))
-        if 'version' in returned_data:
-            data['version'] = returned_data['version']
-        total_manufactured = 0
-        total_defects = 0
-        total_cost = 0
-        if 'data' in returned_data:
-            for record in returned_data['data']:
-                if 'manufactured_qty' in record:
-                    total_manufactured += record['manufactured_qty']
-                if 'defect_qty' in record:
-                    total_defects += record['defect_qty']
-                if 'sku_manufacturing_cost' in record:
-                    total_cost += record['sku_manufacturing_cost']
-        if total_manufactured > 0:
-            data['total'] = int(total_manufactured)
-        if total_defects > 0:
-            data['defects'] = int(total_defects)
-        if total_cost > 0:
-            data['cost'] = int(total_cost)
-    except:
-        logger.error('EXCEPTION: {}'.format(traceback.format_exc()))
+    url = '{}/query/{}/{}'.format(END_POINT_BASE_URL, sku_name, year)
+    logger.info('Calling URL: {}'.format(url))
+    total_tries = 0
+    keep_trying = True
+    while keep_trying is True:
+        try:
+            r = requests.get(url)
+            returned_data = r.json()
+            logger.info('DATA: {}'.format(json.dumps(returned_data, default=str)))
+            if 'version' in returned_data:
+                data['version'] = returned_data['version']
+            total_manufactured = 0
+            total_defects = 0
+            total_cost = 0
+            if 'data' in returned_data:
+                for record in returned_data['data']:
+                    if 'manufactured_qty' in record:
+                        total_manufactured += record['manufactured_qty']
+                    if 'defect_qty' in record:
+                        total_defects += record['defect_qty']
+                    if 'sku_manufacturing_cost' in record:
+                        total_cost += record['sku_manufacturing_cost']
+            if total_manufactured > 0:
+                data['total'] = int(total_manufactured)
+            if total_defects > 0:
+                data['defects'] = int(total_defects)
+            if total_cost > 0:
+                data['cost'] = int(total_cost)
+            keep_trying = False
+        except:
+            logger.error('Exception when calling URL: {}'.format(url))
+            logger.error('EXCEPTION: {}'.format(traceback.format_exc()))
+            total_tries += 1
+            if total_tries > 3:
+                keep_trying = False
+                logger.warning('All retries failed - giving up until next time')
+            else:
+                time.sleep(0.1)
     return data
 
 
