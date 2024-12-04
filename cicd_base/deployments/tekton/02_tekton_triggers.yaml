@@ -459,7 +459,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -517,7 +517,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -533,7 +533,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -593,7 +593,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -623,7 +623,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -697,7 +697,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -755,7 +755,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -771,7 +771,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -829,7 +829,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -847,7 +847,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -905,7 +905,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -923,7 +923,7 @@ spec:
           type: object
           # One can use x-kubernetes-preserve-unknown-fields: true
           # at the root of the schema (and inside any properties, additionalProperties)
-          # to get the traditional CRD behaviour that nothing is pruned, despite
+          # to get the traditional CRD behavior that nothing is pruned, despite
           # setting spec.preserveUnknownProperties: false.
           #
           # See https://kubernetes.io/blog/2019/06/20/crd-structural-schema/
@@ -1588,7 +1588,7 @@ spec:
             capabilities:
               drop:
                 - "ALL"
-            # User 65532 is the distroless nonroot user ID
+            # User 65532 is the distroless non-root user ID
             runAsUser: 65532
             runAsGroup: 65532
             runAsNonRoot: true
@@ -1719,7 +1719,7 @@ spec:
           securityContext:
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
-            # User 65532 is the distroless nonroot user ID
+            # User 65532 is the distroless non-root user ID
             runAsUser: 65532
             runAsGroup: 65532
             runAsNonRoot: true
