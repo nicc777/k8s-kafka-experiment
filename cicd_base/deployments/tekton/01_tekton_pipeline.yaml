@@ -1886,7 +1886,7 @@ data:
   disable-inline-spec: ""
   # Setting this flag to "true" will enable the use of concise resolver syntax
   enable-concise-resolver-syntax: "false"
-  # Setthing this flag to "true" will enable native Kubernetes Sidecar support
+  # Setting this flag to "true" will enable native Kubernetes Sidecar support
   enable-kubernetes-sidecar: "false"
 
 ---
@@ -2457,7 +2457,7 @@ spec:
             capabilities:
               drop:
                 - "ALL"
-            # User 65532 is the nonroot user ID
+            # User 65532 is the non-root user ID
             runAsUser: 65532
             runAsGroup: 65532
             runAsNonRoot: true
@@ -2628,7 +2628,7 @@ spec:
             capabilities:
               drop:
                 - "ALL"
-            # User 65532 is the nonroot user ID
+            # User 65532 is the non-root user ID
             runAsUser: 65532
             runAsGroup: 65532
             runAsNonRoot: true
@@ -3628,7 +3628,7 @@ spec:
             # Additionally, you will also need to change the resource names (metadata.name) of
             # "MutatingWebhookConfiguration" and "ValidatingWebhookConfiguration" in 500-webhooks.yaml
             # to reflect the change in the name of the admission webhook.
-            # Followed by changing the webhook's Role in 200-clusterrole.yaml to update the "resourceNames" of
+            # Followed by changing the webhook's Role in 200-clusterroles.yaml to update the "resourceNames" of
             # "mutatingwebhookconfigurations" and "validatingwebhookconfigurations" resources.
             - name: WEBHOOK_ADMISSION_CONTROLLER_NAME
               value: webhook.pipeline.tekton.dev
@@ -3644,7 +3644,7 @@ spec:
             capabilities:
               drop:
                 - "ALL"
-            # User 65532 is the distroless nonroot user ID
+            # User 65532 is the distroless non-root user ID
             runAsUser: 65532
             runAsGroup: 65532
             runAsNonRoot: true
