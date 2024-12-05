@@ -38,7 +38,7 @@ The installation of `k3s` was done using the following commands:
 curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --disable=traefik --kubelet-arg="node-ip=0.0.0.0" --cluster-cidr=10.42.0.0/16 --service-cidr=10.43.0.0/16
 -->
 
-```shell
+<!--
 # Install k3s without Traefik
 sudo mkdir -p /etc/systemd/system/user@.service.d
 
@@ -66,7 +66,16 @@ sudo cp /tmp/config ~/k3s.yaml
 
 sudo chown $USER:$USER ~/k3s.yaml
 
+-->
+
+
+```shell
 # NOTE: On your local workstation add the host "k3s-server-1" to your LAB machine IP address ub /etc/hosts 
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --disable=traefik --kubelet-arg="node-ip=0.0.0.0"
+
+sudo cp -vf /etc/rancher/k3s/k3s.yaml ./k3s.yaml
+
+sudo chown $USER:$USER ~/k3s.yaml
 ```
 
 See also https://rootlesscontaine.rs/getting-started/common/cgroup2/#enabling-cpu-cpuset-and-io-delegation
