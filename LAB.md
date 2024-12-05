@@ -32,6 +32,9 @@ From 2024-11-30 this lab environment switched to [k3s](https://k3s.io/) in order
 
 The Kubernetes version has therefore gone slightly backwards from 1.31 to 1.30.
 
+> [!NOTE]
+> On Debian 12, to get `k3s` to play nicely, I had to disable IPv6 for the host os. Not doing so resulted in a lot of IPv6 routing related errors on the Traefik ingress which caused all kinds of issues for clients - mostly gateway timeouts.
+
 The installation of `k3s` was done using the following commands:
 
 <!-- 
