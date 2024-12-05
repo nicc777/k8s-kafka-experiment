@@ -142,7 +142,6 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 Run the following to install Traefik:
 
 ```shell
-
 # For values, see https://github.com/traefik/traefik-helm-chart/blob/master/traefik/VALUES.md
 helm upgrade --install -f cicd_base/traefik-values.yaml traefik traefik/traefik
 ```
