@@ -32,18 +32,44 @@ From 2024-11-30 this lab environment switched to [k3s](https://k3s.io/) in order
 
 The Kubernetes version has therefore gone slightly backwards from 1.31 to 1.30.
 
-The installation of `k3s` was done using the basic command (as ROOT):
+The installation of `k3s` was done using the following commands:
+
+<!-- 
+curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --disable=traefik --kubelet-arg="node-ip=0.0.0.0" --cluster-cidr=10.42.0.0/16 --service-cidr=10.43.0.0/16
+-->
 
 ```shell
 # Install k3s without Traefik
-curl -sfL https://get.k3s.io | INSTALL_K3S_EXEC="server" sh -s - --disable=traefik --kubelet-arg="node-ip=0.0.0.0" --cluster-cidr=10.42.0.0/16 --service-cidr=10.43.0.0/16
+sudo mkdir -p /etc/systemd/system/user@.service.d
 
-# Use the kubernetes config (you may have to adjust permissions):
-export KUBECONFIG=/etc/rancher/k3s/k3s.yaml
+cat <<EOF | sudo tee /etc/systemd/system/user@.service.d/delegate.conf
+[Service]
+Delegate=cpu cpuset io memory pids
+EOF
 
-# You may also want to copy the above file to your workstation
-# NOTE: You may need to edit the server address to point to your Lab system IP address or hostname
+sudo systemctl daemon-reload
+
+sudo podman run                             \
+  --privileged                              \
+  -m 64g                                    \
+  --name k3s-server-1                       \
+  --hostname k3s-server-1                   \
+  -p 0.0.0.0:6443:6443                      \
+  -p 0.0.0.0:30080:30080                    \
+  -p 0.0.0.0:30443:30443                    \
+  -d docker.io/rancher/k3s:v1.30.7-rc2-k3s1 \
+  server --disable=traefik
+
+sudo podman cp k3s-server-1:/etc/rancher/k3s/k3s.yaml /tmp/config
+
+sudo cp /tmp/config ~/k3s.yaml
+
+sudo chown $USER:$USER ~/k3s.yaml
+
+# NOTE: On your local workstation add the host "k3s-server-1" to your LAB machine IP address ub /etc/hosts 
 ```
+
+See also https://rootlesscontaine.rs/getting-started/common/cgroup2/#enabling-cpu-cpuset-and-io-delegation
 
 Install Traefik as per the "Ingress" section.
 
@@ -104,6 +130,8 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 Run the following to install Traefik:
 
 ```shell
+
+# For values, see https://github.com/traefik/traefik-helm-chart/blob/master/traefik/VALUES.md
 helm upgrade --install -f cicd_base/traefik-values.yaml traefik traefik/traefik
 ```
 
@@ -117,12 +145,10 @@ To permanently forward common HTTP and HTTPS ports to, run the following (you ne
 export CLUSTER_ADDRESS=...
 
 # Terminal 1 / Panel 1
-export TRAEFIK_INGRESS_NP_HTTP=`kubectl get service/traefik -n default -o json | jq '.spec.ports' | jq '.[] | select(.name=="web")' | jq '.nodePort'`
-sudo socat TCP-LISTEN:80,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$TRAEFIK_INGRESS_NP_HTTP
+sudo socat TCP-LISTEN:80,fork,reuseaddr TCP:$CLUSTER_ADDRESS:30080
 
 # Terminal 2 / Panel 2
-export TRAEFIK_INGRESS_NP_HTTPS=`k get service/traefik -n default -o json | jq '.spec.ports' | jq '.[] | select(.name=="websecure")' | jq '.nodePort'`
-sudo socat TCP-LISTEN:443,fork,reuseaddr TCP:$CLUSTER_ADDRESS:$TRAEFIK_INGRESS_NP_HTTPS
+sudo socat TCP-LISTEN:443,fork,reuseaddr TCP:$CLUSTER_ADDRESS:30443
 ```
 
 You can the string `demo.example.tld traefik-dashboard.example.tld` to your `/etc/hosts` file for the host IP 127.0.0.1 - the demo API endpoint will available at this address.

@@ -28,8 +28,8 @@ providers:
 
 # Use NodePort instead of LoadBalancer
 service:
-  type: NodePort
-
+ type: NodePort
+    
 # Enable access logs and debug logging
 logs:
   access:
@@ -42,6 +42,9 @@ ports:
   web:
     proxyProtocol:
       insecure: true
+    nodePort: 30080
+  websecure:
+    nodePort: 30443
 
 # The following allows us to skip TLS/HTTPS certificate verification. It's similar to "curl -k"
 # It's ok for a LAB environment, but definitely DO NOT USE THIS IN PRODUCTION OR INTERNET EXPOSED SYSTEMS
